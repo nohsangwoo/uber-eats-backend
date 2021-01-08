@@ -25,6 +25,7 @@ const mockMailService = {
   sendVerificationEmail: jest.fn(),
 };
 
+// partial 옵셔널하게 만들어줌
 type MockRepository<T = any> = Partial<Record<keyof Repository<T>, jest.Mock>>;
 
 describe('UserService', () => {
@@ -63,7 +64,22 @@ describe('UserService', () => {
   });
 
   describe('createAccount', () => {
-    it('should fail if user exists', () => {});
+    it('should fail if user exists', async () => {
+      // findOne의 값을 중간에 가로채서 반환값을 바꿔치기함(물론 테스트시에만)
+      usersRepository.findOne.mockResolvedValue({
+        id: 1,
+        email: '',
+      });
+      const result = await service.createAccount({
+        email: '',
+        password: '',
+        role: 0,
+      });
+      expect(result).toMatchObject({
+        ok: false,
+        error: 'There is a user with that email already',
+      });
+    });
   });
 
   it.todo('login');
