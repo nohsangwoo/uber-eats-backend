@@ -1,13 +1,7 @@
 import { DynamicModule, Global, Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from 'src/users/entities/user.entity';
-import { UsersModule } from 'src/users/users.module';
-import { UserService } from 'src/users/users.service';
-import { CONFIG_OPTIONS } from './jwt.constants';
 import { JwtModuleOptions } from './jwt.interfaces';
-import { JwtMiddleware } from './jwt.middleware';
 import { JwtService } from './jwt.service';
-
+import { CONFIG_OPTIONS } from 'src/common/common.constants';
 @Module({})
 @Global()
 export class JwtModule {
