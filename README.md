@@ -91,3 +91,20 @@ npm i @nestjs/graphql@7.9.1 이상 버젼에서 에러가 나타나는 버그가
 ]
 test:cov에서 현재 얼마나 테스트가 완료됐는지 계산해서 퍼센테이지를 보여주는데
 entify파일과 constants 파일은 테스트 할필요가 없으니 제외하기위해서 poackage.js에 추가해준다
+
+# 특정파일만 검사하고싶을때
+
+@blackstar0223 Check "collectCoverageFrom" in package.json.
+In my case:
+"collectCoverageFrom": [
+"**/*.(t|j)s"
+],
+
+I modified it:
+"collectCoverageFrom": [
+"**/*.service.(t|j)s"
+],
+And then jest --coverage shows only \*.service.ts(or js if exists) files.
+and I didn't set coveragePathIgnorePatterns
+
+이런식으로 설정가능
