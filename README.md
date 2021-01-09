@@ -81,3 +81,13 @@ npm i @nestjs/graphql@7.9.1 이상 버젼에서 에러가 나타나는 버그가
 7. 때에 따라서 update()를 save()대신 사용하던가 할수있음(간단하고 빠르기때문에)
 
 # 6 - EMAIL VERIFICATION
+
+# 7.5
+
+"coveragePathIgnorePatterns": [
+"node_modules",
+".entity.ts",
+".constants.ts"
+]
+test:cov에서 현재 얼마나 테스트가 완료됐는지 계산해서 퍼센테이지를 보여주는데
+entify파일과 constants 파일은 테스트 할필요가 없으니 제외하기위해서 poackage.js에 추가해준다
