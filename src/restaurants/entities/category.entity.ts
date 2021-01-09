@@ -5,7 +5,8 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Restaurant } from './restaurant.entity';
 
 // validation과 동시에 graphql 및 postgresql의 table을 구성하는 속성
-@InputType({ isAbstract: true })
+// 첫번째 인자로 네이밍 가능
+@InputType('CategoryInputType', { isAbstract: true })
 @ObjectType()
 @Entity()
 export class Category extends CoreEntity {
