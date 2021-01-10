@@ -30,7 +30,6 @@ export class RestaurantService {
       // save함수로 DB저장
       const newRestaurant = this.restaurants.create(createRestaurantInput);
       newRestaurant.owner = owner;
-      console.log('사용자확인', owner);
       const categoryName = createRestaurantInput.categoryName
         .trim()
         .toLowerCase();

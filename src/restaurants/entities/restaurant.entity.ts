@@ -43,6 +43,7 @@ export class Restaurant extends CoreEntity {
     user => user.restaurants,
     // 카테고리가 없는 테이블 생성도 가능하도록 설정
     // { nullable: true, onDelete: 'SET NULL' },
+    { onDelete: 'CASCADE' },
   )
   owner: User;
 }
