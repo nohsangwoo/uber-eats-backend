@@ -1,14 +1,23 @@
-import { InputType, ObjectType, OmitType } from '@nestjs/graphql';
+import {
+  Field,
+  InputType,
+  ObjectType,
+  OmitType,
+  PickType,
+} from '@nestjs/graphql';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 import { Restaurant } from '../entities/restaurant.entity';
 
 @InputType()
-//  Restaurant.entity.ts 에서 'id',  'category',   'owner', 를 제외한 나머지만 끌어와 사용하겠다
-export class CreateRestaurantInput extends OmitType(Restaurant, [
-  'id',
-  'category',
-  'owner',
-]) {}
+//  Restaurant에서 name, coverImg, address만 골라서 끌어와 사용하겠다
+export class CreateRestaurantInput extends PickType(Restaurant, [
+  'name',
+  'coverImg',
+  'address',
+]) {
+  @Field(type => String)
+  categoryName: string;
+}
 
 @ObjectType()
 // CoreOutPut.dto.ts에서 끌어와 사용하겠다 (ok와 error)

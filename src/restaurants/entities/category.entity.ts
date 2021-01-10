@@ -11,15 +11,20 @@ import { Restaurant } from './restaurant.entity';
 @Entity()
 export class Category extends CoreEntity {
   @Field(type => String)
-  @Column()
+  @Column({ unique: true })
   @IsString() //validation
   @Length(5) //validation
   name: string;
 
-  @Field(type => String)
-  @Column()
+  @Field(type => String, { nullable: true })
+  @Column({ nullable: true })
   @IsString()
   coverImg: string;
+
+  @Field(type => String)
+  @Column({ unique: true })
+  @IsString()
+  slug: string;
 
   //   카테고리는 여러개의 restaurant를 가질수있음(Restaurant는 음식점 사장의 이용)
   @Field(type => [Restaurant]) //for graphql
