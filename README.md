@@ -108,3 +108,7 @@ And then jest --coverage shows only \*.service.ts(or js if exists) files.
 and I didn't set coveragePathIgnorePatterns
 
 이런식으로 설정가능
+
+# jwt.middleware단에서 {user로 뽑아줘야 제대로 작동함}
+
+const { user } = await this.userService.findById(decoded['id']);
