@@ -17,7 +17,7 @@ import { AuthModule } from './auth/auth.module';
 import { Verification } from './users/entities/verification.entity';
 import { MailModule } from './mail/mail.module';
 import { Restaurant } from './restaurants/entities/restaurant.entity';
-import { Category } from './restaurants/entities/category.entity';
+import { Category } from './restaurants/entities/cetegory.entity';
 import { RestaurantsModule } from './restaurants/restaurants.module';
 
 @Module({
@@ -28,7 +28,7 @@ import { RestaurantsModule } from './restaurants/restaurants.module';
       ignoreEnvFile: process.env.NODE_ENV === 'prod',
       validationSchema: Joi.object({
         NODE_ENV: Joi.string()
-          .valid('dev', 'prod')
+          .valid('dev', 'prod', 'test')
           .required(),
         DB_HOST: Joi.string().required(),
         DB_PORT: Joi.string().required(),
@@ -49,7 +49,8 @@ import { RestaurantsModule } from './restaurants/restaurants.module';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       synchronize: process.env.NODE_ENV !== 'prod',
-      logging: process.env.NODE_ENV !== 'prod',
+      logging:
+        process.env.NODE_ENV !== 'prod' && process.env.NODE_ENV !== 'test',
       entities: [User, Verification, Restaurant, Category],
     }),
     GraphQLModule.forRoot({
@@ -64,9 +65,9 @@ import { RestaurantsModule } from './restaurants/restaurants.module';
       domain: process.env.MAILGUN_DOMAIN_NAME,
       fromEmail: process.env.MAILGUN_FROM_EMAIL,
     }),
+    AuthModule,
     UsersModule,
     RestaurantsModule,
-    AuthModule,
   ],
   controllers: [],
   providers: [],

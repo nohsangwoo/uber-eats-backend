@@ -23,7 +23,7 @@ registerEnumType(UserRole, { name: 'UserRole' });
 @ObjectType()
 @Entity()
 export class User extends CoreEntity {
-  @Column()
+  @Column({ unique: true })
   @Field(type => String)
   @IsEmail()
   email: string;
@@ -43,8 +43,7 @@ export class User extends CoreEntity {
   @IsBoolean()
   verified: boolean;
 
-  //   카테고리는 여러개의 restaurant를 가질수있음(Restaurant는 음식점 사장의 이용)
-  @Field(type => [Restaurant]) //for graphql
+  @Field(type => [Restaurant])
   @OneToMany(
     type => Restaurant,
     restaurant => restaurant.owner,
