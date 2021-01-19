@@ -29,6 +29,78 @@ npm i @nestjs/graphql@7.9.1 이상 버젼에서 에러가 나타나는 버그가
 7.9.1버젼으로 진행하는거 추천
 #4.5에 pgadmin 질문올림
 
+# 1 GRAPHQL API
+
+# 1.0 apollo server setup
+
+- main.ts를 통해서 appModule(app.Module.ts)을 불러와 렌더링 한다
+  app.Module.ts에서 모든 모듈이나 GRAPHQL 또는 DATABASE를 불러온다
+- forRoot()라는건 모듈을 불러올때 설정값을 조정하는것
+- GRAPHQL API는 스키마랑 리졸버가 한개이상 구성돼있어야함 (따라서 처음에 그래프큐엘 세팅시 스키마랑 리졸버가 구성안돼있으니 에러 나올수있음)
+
+# 1.1 Our First Resolver
+
+- graphQl은 기본적으로 apolloserver위에서 동작함
+- (nest g mo restaurant) 명령어로 restaurant 모듈을 생성함
+- 생성된 restaurant모듈은 자동으로 app.module.ts에 import됨
+- restaurant.resolver파일을 생성하고 거기에 도어맨 역할을 하는 기능의 함수 생성
+- 도어맨 역할이란? 실질적인 기능은 없고 실질적인 기능을 불러오는 기능만 해줌 -> 말그대로 문을 열어주기만함
+
+- 생성한 resolver파일은 restaurant.module.ts에서 providers에 추가해준다
+- resolver파일은 @Resolver() 데코레이터로 선언하면 됨 (그럼 자동으로 resolver 파일이라고 인식하는듯 )
+- 생성한 sevice파일은 restaurant.module.ts에서 providers에 추가해준다
+
+- 해당 resolver에서는 mutation이나 query등을 선언할수있는데 위에 말했듯이 도어맨 역할만 해줌 (이건 어떤이름의 쿼리구나! 이건 어떤 이름의 뮤테이션이구나!)
+- 이때 쿼리는 @Query() 데코레이터로 선언 / from "@nestjs/graphql
+- mutation도 마찬가지
+- 또한 쿼리문이나 뮤테이션 데코레이터 선언시
+  ex) @Query(returns => Boolean) 이런식으로 반환되는 타입을 미리 graphql을 위해 선언해줌
+  예시)
+  @Resolver()
+  export class RestaurantResolver{
+  @Query(returns=>Boolean) //for graphql
+  isPizzaGood():Boolean{ //for typescript
+  return: true
+  }
+  }
+
+# 1.2 ObjectType
+
+entity
+
+- restaurant.entity.ts
+- DB의 (테이블)모델을 구성함
+
+- @InputType() from '@nestjs/graphql';
+  전달되는 arguments가 있다
+- @ObjectType() from '@nestjs/graphql';
+  말 그대로 object type이다
+  이후 선언되는 type을 지정
+- graphlql을 위해 선언하는건 @Field(type => String)
+  type은 말그대로 해당 Field의 type을 선언
+- typeorm을 위해 선언되는건 @Column()
+
+* about
+  @IsString()
+  @Length(5)
+  이런것들은 validation을 선언 꼭 string이어야하고 꼭 길이가 5개 이내여야하고...
+
+- @Field(type => Boolean, { nullable: true })
+  기본적으론 Boolean type이지만 null형식이 허용된다.라는 뜻(필수로 값이 채워지지 않아도 된다 Not Required)
+
+# 1.5 class-validation
+
+- class-validation을 사용하기 위해선 main.ts에서 useGlobalPipe설정 해줘야함
+
+# 2 postgresql 세팅 및 dotenv를 nestjs방식으로 불러오기
+
+# 3 TypeORM AND NEST
+
+# 3.1 Entity
+
+- Entity는 데이터베이스에 저장되는 데이터의형태를 보여주는 모델
+- 이렇게 설정한 DB는(Restaurant테이블) app.module.ts에서 typeOrmModule.forRoot({ 설정의 entities:[Restaurant]}) 에 예시처럼 추가한다
+
 # 6 - USER AUTHENTICATION
 
 # 5.0~5.7
