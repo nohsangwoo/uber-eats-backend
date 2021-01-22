@@ -69,9 +69,10 @@ export class User extends CoreEntity {
       }
     }
   }
-
+  // 비밀번호가 맞는지 확인해주는 기능
   async checkPassword(aPassword: string): Promise<boolean> {
     try {
+      // aPassword는 입력받는 비밀번호 , this.password는 DB의 password
       const ok = await bcrypt.compare(aPassword, this.password);
       return ok;
     } catch (e) {

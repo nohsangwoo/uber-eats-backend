@@ -29,6 +29,7 @@ export class UserResolver {
     return this.usersService.createAccount(createAccountInput);
   }
 
+  // 로그인 성공하면 토큰을 반환해줌
   @Mutation(returns => LoginOutput)
   async login(@Args('input') loginInput: LoginInput): Promise<LoginOutput> {
     return this.usersService.login(loginInput);

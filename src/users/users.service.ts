@@ -59,6 +59,7 @@ export class UserService {
 
   async login({ email, password }: LoginInput): Promise<LoginOutput> {
     try {
+      // email로 유저 찾아서 없으면 false와 에러문을 반환
       const user = await this.users.findOne(
         { email },
         { select: ['id', 'password'] }
@@ -69,6 +70,11 @@ export class UserService {
           error: 'User not found',
         };
       }
+
+      // 비밀번호가 맞는지 확인
+      //위에 users에서 찾은값을 저장한 user변수와는 전혀 상관없는
+      // user.checkPassword의 user (이건 user entity에서 온 user이다)
+      // user entity에서 checkPassword 함수 실행(password전달)
       const passwordCorrect = await user.checkPassword(password);
       if (!passwordCorrect) {
         return {
@@ -77,6 +83,7 @@ export class UserService {
         };
       }
 
+      // 비밀번호가 맞으면 토큰 발급(세션 유지용  )
       const token = this.jwtService.sign(user.id);
       return {
         ok: true,
