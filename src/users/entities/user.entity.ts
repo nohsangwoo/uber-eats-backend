@@ -11,13 +11,14 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { IsBoolean, IsEmail, IsEnum, IsString } from 'class-validator';
 import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
 
+// 이 셋중 하나여야 한다는 의미의 규칙
 export enum UserRole {
   Client = 'Client',
   Owner = 'Owner',
   Delivery = 'Delivery',
 }
 
-registerEnumType(UserRole, { name: 'UserRole' });
+registerEnumType(UserRole, { name: 'UserRole' }); //for graqhpl
 
 @InputType('UserInputType', { isAbstract: true })
 @ObjectType()
@@ -46,7 +47,7 @@ export class User extends CoreEntity {
   @Field(type => [Restaurant])
   @OneToMany(
     type => Restaurant,
-    restaurant => restaurant.owner,
+    restaurant => restaurant.owner
   )
   restaurants: Restaurant[];
 
