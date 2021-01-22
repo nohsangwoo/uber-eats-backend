@@ -34,7 +34,7 @@ export class Restaurant extends CoreEntity {
   @ManyToOne(
     type => Category,
     category => category.restaurants,
-    { nullable: true, onDelete: 'SET NULL' },
+    { nullable: true, onDelete: 'SET NULL' }
   )
   category: Category;
 
@@ -42,7 +42,7 @@ export class Restaurant extends CoreEntity {
   @ManyToOne(
     type => User,
     user => user.restaurants,
-    { onDelete: 'CASCADE' },
+    { onDelete: 'CASCADE' }
   )
   owner: User;
 

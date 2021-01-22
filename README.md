@@ -121,6 +121,40 @@ create()로 일단 객체를 만들어 준비를 한다.
 
 # 3.6
 
+# 4 USER CRUD
+
+# 4.7 listener는 entity에 무슨일이 생길때 실행되는것
+
+- @BeforeInsert()
+  해당 entity에서 insert되기 직전에 실행되는 내용
+- @BeforeUpdate()
+  해당 entity에서 update되기 직전에 실행되는내용
+
+-모듈생성
+
+- entity파일에 테이블을 만든다.
+  이때 이 entity파일은 기본적으로 graphql을 위한 validation과 typeorm을 위한 validation을 같이 해준다.
+  그리고 entity파일을 사용하기위해 해당 모듈의 module.ts파일 에 import : TypeOrmModule.forFeature([User, Verification, another entity...]) 이런형식으로 추가해준다.(상용구)
+- resolver파일과 service파일을 생성하는데 이파일은 해당 모듈의 module.ts 파일에 providers: [UserResolver, UserService] 이런형식으로 추가해준다.(상용구)
+- resolver파일은 graphql을 위한 도어맨 역할만 해준다.
+  말하자면 실질적인 기능은 없고 해당 기능으로 가기위한 문 같은 기능
+  유저생성하고 싶어요 유저 생성하는 함수를 가져와주세요 => graphlql요청 :::: 이 요청을 받아주는 곳이 resolver
+- service파일은 실질적인 기능들(함수들)이 모여있는 파일
+  해당파일에 실제로 유저를 생성하는 typeorm을 위한 createUser의 DB조작 명령어가 담겨있음
+
+그리고 entity, resolver, service 파일은 각각에 해당하는 상용구가 있음
+
+- DTO
+  mutation시 전달되는 arguement의 type과 종류 , 해당 쿼리가 실행되고 return되는 type과 종류를 validation해줄수있음 (DTO)
+  DTO파일은 entity를 extends해와서 partialtype(옵셔널- entity에서 불러온 목록을 사용해도되고 안해도되고로 설정) , picktype(entity에서 불러온 목록을 required(필수)를 기본으로 해서 설정)
+  @InputType은 보통 mutation시 전달되는 DTO에 붙는 데코레이션
+  @ObjectType은 보통 반환되는 DTO에 붙는 데코레이션
+- @ObjectType 과 @InputType데코레이션을 같이 써야하는경우(input형식과 return 형식이 같은경우)는
+  @InputType("input이름", {isAbstract: true })
+  @ObjectType()
+  이렇게 사용한다
+  isAbstract은 해당 DTO를 그대로 가져다 쓰는게아니라 추상적으로 어딘가에 복사하여 사용한다는 의미 어쨌든 같이 동작하게 하려면 이옵션 true로 하면됨
+
 # 6 - USER AUTHENTICATION
 
 # 5.0~5.7

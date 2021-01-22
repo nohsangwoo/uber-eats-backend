@@ -11,7 +11,7 @@ export class AuthGuard implements CanActivate {
     const roles = this.reflector.get<AllowedRoles>(
       // 메타데이터를 roles라는 키와함께 가져와서 roles에 담는다
       'roles',
-      context.getHandler(),
+      context.getHandler()
     );
 
     // 메타데이터가 없다면 public이란 뜻이라서 true

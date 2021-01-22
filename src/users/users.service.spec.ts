@@ -117,7 +117,7 @@ describe('UserService', () => {
       expect(mailService.sendVerificationEmail).toHaveBeenCalledTimes(1);
       expect(mailService.sendVerificationEmail).toHaveBeenCalledWith(
         expect.any(String),
-        expect.any(String),
+        expect.any(String)
       );
       expect(result).toEqual({ ok: true });
     });
@@ -142,7 +142,7 @@ describe('UserService', () => {
       expect(usersRepository.findOne).toHaveBeenCalledTimes(1);
       expect(usersRepository.findOne).toHaveBeenCalledWith(
         expect.any(Object),
-        expect.any(Object),
+        expect.any(Object)
       );
       expect(result).toEqual({
         ok: false,
@@ -221,20 +221,20 @@ describe('UserService', () => {
 
       expect(usersRepository.findOne).toHaveBeenCalledTimes(1);
       expect(usersRepository.findOne).toHaveBeenCalledWith(
-        editProfileArgs.userId,
+        editProfileArgs.userId
       );
 
       expect(verificationsRepository.create).toHaveBeenCalledWith({
         user: newUser,
       });
       expect(verificationsRepository.save).toHaveBeenCalledWith(
-        newVerification,
+        newVerification
       );
 
       expect(mailService.sendVerificationEmail).toHaveBeenCalledTimes(1);
       expect(mailService.sendVerificationEmail).toHaveBeenCalledWith(
         newUser.email,
-        newVerification.code,
+        newVerification.code
       );
     });
 
@@ -246,7 +246,7 @@ describe('UserService', () => {
       usersRepository.findOne.mockResolvedValue({ password: 'old' });
       const result = await service.editProfile(
         editProfileArgs.userId,
-        editProfileArgs.input,
+        editProfileArgs.input
       );
       expect(usersRepository.save).toHaveBeenCalledTimes(1);
       expect(usersRepository.save).toHaveBeenCalledWith(editProfileArgs.input);
@@ -275,14 +275,14 @@ describe('UserService', () => {
       expect(verificationsRepository.findOne).toHaveBeenCalledTimes(1);
       expect(verificationsRepository.findOne).toHaveBeenCalledWith(
         expect.any(Object),
-        expect.any(Object),
+        expect.any(Object)
       );
       expect(usersRepository.save).toHaveBeenCalledTimes(1);
       expect(usersRepository.save).toHaveBeenCalledWith({ verified: true });
 
       expect(verificationsRepository.delete).toHaveBeenCalledTimes(1);
       expect(verificationsRepository.delete).toHaveBeenCalledWith(
-        mockedVerification.id,
+        mockedVerification.id
       );
       expect(result).toEqual({ ok: true });
     });

@@ -14,14 +14,16 @@ import { VerifyEmailOutput } from './dtos/verify-email.dto';
 import { UserProfileOutput } from './dtos/user-profile.dto';
 import { MailService } from 'src/mail/mail.service';
 
+// 서비스 파일의 상용구
 @Injectable()
 export class UserService {
   constructor(
+    //  user Entity를 사용하기위한 상용구
     @InjectRepository(User) private readonly users: Repository<User>,
     @InjectRepository(Verification)
     private readonly verifications: Repository<Verification>,
     private readonly jwtService: JwtService,
-    private readonly mailService: MailService,
+    private readonly mailService: MailService
   ) {}
 
   async createAccount({
@@ -30,17 +32,23 @@ export class UserService {
     role,
   }: CreateAccountInput): Promise<CreateAccountOutput> {
     try {
+      // DB안에서 해당내용을 찾아 가장 첫번째 결과를 가져와서 exists 변수에 넣어줘라
       const exists = await this.users.findOne({ email });
+      // 만약 존재하면  오브젝트를 반환하는데
+      //error:이메일이 있다는 경고문 저장, ok:false저장
+      //위 오브젝트를 반환한다
       if (exists) {
         return { ok: false, error: 'There is a user with that email already' };
       }
+      // resolver에서 전달받은 email,password,role변수를 create하여 자바스크립트 상에 저장하여 object를 준비하고
+      //준비된 object를 save하여 실제 DATABASE에 저장한다
       const user = await this.users.save(
-        this.users.create({ email, password, role }),
+        this.users.create({ email, password, role })
       );
       const verification = await this.verifications.save(
         this.verifications.create({
           user,
-        }),
+        })
       );
       this.mailService.sendVerificationEmail(user.email, verification.code);
       return { ok: true };
@@ -53,7 +61,7 @@ export class UserService {
     try {
       const user = await this.users.findOne(
         { email },
-        { select: ['id', 'password'] },
+        { select: ['id', 'password'] }
       );
       if (!user) {
         return {
@@ -96,7 +104,7 @@ export class UserService {
 
   async editProfile(
     userId: number,
-    { email, password }: EditProfileInput,
+    { email, password }: EditProfileInput
   ): Promise<EditProfileOutput> {
     try {
       const user = await this.users.findOne(userId);
@@ -105,7 +113,7 @@ export class UserService {
         user.verified = false;
         await this.verifications.delete({ user: { id: user.id } });
         const verification = await this.verifications.save(
-          this.verifications.create({ user }),
+          this.verifications.create({ user })
         );
         this.mailService.sendVerificationEmail(user.email, verification.code);
       }
@@ -125,7 +133,7 @@ export class UserService {
     try {
       const verification = await this.verifications.findOne(
         { code },
-        { relations: ['user'] },
+        { relations: ['user'] }
       );
       if (verification) {
         verification.user.verified = true;

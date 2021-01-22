@@ -9,7 +9,7 @@ export class CategoryRepository extends Repository<Category> {
     let category = await this.findOne({ slug: categorySlug });
     if (!category) {
       category = await this.save(
-        this.create({ slug: categorySlug, name: categoryName }),
+        this.create({ slug: categorySlug, name: categoryName })
       );
     }
     return category;

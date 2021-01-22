@@ -7,15 +7,17 @@ import {
 
 @ObjectType()
 export class CoreEntity {
-  @PrimaryGeneratedColumn()
-  @Field(type => Number)
+  @PrimaryGeneratedColumn() //for typeorm
+  @Field(type => Number) //for graphql
   id: number;
 
-  @CreateDateColumn()
-  @Field(type => Date)
+  // 자동으로 만든날짜 만들어줌
+  @CreateDateColumn() //for typeorm
+  @Field(type => Date) //for graphql
   createdAt: Date;
 
-  @UpdateDateColumn()
-  @Field(type => Date)
+  // 자동으로 업데이트된 날짜 만들어줌
+  @UpdateDateColumn() //for typeorm
+  @Field(type => Date) //for graphql
   updatedAt: Date;
 }
