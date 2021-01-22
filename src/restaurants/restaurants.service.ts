@@ -14,12 +14,20 @@ import { Category } from './entities/cetegory.entity';
 import { Restaurant } from './entities/restaurant.entity';
 import { CategoryRepository } from './repositories/category.repository';
 
+// 서비스파일 상용구
 @Injectable()
 export class RestaurantService {
   constructor(
+    // restaurant entiry를 가져와 사용할수있음
+    // repository를 가져올때 사용하는 상용구
+    // const restaurants = connection.getRepository(Restaunrant); 가 함축돼있는 데코레이터
     @InjectRepository(Restaurant)
     private readonly restaurants: Repository<Restaurant>,
+<<<<<<< HEAD
     private readonly categories: CategoryRepository,
+=======
+    private readonly categories: CategoryRepository
+>>>>>>> 80b3dc1a97e738fc72e3994371b8df53fadac9f4
   ) {}
 
   async getOrCreate(name: string): Promise<Category> {
@@ -28,7 +36,7 @@ export class RestaurantService {
     let category = await this.categories.findOne({ slug: categorySlug });
     if (!category) {
       category = await this.categories.save(
-        this.categories.create({ slug: categorySlug, name: categoryName }),
+        this.categories.create({ slug: categorySlug, name: categoryName })
       );
     }
     return category;
@@ -36,13 +44,17 @@ export class RestaurantService {
 
   async createRestaurant(
     owner: User,
-    createRestaurantInput: CreateRestaurantInput,
+    createRestaurantInput: CreateRestaurantInput
   ): Promise<CreateRestaurantOutput> {
     try {
       const newRestaurant = this.restaurants.create(createRestaurantInput);
       newRestaurant.owner = owner;
       const category = await this.categories.getOrCreate(
+<<<<<<< HEAD
         createRestaurantInput.categoryName,
+=======
+        createRestaurantInput.categoryName
+>>>>>>> 80b3dc1a97e738fc72e3994371b8df53fadac9f4
       );
       newRestaurant.category = category;
       await this.restaurants.save(newRestaurant);
@@ -59,11 +71,11 @@ export class RestaurantService {
 
   async editRestaurant(
     owner: User,
-    editRestaurantInput: EditRestaurantInput,
+    editRestaurantInput: EditRestaurantInput
   ): Promise<EditRestaurantOutput> {
     try {
       const restaurant = await this.restaurants.findOne(
-        editRestaurantInput.restaurantId,
+        editRestaurantInput.restaurantId
       );
       if (!restaurant) {
         return {
@@ -80,7 +92,11 @@ export class RestaurantService {
       let category: Category = null;
       if (editRestaurantInput.categoryName) {
         category = await this.categories.getOrCreate(
+<<<<<<< HEAD
           editRestaurantInput.categoryName,
+=======
+          editRestaurantInput.categoryName
+>>>>>>> 80b3dc1a97e738fc72e3994371b8df53fadac9f4
         );
       }
       await this.restaurants.save([
