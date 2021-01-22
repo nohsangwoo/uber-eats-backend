@@ -29,11 +29,7 @@ export class RestaurantResolver {
     @AuthUser() authUser: User,
     // DTO를 사용하여 input validation을 진행해줌
     //for graphql and typescript 양쪽에서 다 적용됨
-<<<<<<< HEAD
-    @Args('input') createRestaurantInput: CreateRestaurantInput,
-=======
     @Args('input') createRestaurantInput: CreateRestaurantInput
->>>>>>> 80b3dc1a97e738fc72e3994371b8df53fadac9f4
     //for typescript
   ): Promise<CreateRestaurantOutput> {
     return this.restaurantService.createRestaurant(

@@ -42,7 +42,7 @@ describe('MailService', () => {
       jest.spyOn(service, 'sendEmail').mockImplementation(async () => true);
       service.sendVerificationEmail(
         sendVerificationEmailArgs.email,
-        sendVerificationEmailArgs.code,
+        sendVerificationEmailArgs.code
       );
       expect(service.sendEmail).toHaveBeenCalledTimes(1);
       expect(service.sendEmail).toHaveBeenCalledWith(
@@ -51,7 +51,7 @@ describe('MailService', () => {
         [
           { key: 'code', value: sendVerificationEmailArgs.code },
           { key: 'username', value: sendVerificationEmailArgs.email },
-        ],
+        ]
       );
     });
   });
@@ -63,7 +63,7 @@ describe('MailService', () => {
       expect(got.post).toHaveBeenCalledTimes(1);
       expect(got.post).toHaveBeenCalledWith(
         `https://api.mailgun.net/v3/${TEST_DOMAIN}/messages`,
-        expect.any(Object),
+        expect.any(Object)
       );
       expect(ok).toEqual(true);
     });

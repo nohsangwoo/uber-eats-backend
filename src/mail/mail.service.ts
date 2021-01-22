@@ -7,18 +7,18 @@ import { EmailVar, MailModuleOptions } from './mail.interfaces';
 @Injectable()
 export class MailService {
   constructor(
-    @Inject(CONFIG_OPTIONS) private readonly options: MailModuleOptions,
+    @Inject(CONFIG_OPTIONS) private readonly options: MailModuleOptions
   ) {}
 
   async sendEmail(
     subject: string,
     template: string,
-    emailVars: EmailVar[],
+    emailVars: EmailVar[]
   ): Promise<boolean> {
     const form = new FormData();
     form.append(
       'from',
-      `Nico from Nuber Eats <mailgun@${this.options.domain}>`,
+      `Nico from Nuber Eats <mailgun@${this.options.domain}>`
     );
     form.append('to', `nico@nomadcoders.co`);
     form.append('subject', subject);
@@ -30,11 +30,11 @@ export class MailService {
         {
           headers: {
             Authorization: `Basic ${Buffer.from(
-              `api:${this.options.apiKey}`,
+              `api:${this.options.apiKey}`
             ).toString('base64')}`,
           },
           body: form,
-        },
+        }
       );
       return true;
     } catch (error) {

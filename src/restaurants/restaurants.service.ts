@@ -23,11 +23,7 @@ export class RestaurantService {
     // const restaurants = connection.getRepository(Restaunrant); 가 함축돼있는 데코레이터
     @InjectRepository(Restaurant)
     private readonly restaurants: Repository<Restaurant>,
-<<<<<<< HEAD
-    private readonly categories: CategoryRepository,
-=======
     private readonly categories: CategoryRepository
->>>>>>> 80b3dc1a97e738fc72e3994371b8df53fadac9f4
   ) {}
 
   async getOrCreate(name: string): Promise<Category> {
@@ -50,11 +46,7 @@ export class RestaurantService {
       const newRestaurant = this.restaurants.create(createRestaurantInput);
       newRestaurant.owner = owner;
       const category = await this.categories.getOrCreate(
-<<<<<<< HEAD
-        createRestaurantInput.categoryName,
-=======
         createRestaurantInput.categoryName
->>>>>>> 80b3dc1a97e738fc72e3994371b8df53fadac9f4
       );
       newRestaurant.category = category;
       await this.restaurants.save(newRestaurant);
@@ -92,11 +84,7 @@ export class RestaurantService {
       let category: Category = null;
       if (editRestaurantInput.categoryName) {
         category = await this.categories.getOrCreate(
-<<<<<<< HEAD
-          editRestaurantInput.categoryName,
-=======
           editRestaurantInput.categoryName
->>>>>>> 80b3dc1a97e738fc72e3994371b8df53fadac9f4
         );
       }
       await this.restaurants.save([

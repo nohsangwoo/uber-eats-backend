@@ -7,5 +7,5 @@ export const AuthUser = createParamDecorator(
     const user = gqlContext['user'];
     console.log(user);
     return user;
-  },
+  }
 );
