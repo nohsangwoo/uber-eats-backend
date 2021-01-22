@@ -16,6 +16,9 @@ import { RestaurantService } from './restaurants.service';
 
 @Resolver(of => Restaurant)
 export class RestaurantResolver {
+  // 서비스를 가져와 사용하고싶을때 constructor에 추가
+  // 서비스파일엔 실질적인 기능을 가지고있는 함수들이 모여있음
+  // resolver는 도어맨 역할을 함
   constructor(private readonly restaurantService: RestaurantService) {}
 
   @Mutation(returns => CreateRestaurantOutput) //for graphql
@@ -26,12 +29,12 @@ export class RestaurantResolver {
     @AuthUser() authUser: User,
     // DTO를 사용하여 input validation을 진행해줌
     //for graphql and typescript 양쪽에서 다 적용됨
-    @Args('input') createRestaurantInput: CreateRestaurantInput,
+    @Args('input') createRestaurantInput: CreateRestaurantInput
     //for typescript
   ): Promise<CreateRestaurantOutput> {
     return this.restaurantService.createRestaurant(
       authUser,
-      createRestaurantInput,
+      createRestaurantInput
     );
   }
 
@@ -41,7 +44,7 @@ export class RestaurantResolver {
   @Role(['Owner'])
   editRestaurant(
     @AuthUser() AuthUser: User,
-    @Args('input') editRestaurantInput: EditRestaurantInput,
+    @Args('input') editRestaurantInput: EditRestaurantInput
   ): EditRestaurantOutput {
     return { ok: true };
   }

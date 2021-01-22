@@ -96,10 +96,30 @@ entity
 
 # 3 TypeORM AND NEST
 
+entity를 생성하고 사용하고 싶으면 app.module.ts에서 typeorm.forRoot(typeorm옵션 설정)의 항목중 entities항목에 사용하고자 하는 entity를 추가해줘야함
+
+# 3.1 DATA MAPPER pattern 을 이용
+
 # 3.1 Entity
+
+이유는 대규모 프로젝트에선 DATA MAPPER 패턴이 유리하다해서 적용
 
 - Entity는 데이터베이스에 저장되는 데이터의형태를 보여주는 모델
 - 이렇게 설정한 DB는(Restaurant테이블) app.module.ts에서 typeOrmModule.forRoot({ 설정의 entities:[Restaurant]}) 에 예시처럼 추가한다
+
+# 3.4 save
+
+DB에 컬럼을 저장하는 방법
+create()로 일단 객체를 만들어 준비를 한다.
+그다음 save()기능을 사용하여 create로 준비된 객체를 불러와 저장한다.
+
+- await 를 쓸때는 promise로 반환타입을 설정해줘야함 ex) promise<boolean>
+
+- @InputType과 @ObjectType을 같이 사용할때는 유니크한 스키마 이름을 써야하는데
+  동일한 스키마에 위 두가지를 같이 쓰고싶다면 둘중 하나에 {isAbstrack:true}를 사용하면, 해당 데코레이터의 스키마는 어딘가 복사해서 하나의 새로운 스키마 처럼 사용가능(동일 스키마 이름이지만 다르다고 해석함)
+  또는 DTO에서 불러올때 두번째 인자로 InputType을 설정해줌
+
+# 3.6
 
 # 6 - USER AUTHENTICATION
 
@@ -184,3 +204,6 @@ and I didn't set coveragePathIgnorePatterns
 # jwt.middleware단에서 {user로 뽑아줘야 제대로 작동함}
 
 const { user } = await this.userService.findById(decoded['id']);
+#mac 연결
+
+npm install eslint eslint-plugin-react eslint-babel –save-dev

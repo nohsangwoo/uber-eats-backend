@@ -57,8 +57,10 @@ import { RestaurantsModule } from './restaurants/restaurants.module';
       // DB의 구성을 자동으로 바꿔줌
       // 하지만 이번엔 Production모드가 아닐때만 synchrinize가 실행됨
       synchronize: process.env.NODE_ENV !== 'prod',
+      // 현재 돌아가고있는 DB의 모든 log를 불러오게 해주는 옵션
       logging:
         process.env.NODE_ENV !== 'prod' && process.env.NODE_ENV !== 'test',
+      // entity를 사용하려면(DB 구조) entity항목을 여기에 추가해줘야함
       entities: [User, Verification, Restaurant, Category],
     }),
     GraphQLModule.forRoot({
