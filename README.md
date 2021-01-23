@@ -155,7 +155,7 @@ create()로 일단 객체를 만들어 준비를 한다.
   이렇게 사용한다
   isAbstract은 해당 DTO를 그대로 가져다 쓰는게아니라 추상적으로 어딘가에 복사하여 사용한다는 의미 어쨌든 같이 동작하게 하려면 이옵션 true로 하면됨
 
-# 5.0~5.7
+# User authentication
 
 # 5.0 recap
 
@@ -231,13 +231,47 @@ providers의 생략되지 않은 작동방식을 구현
 
 - middleware설치 방법
   main.ts에서 bootstrap에서 설치하여 전구간에 사용가능하도록 설치
+  (이때 미들웨어는 function 형식이어야 함)
   app.module.ts에서 consumer를 이용하여 일련의 상용구로 설치가능
+  (이때 미들웨어는 class형식이어야 함)
 
-# context (appmodule)
+# 5.7 verify token from jwt middleware
+
+jwt미들웨어 구현
+
+- jwtmiddleware.ts에서 UserService를 사용하고싶을때
+  users.module.ts에서 exports:[UserService] 설정을 해주면 됨
+
+# 5.8 request context (appmodule)
+
+req단에 저장된 데이터를 graphql단에 끌어와 사용하는 방법
+
+request context는 각 request에서 사용이 가능하다.
+context가 함수로 정의되면 매 request마다 호출된다.
+이것은 req property를 포함한 object를 express로 부터 받는다
+
+즉 context에 저장된 데이터는 graphql의 어떤 쿼리문이나 mutation문에서든 불러올수있다.
+
+- context적용방법
+  app.module.ts에서 imports 안에
+  GraphQLModule.forRoot({
+  autoSchemaFile: true,
+  context: ({ req }) => ({ user: req['user'] }),
+  }),
+  이와같은 형식으로 설정한다.
+  이경우 뜻은
+  jwtmiddleware로부터 저장된 req['user']의 값을 불러와
+  user라는 키값에 할당된 오브젝트를 모든 구역의 graphql에서 불러올수있음
 
 1. apollo server나 graphql의 모든 resolver에서 사용가능하도록 설정해줌(ex..req)
-2. 그니깐 JWTmiddleware를 거쳐서 graqhql context에 request user를 전달해줌
+2. JWTmiddleware를 거쳐서 graqhql context에 request user를 전달해줌
    token을 전달한 http와 같음
+
+- user.resolver.ts에서
+  me(@context() context){
+  console.log(context.user);
+  }
+  이런 방식으로 불러와서 사용가능
 
 # guard concept
 

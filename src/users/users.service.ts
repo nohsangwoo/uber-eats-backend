@@ -99,6 +99,7 @@ export class UserService {
     }
   }
 
+  // 전달받은 id로 유저를 찾아주는 기능
   async findById(id: number): Promise<UserProfileOutput> {
     try {
       const user = await this.users.findOneOrFail({ id });
