@@ -35,6 +35,7 @@ export class UserResolver {
     return this.usersService.login(loginInput);
   }
 
+  // 로그인한상태가 내가 맞는지 확인
   @Query(returns => User)
   @Role(['Any'])
   me(@AuthUser() authUser: User) {

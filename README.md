@@ -221,6 +221,18 @@ providers의 생략되지 않은 작동방식을 구현
    //middleware---end
 5. 이제 middleware단에서 변경된 request object를 모든 resolver에서 사용가능!
 
+# 5.6 token 받아오기 JWT Middleware 미들웨어 설치 방법
+
+- http headers 를 활용하는 방식으로 받아올꺼임
+
+//request.headers['x-jwt']에 저장된 토큰값을 뽑아와서 서버단에 저장된 토큰값이랑 일치하는지 확인하는 작업을 해줌
+//request 말그대로 요청한다는 뜻 뭔가를 가져오거나 하는걸 요청할때
+//response는 반대로 응답하는 작동 (client로 부터의...)
+
+- middleware설치 방법
+  main.ts에서 bootstrap에서 설치하여 전구간에 사용가능하도록 설치
+  app.module.ts에서 consumer를 이용하여 일련의 상용구로 설치가능
+
 # context (appmodule)
 
 1. apollo server나 graphql의 모든 resolver에서 사용가능하도록 설정해줌(ex..req)

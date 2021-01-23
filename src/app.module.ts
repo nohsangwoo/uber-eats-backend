@@ -88,6 +88,9 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(JwtMiddleware)
+      // 이 미들웨어를 정확이 어디 라우트에 적용하고 싶은지 설정가능
+      //  forRoutes를 통해 "/graphql"라우트이고 메소드가 post인 경우에만 적용
+      // 만약 특정 경로만 제외하고 싶다면 forRoutes 대신 exclude를 사용하여 경로와 메소드를 지정하면 해당 조건을 제외하는 구간에서 전부 미들웨어를 적용해줌
       .forRoutes({ path: '/graphql', method: RequestMethod.POST });
   }
 }

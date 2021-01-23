@@ -17,6 +17,7 @@ export class JwtService {
   }
 
   //client단에서 전달받은 token이 서버단에서 가지고있는 token이랑 같은지 비교해줌
+  //jwt middleware에서 일단 사용됨
   verify(token: string) {
     return jwt.verify(token, this.options.privateKey);
   }
