@@ -84,6 +84,8 @@ export class UserService {
       }
 
       // 비밀번호가 맞으면 토큰 발급(세션 유지용  )
+      // 토큰이 암호화는 되지만 누구나 볼수있고
+      // 디코딩 방법도 어렵지 않아서 user의 id 정보만 저장
       const token = this.jwtService.sign(user.id);
       return {
         ok: true,

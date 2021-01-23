@@ -155,13 +155,53 @@ create()로 일단 객체를 만들어 준비를 한다.
   이렇게 사용한다
   isAbstract은 해당 DTO를 그대로 가져다 쓰는게아니라 추상적으로 어딘가에 복사하여 사용한다는 의미 어쨌든 같이 동작하게 하려면 이옵션 true로 하면됨
 
-# 6 - USER AUTHENTICATION
-
 # 5.0~5.7
+
+# 5.0 recap
 
 1. service를 export하여 어디서 사용할것인가를 설정가능 (dependency injection)
 2. 위 export한 service를 app.module에서 불러와 전역에서 사용가능하게 만들수도있고
 3. 특정 module에서 끌어와 해당 모듈에서만 사용가능하게 consumer를 건들여 설정하는 방법이 있음
+
+# 5.1 ConfigService
+
+- (dependency injection)
+  app.module.ts에서 ConfigModule에 추가된(설치된) 설정값은
+  불러오고자하는 module.ts에서 ConfigService를 imports에 추가하고
+  해당 모듈에서 설정값을 사용하고자하는곳에서 불러와사용할수있다
+  예를들면 service파일에서 private readonly config:ConfigService 로 불러와서
+  this.config.get("SecretKey") 이런식으로 사용가능
+
+- 이때  
+  ConfigModule.forRoot({
+  isGlobal: true,
+  ...
+  })
+  이런식으로 isGlobal가 true라면 전역의 모든 모듈에서
+  위 설정처럼 ConfigService로 적용하지 않아도 아무데서나 ConfigModule의 설정값을 끌어다 사용할수 있다.
+
+# 5.2 recap
+
+- jwt.io 에서 jwt토큰을 디코딩 가능함
+- 토큰을 사용하는이유
+  서버단에서 배포된 토큰에 정보가 변경됐는지를 감지하여 사용자의 행동제약 조건을 설정할 수 있음
+
+- StaticModule
+  옵션설정이 필요하지않고 모듈 자체적으로 다 갖춰져있음
+
+- DynamicModule
+  옵션설정을 forRoot같은걸로 적용해주는 모듈을 말함
+  기본적으로 모듈은 StaticModule이고 DynamicModule을 반환하는 형식
+  따라서 단지 또다른 모듈을 반환해주는 모듈
+
+# 5.3 JWT module
+
+- 로그인시 토큰을 생성하는 모듈을 아예 따로 만들어줌
+  모듈 파일에 상세내용 적어둠
+  기본적으로 JWT MODULE은 graphql에서 따로 호출하여 작동하는 방식이 아니라 resolver파일은 없음
+
+- @Global()
+  이제 이 모듈은 다른모듈 어디서든 제약없이 불러다 사용할수있음
 
 # 인증과정
 
