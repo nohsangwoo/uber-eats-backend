@@ -12,6 +12,7 @@ export class JwtService {
   ) {}
   // 받아온 id를 jwt으로 인코딩하여 토큰을 생성해줌
   sign(userId: number): string {
+    //사실 ConfigService로 this.ConfigService.get("privateKey")이런형식으로 불러와 사용할수도있음(이게 더 편한듯)
     return jwt.sign({ id: userId }, this.options.privateKey);
   }
 

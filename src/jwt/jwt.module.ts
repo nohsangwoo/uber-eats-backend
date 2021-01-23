@@ -16,6 +16,8 @@ export class JwtModule {
   // 모듈 안에서 또다른 모듈을 불러오기위한 ...
   //static함수는 그냥 바로 실행되는 함수
   // 정적 메서드는 클래스의 인스턴스 없이 호출이 가능하며 클래스가 인스턴스화되면 호출할 수 없다. 정적 메서드는 종종 어플리케이션의 유틸리티 함수를 만드는데 사용된다.
+  // static 메소드를 생성한거니 전달되는 인자의 형식은 class가 아닌 interface로 설정해줘야함
+  // 이 validation하는 값은 app.module.ts에서 받아온다
   static forRoot(options: JwtModuleOptions): DynamicModule {
     return {
       //app.module.ts에서 스태틱모듈형식으로 만들고
@@ -25,7 +27,13 @@ export class JwtModule {
       // CONFIG_OPTIONS라는 상수와
       // options의 정보를 JwtModule 안의 전역에서 사용가능하도록 providers에 추가해줌
       providers: [
+        //원래는 이런형식으로 작동하는값을 확인한다.
         {
+          // CONFIG_OPTION이라는 이름의 provider를 생성하고
+          // 그 값은 options이다
+          //이 CONFIG_OPTION라는 이름의 provider를 사용하고싶으면
+          // @Inject(CONFIG_OPTIONS) private readonly options: JwtModuleOptions
+          //위와 같은 형식으로 불러와 사용하면됨(상용구)
           provide: CONFIG_OPTIONS,
           useValue: options,
         },

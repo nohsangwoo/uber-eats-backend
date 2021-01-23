@@ -203,6 +203,14 @@ create()로 일단 객체를 만들어 준비를 한다.
 - @Global()
   이제 이 모듈은 다른모듈 어디서든 제약없이 불러다 사용할수있음
 
+# 5.4 providers 작동원리 feat JWT module
+
+# 5.5 JWT service구현
+
+providers의 생략되지 않은 작동방식을 구현
+
+- providers 작동원리
+
 # 인증과정
 
 1. login하면 token생성 jsonwebtoken을 이용하여 암호화 함.
