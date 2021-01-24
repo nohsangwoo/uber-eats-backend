@@ -356,24 +356,19 @@ context가 함수로 정의되면 매 request마다 호출된다.
 
   ! jwtmiddleware를 거치고 apollo server의 context를 거치고 graphql context에 user key를 가진 object를 보내고 authorization guard에 의해 request가 authrize되면 마지막으로 resolver의 @AuthUser데코레이터에 도착하는데, 이 데코레이터는 context에서 user를 찾아와 그 값을 authUser에 저장하여 me qeury의 반환값으로 설정해줌
 
-# 5.12 userProfile query
+# 5.12진도 ~16 editProfile
 
 user.resolver.ts 에 추가 user의 정보를 불러오는 작업
 
-# 5.13 editProfile part1
-
-editProfile 의input과 output의 DTO를 만들어줌
-
-# 5.12진도 ~16 editProfile
-
+0. editProfile 의input과 output의 DTO를 만들어줌
 1. 개인정보수정 기능(email, password)
-2. edit profile 의input과 output의 DTO를 만들어줌
-3. 위 기준으로 user.service.ts에서 실질적인 editprofile 기능을 구현 이때 save로 구현
-4. middleware단에서(user.entity.ts) @beforUpdate() 데코레이터로 save되기직전 해시화 할수있게 설정
-5. 원래는 update()로 수정을 구현하려고했는데 이렇게하면 beforeupdate 데코레이터를 사용할수없음
+1. edit profile 의input과 output의 DTO를 만들어줌
+1. 위 기준으로 user.service.ts에서 실질적인 editprofile 기능을 구현 이때 save로 구현
+1. middleware단에서(user.entity.ts) @beforUpdate() 데코레이터로 save되기직전 해시화 할수있게 설정
+1. 원래는 update()로 수정을 구현하려고했는데 이렇게하면 beforeupdate 데코레이터를 사용할수없음
    왜냐하면 update()는 빠른대신 아무것도 확인안하고 그냥 무조건 쿼리를 날려버림 그래서 beforeUpdate도 작동안함
    따라서 save를 사용하고 beforeupdate를 미들웨어단에서 불러와 password수정시 해시화 할수있게 설정해줌
-6. 때에 따라서 update()를 save()대신 사용하던가 할수있음(간단하고 빠르기때문에)
+1. 때에 따라서 update()를 save()대신 사용하던가 할수있음(간단하고 빠르기때문에)
 
 # 6 - EMAIL VERIFICATION
 
