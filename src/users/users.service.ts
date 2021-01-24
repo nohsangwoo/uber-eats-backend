@@ -112,12 +112,17 @@ export class UserService {
     }
   }
 
+  // 유저의 정보를 수정하는 기능
+  // 유저 정보를 수정할때 필요한 input값은 id, email,password이다
   async editProfile(
     userId: number,
     { email, password }: EditProfileInput
   ): Promise<EditProfileOutput> {
     try {
+      // 전달받은 아이디로 유저정보를 찾는데 가장 처음에 찾은 정보를 user변수에 저장
       const user = await this.users.findOne(userId);
+      // javascript상에서 저장된 유저정보를 수정하는단계
+      // 그다음 변경된 user정보를 DB로 업데이트할꺼임
       if (email) {
         user.email = email;
         user.verified = false;

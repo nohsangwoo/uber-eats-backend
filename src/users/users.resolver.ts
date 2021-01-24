@@ -47,17 +47,22 @@ export class UserResolver {
     return authUser;
   }
 
+  // user의 profile을 볼수있는 query
   @Query(returns => UserProfileOutput)
   @Role(['Any'])
+  // client로부터 전달받은 userProfileInput의 userId로 user정보를 찾아 반환한다
   async userProfile(
-    @Args() userProfileInput: UserProfileInput
+    @Args() { userId }: UserProfileInput
   ): Promise<UserProfileOutput> {
-    return this.usersService.findById(userProfileInput.userId);
+    // 전달받은 userId로 user정보를 찾아 반환한다
+    return this.usersService.findById(userId);
   }
 
+  // user정보를 수정하는 mutaiton
   @Mutation(returns => EditProfileOutput)
   @Role(['Any'])
   async editProfile(
+    // AuthUser로 유저인증하고 user값을 authUser에 반환하여 저장함
     @AuthUser() authUser: User,
     @Args('input') editProfileInput: EditProfileInput
   ): Promise<EditProfileOutput> {

@@ -12,6 +12,7 @@ export class JwtMiddleware implements NestMiddleware {
     private readonly jwtService: JwtService,
     private readonly userService: UserService
   ) {}
+
   async use(req: Request, res: Response, next: NextFunction) {
     //request.headers['x-jwt']에 저장된 토큰값을 뽑아온다
     //request 말그대로 요청한다는 뜻 뭔가를 가져오거나 하는걸 요청할때
@@ -23,7 +24,7 @@ export class JwtMiddleware implements NestMiddleware {
         const decoded = this.jwtService.verify(token.toString());
         // decoded의 타입이 object이고 동시에 decoded의 property중 id가 존재한다면 진행
         if (typeof decoded === 'object' && decoded.hasOwnProperty('id')) {
-          // 토큰을 보낸 유저의 id를 이제 decoded['id'] 에서 확인할수 있고 
+          // 토큰을 보낸 유저의 id를 이제 decoded['id'] 에서 확인할수 있고
           // 해당 변수로 유저를 찾아오고 결과를 반환한다
           const { user, ok } = await this.userService.findById(decoded['id']);
           // 성공적으로 user가 불려와지면 requset["user"]에 user정보를 담는다
@@ -32,8 +33,9 @@ export class JwtMiddleware implements NestMiddleware {
           }
         }
       } catch (e) {}
-    // next() : 현재 라우터에서 판단하지 않고 다음 라우터로 넘기겠다.
-    // 상단작업에서 req, res작업을 해준이후에는 next()함수를 호출해줌
-    next();
+      // next() : 현재 라우터에서 판단하지 않고 다음 라우터로 넘기겠다.
+      // 상단작업에서 req, res작업을 해준이후에는 next()함수를 호출해줌
+      next();
+    }
   }
 }
