@@ -165,7 +165,7 @@ create()로 일단 객체를 만들어 준비를 한다.
 
 # 5.1 ConfigService
 
-- (dependency injection)
+- (dependency injection) - 다른 모듈 파일 에서도 사용할수있게 설정하는 방법
   app.module.ts에서 ConfigModule에 추가된(설치된) 설정값은
   불러오고자하는 module.ts에서 ConfigService를 imports에 추가하고
   해당 모듈에서 설정값을 사용하고자하는곳에서 불러와사용할수있다
@@ -273,20 +273,88 @@ context가 함수로 정의되면 매 request마다 호출된다.
   }
   이런 방식으로 불러와서 사용가능
 
-# guard concept
+# 5.9 AuthGuard
+
+- guard concept
 
 1. implements CanActivate해서 사용(상용구 auth.guard참고)
+   CanActivate => true를 return 하면 request를 진행시키고 false를 return 하면 request를 멈춤
 2. function의 기능을 보충해줌 조건에 따라 true false로 함수의 기능을 사용할지 차단할지 설정해줌
    =====이안에서 사용될 함수의 이름은 canActivate====
-3. 위에서 전역 graphql resolver에서 사용가능하게 만들어준 context를 graphql에서 사용가능하도록 변환한다음 불러옴
+3. 위에서 http형식의 context를 graphql형식으로 변환해서 가져옴
 4. 전달받은 내용을 가지고 조건을 걸어서 true or false를 return함
-   (app.module.ts => graphqlmodule.forRoot => 전역 사용하게 가능한 context 설정 => http req로 전달된 user object를 다른곳에서 끌어와 사용하는 작업)
-5. 여기서 request를 진행시킬지 말지 결정가능
+   // ExecutionContext는 (app.module.ts => graphqlmodule.forRoot => 전역 사용하게 가능한 context)에서 전역설정된 http의 context를 가져다 사용하겠다는말
+   // 그 가져온 데이터값을 context라는 변수에 넣어줌끌어와 사용하는 작업)
+   // 위에서 가져온 http의 context를 graphql에서 사용할수있게 변환후 gqlContext라는 변수에 넣어줌
 
-# AuthUser Decorator
+   auth-user.decorator.ts의 내용해석(중요해서 여기서도 설명함)
 
-1. 위 인증과정 적용은 (@UseGuards)을 이용하여 resolver에 설치 가능
-2. 위 인증과정이 끝나면 users.resolver.ts에서 user를 끌어와 사용할수있음
+5. 인증과정을 통하여 request를 진행시킬지 말지 결정가능
+
+- authentication
+  누가 자원을 요청하는지 확인하는 과정(token으로 identity를 확인하는 작업)
+
+- authorization
+  user가 어떤일을 하기전에 permission을 가지고있는지 확인하는 작업(ex. userRole)
+
+# 5.10 AuthUser Decorator
+
+- login 되어있지 않다면 request를 멈추게 할꺼고 login됐다면 request를 진행시킬꺼임
+- createParamDecorator
+  데코레이터를 만드는 함수
+
+1. 데코레이터 적용은 custom된 데코레이터 파일을 불러와서 resolver에 설치 가능
+   (여기선@AuthUser라는 이름의 데코레이터를 users.resolver.ts에 설치)
+2. 위 데코레이터의 인증과정이 끝나면 users.resolver.ts에서 graphql형식으로 변환된 user데이터를 끌어와 사용할수있음
+   (resolver는 graphql을 위한 작업파일이니깐!)
+
+# 5.11 recap about 5.0~5.10 - me() Qurery
+
+- (##authentication 작동 정리)
+
+- 이전 단계에서 만들어진 token을 graphql의 HTTP HEADERS에서 "x-jwt"라는 이름으로 담아 server로 전달하고있음
+  headers는 http 기술중 하나다
+  그래서 http기술을 사용하기위해 jwt.middleware.ts를 만들었음
+
+- part1 => jwt.middleware.ts의 기능
+  0 NestMiddleware를 implements하여 middleware로 만들어준다(use기능을 꼭 포함하여야함)
+  1 req.headers['x-jwt']로 token을 가져와 token이란 변수에 담아준다
+  2 가져온 token을 디코딩한다 - jwt.verify함수를 이용하여 서버단의 privateKey를 가지고 디코딩하고 decoded라는 변수에 저장하는 작업 (그과정에 privateKey를 사용하여 token의 값이 변경됐는지 확인해줌)
+  3 그다음 디코딩된 decoded에서 id를 추출하여 users DB에서 해당 id와 동일한 user data를 찾아와 request object에 붙여 반환한다.
+  (이때 찾지못하면 fail error를 던짐)
+  이 middleware를 가장 먼저 만나기 때문에 middleware가 원하는대로 request object를 바꿀 수 있다.
+  그러면 middleware에 의해 바귄request object를 모든 resolver에서 사용가능
+  token이 없거나 에러가 나거나 디코딩된 totken으로(id값이 jwt로 token화 됨) user를 찾을수 없다면 request object에 데이터가 추가되지 않는다
+
+- part2 => context
+  (app.module에서 graphlQLModule.forRoot의 context)
+  apollo server의 context나 graphql의 context는 모든 resolver에 정보를 보낼수 있는 property이다
+  context get이 매 request마다 호출될것이다
+  context에서 function을 만들면 해당 function이 request object를 줄것이다. 여기서 request object는 전에 만들어둔 user key(token)를 가진 http이다
+
+  ! jwtmiddleware를 거치고 graphql context에 request user를 보내는 순서로 진행됨
+
+- part3 => authGuard
+  canActivate는 function의 기능을 보충해주는데 이 function은 true나 false를 return 한다
+  이때 true를 return하면 request를 진행시키고 false를 return하면 request를 중단한다.
+  그리고 여기서 불러오는 context:ExecutionContext는 nestjs Context이다(이게좀 헷갈림 )
+  어쨌든 graphql 형식으로 변환해주는 작업을 거쳐( GqlExecutionContext.create(context).getContext()) 변수에 저장한다(gqlContext) 여기서 불러오는 getContext는 app.module.ts의 graphql.forRoot에서 설정된 context의 값이다
+
+  그리고 반환된 context object에서 user라는 key를 뽑아와 user라는 변수에 저장한다.
+  (app.module.ts의 graphql.forRoot에서 설정된 context의 값을 보면 user라는 key에 저장했으니 뽑아올때도 gqlContext['user] 식으로 가져옴 )
+  여기서 user가 존재하면 true를 반환 존재하지 않으면 false를 반환하여 canActivate를 활성화
+
+  ! jwtmiddleware를 거치고 apollo server의 context를 거치고 graphql context에 user key를 가진 object를 보내고 authorization guard를 거쳐서 마지막으로 reeesolver에 도착하면 데코레이터가 있음
+
+- part4 => auth-user.decorator.ts (@AuthUser)
+  이 데코레이터도 graphql context를 가져오는 작업을 거쳐 gqlContext['user']를 가져온다
+  이 데코레이터가 user의 값을 가져오는것을 성공하면 반환값을 가지는데
+  me(@AuthUser() authUser: User) {
+  return authUser;
+  }
+  이런형식으로 사용한다 이때 @AuthUser() 의 반환된 user값은 authUser변수에 저장되고 그 type은 User이다(user.entity.ts에서 설정된 validation)
+
+  ! jwtmiddleware를 거치고 apollo server의 context를 거치고 graphql context에 user key를 가진 object를 보내고 authorization guard에 의해 request가 authrize되면 마지막으로 resolver의 @AuthUser데코레이터에 도착하는데, 이 데코레이터는 context에서 user를 찾아와 그 값을 authUser에 저장하여 me qeury의 반환값으로 설정해줌
 
 # 5.12진도 ~16 editProfile
 

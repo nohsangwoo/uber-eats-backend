@@ -16,7 +16,7 @@ export class JwtService {
     return jwt.sign({ id: userId }, this.options.privateKey);
   }
 
-  //client단에서 전달받은 token이 서버단에서 가지고있는 token이랑 같은지 비교해줌
+  //jwt.verify함수를 이용하여 client단에서 전달받은 token을 디코딩 해줌(그과정에 privateKey를 사용하여 token의 값이 변경됐는지 확인해줌)
   //jwt middleware에서 일단 사용됨
   verify(token: string) {
     return jwt.verify(token, this.options.privateKey);

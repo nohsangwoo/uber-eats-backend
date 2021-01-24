@@ -38,6 +38,11 @@ export class UserResolver {
   // 로그인한상태가 내가 맞는지 확인
   @Query(returns => User)
   @Role(['Any'])
+  // 유저의 인증과정을 커스텀된 데코레이터로 인증하고
+  // 해당 데코레이터는 인증에 성공하면 User의 정보를 return 해줌
+  // @AuthUser가 return한 값은 authUser라는 변수에 User라는 type으로 저장됨
+  // authUser에 저장된값을 me라는 graphql Query문의 반환값으로 지정
+  // @UseGuards(AuthGuard) //AuthGuard 사용방법
   me(@AuthUser() authUser: User) {
     return authUser;
   }
