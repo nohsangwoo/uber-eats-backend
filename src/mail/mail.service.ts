@@ -12,6 +12,7 @@ export class MailService {
     @Inject(CONFIG_OPTIONS) private readonly options: MailModuleOptions
   ) {}
 
+  //  이 밑에 부분은 그냥 보일러플레이트(상용구)라고 보면됨 메일 사용하는 방법은 이렇게 사용하면 된다~ 이거임
   async sendEmail(
     subject: string,
     template: string,
@@ -50,6 +51,7 @@ export class MailService {
   }
 
   sendVerificationEmail(email: string, code: string) {
+    // 제목 , template이름, 사용되는(전달되는)  변수
     this.sendEmail('Verify Your Email', 'verify-email', [
       { key: 'code', value: code },
       { key: 'username', value: email },

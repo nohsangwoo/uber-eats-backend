@@ -425,6 +425,11 @@ verification code를 사용해서 그들의verification을 찾음, 그걸 지우
 nodeJs에서 request를 쉽게 작성하게 해주는 GOT패키지를 설치
 거기에 form-data패키지를 사용하여 form 처리 완료
 
+# 6.8
+
+- mailgun template service
+  메일받았을때 form을 html과 css로 꾸밀수있음
+
 # 7.5
 
 "coveragePathIgnorePatterns": [
