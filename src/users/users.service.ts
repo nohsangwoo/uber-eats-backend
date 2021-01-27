@@ -45,11 +45,15 @@ export class UserService {
       const user = await this.users.save(
         this.users.create({ email, password, role })
       );
+
+      // 인증 과정을 거쳐서 인증이 확인되면 최종적으로 계정을 생성하겠다는 뜻
       const verification = await this.verifications.save(
         this.verifications.create({
           user,
         })
       );
+
+      //
       this.mailService.sendVerificationEmail(user.email, verification.code);
       return { ok: true };
     } catch (e) {
@@ -62,6 +66,7 @@ export class UserService {
       // email로 유저 찾아서 없으면 false와 에러문을 반환
       const user = await this.users.findOne(
         { email },
+        // user.entity.ts의 password가 select:false가 돼있어서 설정해줌
         { select: ['id', 'password'] }
       );
       if (!user) {
@@ -125,6 +130,7 @@ export class UserService {
       // 그다음 변경된 user정보를 DB로 업데이트할꺼임
       if (email) {
         user.email = email;
+        // 유저 이메일이 변경되면 verify과정을 거쳐야함 그래서 editprofile이 작동하면 기본적으로 verified=false로 설정
         user.verified = false;
         await this.verifications.delete({ user: { id: user.id } });
         const verification = await this.verifications.save(
@@ -146,13 +152,18 @@ export class UserService {
 
   async verifyEmail(code: string): Promise<VerifyEmailOutput> {
     try {
+      // verification을 통하여 user를 불러오고 싶으면 확실하게 설정해줘야 불러올수있음
       const verification = await this.verifications.findOne(
         { code },
         { relations: ['user'] }
       );
       if (verification) {
+        // verification을 통해 user에 접근해서 user의 verified를 true로 변경해서 저장해줌
         verification.user.verified = true;
+        // 이때 password의 select:false 설정으로 인하여 password는 제외하고 save됨
         await this.users.save(verification.user);
+        // 그리고 헤당 verification을 삭제해줌 (해당 인증과정이 끝나서 더이상 필요없는 데이터니깐)
+
         await this.verifications.delete(verification.id);
         return { ok: true };
       }

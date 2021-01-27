@@ -69,6 +69,7 @@ export class UserResolver {
     return this.usersService.editProfile(authUser.id, editProfileInput);
   }
 
+  // email인증 처리
   @Mutation(returns => VerifyEmailOutput)
   verifyEmail(
     @Args('input') { code }: VerifyEmailInput

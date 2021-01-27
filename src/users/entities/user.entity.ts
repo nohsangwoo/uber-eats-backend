@@ -22,6 +22,7 @@ registerEnumType(UserRole, { name: 'UserRole' }); //for graqhpl
 
 @InputType('UserInputType', { isAbstract: true })
 @ObjectType()
+// Table이 만들어진다는것을 typeOrm을 위해 선언
 @Entity()
 export class User extends CoreEntity {
   @Column({ unique: true })
@@ -29,6 +30,7 @@ export class User extends CoreEntity {
   @IsEmail()
   email: string;
 
+  // 다른곳에서 relations:['user']로 선택해서 user를 불러올때 password는 선택되지 않게 하는 작업
   @Column({ select: false })
   @Field(type => String)
   @IsString()
@@ -39,6 +41,8 @@ export class User extends CoreEntity {
   @IsEnum(UserRole)
   role: UserRole;
 
+  // User의 email이 verify 됐는지 안됐는지 확인하는 컬럼
+  // email인증이 끝나면 true로 변경될것임
   @Column({ default: false })
   @Field(type => Boolean)
   @IsBoolean()
@@ -58,6 +62,7 @@ export class User extends CoreEntity {
   // password를 hashing해주는 기능
   // 어떤 promise를 반환해도 다 괜찮다는 의미
   async hashPassword(): Promise<void> {
+    // save로 전달된 object에 password가 있으면 해쉬함수가 작동하는걸로
     if (this.password) {
       try {
         // save하기 직전에만들어진 instance를 기준으로 (create()로 만들어진 instance)

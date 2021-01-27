@@ -370,7 +370,49 @@ user.resolver.ts 에 추가 user의 정보를 불러오는 작업
    따라서 save를 사용하고 beforeupdate를 미들웨어단에서 불러와 password수정시 해시화 할수있게 설정해줌
 1. 때에 따라서 update()를 save()대신 사용하던가 할수있음(간단하고 빠르기때문에)
 
-# 6 - EMAIL VERIFICATION
+# 6 - EMAIL VERIFICATION (이메일 검증)
+
+유저가 계정을 생성하면 일련의 인증과정을 거쳐서 생성되게함 그 과정을 담당하는 table이 verification이고 이것은 email인증으로 이루어질것임
+
+이메일인증은 서버단에서 이메일로 일련의 암호화된 코드? 를 보내면 유저는 해당 이메일에서 그것을 인증하여 최종적으로 계정이 만들어지는 과정을 거침
+
+# 6.0 verification 테이블 생성
+
+users/entities에 verification.entity.ts추가 (테이블을 하나 만드는것)
+
+- OneToOne (1:1관계)
+  verification은 users와 1:1관계이다 그리고 둘중 한곳에 @JoinColumn()가 정의돼야함 이경우엔 verification쪽에 정의함
+  (verification에서 user로 접근하는경우엔 verification쪽에 @JoinColumn()가 정의되고
+  user에서 verification로 접근하는경우엔 user쪽에 @JoinColumn()가 정의됨)
+  @JoinColumn()을 포함하고있는쪽에 relation id를 외래키로 가지고있음
+
+# 6.1
+
+# 6.2 select:false
+
+// 다른곳에서 relations:['user']로 선택해서 user를 불러올때 password는 선택되지 않게 하는 작업
+@Column({ select: false })
+@Field(type => String)
+@IsString()
+password: string;
+
+- verification을 통하여 user를 불러오고 싶으면 확실하게 설정해줘야 불러올수있음
+  const verification = await this.verifications.findOne(
+  { code },
+  { relations: ['user'] }
+  );
+  (즉 이런식으로 relations를 user로 지정해줘야 verification.user를 사용가능)
+
+verification은 user와 거의 비슷해서 따로 모듈을 만들지 않고 그냥 user모듈의 일부분으로 합침
+verification code를 사용해서 그들의verification을 찾음, 그걸 지우고 그다음 user를 verifiaction함
+
+- 정리
+  users.service.ts의 uverifyEmail에서 relations:['user']로 user을 불러오고 select할때
+  user.entity.ts의 password설정이 select:false라서 password를 제외하고 불러옴
+  따라서 이때 user.entity의 @BeforeUpdate에서 hashPassword가 작동되지 않음(조건문으로 password가 있을때만 실행되게 설정함)
+
+//onDelete: CASCASDE 여기서는 user 테이블쪽에서 필드가 삭제되면
+// 그에 의존하고있는(1:1관계인 verification)필드도 같이 삭제된다는 뜻
 
 # 7.5
 
