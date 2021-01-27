@@ -24,6 +24,7 @@ import { RestaurantsModule } from './restaurants/restaurants.module';
   imports: [
     // dotenv를 불러오는 nestjs방식
     // Joi는 자바스크립트용 Validation 해주는 라이브러리
+    // 여기서 validation된 key는 하단에서 import된 모듈에서 끌어다 사용가능함
     ConfigModule.forRoot({
       isGlobal: true,
       // package.json에서 설정한 NODE_ENV의 값에따라서 불러오는 env파일을 다르게함

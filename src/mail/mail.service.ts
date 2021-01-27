@@ -7,6 +7,8 @@ import { EmailVar, MailModuleOptions } from './mail.interfaces';
 @Injectable()
 export class MailService {
   constructor(
+    // app.module.ts에서 mail.module.ts를 통해 전달받은 인자(apiKey,domain,fromEmail)를 사용하기위한 상용구
+    // 이때 ㅂMailModuleOptions형식으로 받아온다.
     @Inject(CONFIG_OPTIONS) private readonly options: MailModuleOptions
   ) {}
 
@@ -20,11 +22,16 @@ export class MailService {
       'from',
       `Nico from Nuber Eats <mailgun@${this.options.domain}>`
     );
-    form.append('to', `nico@nomadcoders.co`);
+    // form사용방법
+    form.append('to', `fairyfloss0909@gmail.com`);
     form.append('subject', subject);
     form.append('template', template);
     emailVars.forEach(eVar => form.append(`v:${eVar.key}`, eVar.value));
     try {
+      // got패키지를 이용하여 post를 request함
+      // 어디로? : 메일 서버로 메일보내달라고!
+      // 그럼 메일서버에서 메일보낸요청에대하여 성공했는지 실패했는지 응답이 오고
+      // 그 응답결과에따라 행동을 지정하면됨 여기선 try catch로 핸들링함
       await got.post(
         `https://api.mailgun.net/v3/${this.options.domain}/messages`,
         {

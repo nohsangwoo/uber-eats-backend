@@ -414,6 +414,17 @@ verification code를 사용해서 그들의verification을 찾음, 그걸 지우
 //onDelete: CASCASDE 여기서는 user 테이블쪽에서 필드가 삭제되면
 // 그에 의존하고있는(1:1관계인 verification)필드도 같이 삭제된다는 뜻
 
+# 6.5 mailugun setup
+
+- mail 모듈 관련 세팅
+
+사용자 인증이끝나면 verifycation의 항목을 지워줌
+
+# 6.6 mail.service.ts 작성
+
+nodeJs에서 request를 쉽게 작성하게 해주는 GOT패키지를 설치
+거기에 form-data패키지를 사용하여 form 처리 완료
+
 # 7.5
 
 "coveragePathIgnorePatterns": [
