@@ -430,6 +430,62 @@ nodeJs에서 request를 쉽게 작성하게 해주는 GOT패키지를 설치
 - mailgun template service
   메일받았을때 form을 html과 css로 꾸밀수있음
 
+# unit Testing the user test
+
+Jest를 이용한 uit test방법
+
+# 7.0 unit test for user part
+
+user.service.spec.ts생성(테스트파일)
+npm run test:watch
+
+- beforeAll 테스트 모듈을 만들어줌
+  \*\*즉 graphql등 과 상관없이 오직 UserService파일만을 위한 독립된 별개의 테스팅환경을 만들어주는것
+
+# 7.1 Jest 경로 에러 수정 및 Mocking
+
+- Jest 경로 에러 수정은 package.json에서 수정해줌
+  "jest": {
+  "moduleNameMapper": {
+
+    <!-- src로 시작하는 경로포함방식을 찾는다면 
+    해당 모든 황작자와 모든 경로는 Root Directory에서 찾아내라고 알려주는 설정 -->
+
+  "^src/(.\*)$": "<rootDir>/$1"
+  },
+  "rootDir": "src"
+
+  <!-- 여기가 root Directory -->
+
+  ...
+  }
+
+- mocking (가짜 함수)
+  repository를 포함하고 있는 모듈에서 repository를 가짜로 속이려고 만드는 설정
+  즉 Mock repository를 생성 => 이런 일련의 작업을 mockicng 이라고함
+  첫번째로 테스팅 모듈 생성시 providers에서 최상위 대체 대상을 모킹하고
+  그 대체대상이 포함하고있는 함수를 사용할경우
+  //---------------
+  const mockRepository = () => ({
+  findOne: jest.fn(),
+  save: jest.fn(),
+  create: jest.fn(),
+  findOneOrFail: jest.fn(),
+  delete: jest.fn(),
+  });
+  //---------------
+  const mockJwtService = () => ({
+  sign: jest.fn(() => 'signed-token-baby'),
+  verify: jest.fn(),
+  });
+  //---------------
+  const mockMailService = () => ({
+  sendVerificationEmail: jest.fn(),
+  });
+
+  이런식으로 설정하여 사용한다
+  설정된 함수는 테스팅 모듈을 포함할때 useVale에 포함한다.
+
 # 7.5
 
 "coveragePathIgnorePatterns": [

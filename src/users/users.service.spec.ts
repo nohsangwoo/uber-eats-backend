@@ -27,25 +27,37 @@ const mockMailService = () => ({
 type MockRepository<T = any> = Partial<Record<keyof Repository<T>, jest.Mock>>;
 
 describe('UserService', () => {
+  // UserService 를 testing에 불러와 사용하고자 하는 작업 - 1
+  // 나머지 작업도 같은의미
   let service: UserService;
   let usersRepository: MockRepository<User>;
   let verificationsRepository: MockRepository<Verification>;
   let mailService: MailService;
   let jwtService: JwtService;
 
+  // NestJs의 모든것을 사용하려 테스팅 모듈을 만들어준다
   beforeEach(async () => {
+    // 테스팅 모듈은 import가 필요함
     const module = await Test.createTestingModule({
       providers: [
         UserService,
+        // repository를 포함하고 있는 모듈에서
+        // repository를 가짜로 속이려고 만드는 설정
+        // 즉 Mock repository를 생성 => 이런 일련의 작업을 mockicng 이라고함
         {
+          // User의 repository 대체 함수를 제공하고
           provide: getRepositoryToken(User),
+          // 그 안의 값들은 상단에서 mokcing된  mockRepository()로 대체한다
           useValue: mockRepository(),
         },
         {
+          // Verification의 repository 대체 함수를 제공하고
           provide: getRepositoryToken(Verification),
+          // 그 안의 값들은 상단에서 mokcing된  mockRepository()로 대체한다
           useValue: mockRepository(),
         },
         {
+          // 위와 같은 개념 다만 repository가 아닌경우 그냥 불러옴
           provide: JwtService,
           useValue: mockJwtService(),
         },
@@ -55,6 +67,8 @@ describe('UserService', () => {
         },
       ],
     }).compile();
+    // UserService 를 testing에 불러와 사용하고자 하는 작업 - 2
+    // 나머지 작업도 같은의미
     service = module.get<UserService>(UserService);
     mailService = module.get<MailService>(MailService);
     jwtService = module.get<JwtService>(JwtService);
