@@ -24,6 +24,9 @@ const mockMailService = () => ({
   sendVerificationEmail: jest.fn(),
 });
 
+// type MockRepository는 Repository의 모든 함수를 말하는데
+// 이함수들의 타입이 jest.Mock함수인 것이다.
+// for javascript (그냥 복붙 ㄱㄱ)
 type MockRepository<T = any> = Partial<Record<keyof Repository<T>, jest.Mock>>;
 
 describe('UserService', () => {
@@ -76,28 +79,43 @@ describe('UserService', () => {
     verificationsRepository = module.get(getRepositoryToken(Verification));
   });
 
+  // service(UserService)가 정의 됐길 기대하는 테스팅함수
+  // 즉 독림된 모듈로 분리되어 정의됐길 기대한다
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
 
   describe('createAccount', () => {
+    enum UserRole {
+      Client = 'Client',
+      Owner = 'Owner',
+      Delivery = 'Delivery',
+    }
+
+    // createAccount의 전달 받는 인자를 속이기 위해 가짜로 데이터를 생성
     const createAccountArgs = {
       email: 'bs@email.com',
       password: 'bs.password',
-      role: 0,
+      //enum type은 이런식으로 불러와 준다
+      role: UserRole.Client,
     };
 
+    // 사용자가 있다면 실패하길 기대하는 테스트
     it('should fail if user exists', async () => {
+      // findOne함수가 사용하는 값을 mocking해준다
       usersRepository.findOne.mockResolvedValue({
         id: 1,
         email: '',
       });
+      // 그다음 계성생성하는 함수를 실행한다음 결과를 반환하여 result에 저장
+      // role이 enum type이라서 inputType 안맞는다고 에러나는데 상관없음
       const result = await service.createAccount(createAccountArgs);
       expect(result).toMatchObject({
         ok: false,
         error: 'There is a user with that email already',
       });
     });
+    // end of ...
 
     it('should create a new user', async () => {
       usersRepository.findOne.mockResolvedValue(undefined);

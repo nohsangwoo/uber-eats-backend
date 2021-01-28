@@ -486,6 +486,10 @@ npm run test:watch
   이런식으로 설정하여 사용한다
   설정된 함수는 테스팅 모듈을 포함할때 useVale에 포함한다.
 
+# 7.2 mocking part two
+
+# 7.4 recap
+
 # 7.5
 
 "coveragePathIgnorePatterns": [
