@@ -492,13 +492,19 @@ npm run test:watch
 
 # 7.5
 
-"coveragePathIgnorePatterns": [
-"node_modules",
-".entity.ts",
-".constants.ts"
-]
-test:cov에서 현재 얼마나 테스트가 완료됐는지 계산해서 퍼센테이지를 보여주는데
-entify파일과 constants 파일은 테스트 할필요가 없으니 제외하기위해서 poackage.js에 추가해준다
+- 테스트를 제외해도 되는 부분 설정(package.json)
+  "coveragePathIgnorePatterns": [
+  "node_modules",
+  ".entity.ts",
+  ".constants.ts"
+  ]
+  이런식으로 설정
+  test:cov에서 현재 얼마나 테스트가 완료됐는지 계산해서 퍼센테이지를 보여주는데
+  entify파일과 constants 파일은 테스트 할필요가 없으니 제외하기위해서 poackage.js에 추가해준다
+
+- 테스트하는 방식은 테스트 하는사람의 자유
+- toHaveBeenCalled() 몇번 호출됐는지 상관없이 호출됐는지만 확인(안쓰여서 부가 설명)
+- npm run test:cov 얼마나 테스팅이 진행됐는지 퍼센테이지와 어디가 진행안됐는지 모니터링 해줌
 
 # 특정파일만 검사하고싶을때
 

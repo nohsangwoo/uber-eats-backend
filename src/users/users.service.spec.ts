@@ -3,7 +3,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { JwtService } from 'src/jwt/jwt.service';
 import { MailService } from 'src/mail/mail.service';
 import { Repository } from 'typeorm';
-import { User } from './entities/user.entity';
+import { User, UserRole } from './entities/user.entity';
 import { Verification } from './entities/verification.entity';
 import { UserService } from './users.service';
 
@@ -86,17 +86,12 @@ describe('UserService', () => {
   });
 
   describe('createAccount', () => {
-    enum UserRole {
-      Client = 'Client',
-      Owner = 'Owner',
-      Delivery = 'Delivery',
-    }
-
     // createAccount의 전달 받는 인자를 속이기 위해 가짜로 데이터를 생성
     const createAccountArgs = {
       email: 'bs@email.com',
       password: 'bs.password',
       //enum type은 이런식으로 불러와 준다
+      // UserRole은 user.entity.ts에서 불러온다
       role: UserRole.Client,
     };
 
@@ -117,42 +112,64 @@ describe('UserService', () => {
     });
     // end of ...
 
+    // 정상적으로 user를 생성했을때의 테스팅
     it('should create a new user', async () => {
+      // fineOne의 반환된 데이터가 없다고 설정. 원문에서 exists로 반환되는데 이값이 없어야 나머지 구문이 진행되게 if문을 사용했음
+      // 따라서 exists변수가 false인 경우 정상진행이 되기때문에 findOne을 false로 반환하게 하기위해 설정하는 값
       usersRepository.findOne.mockResolvedValue(undefined);
+      // 상단에서 만들어진 createAccountArgs mock args를 재황용하여 create와 save함수를 테스트
+      //  usersRepository.create의 반환값은 createAccountArgs 이다 라고 mocking
       usersRepository.create.mockReturnValue(createAccountArgs);
+      // 이게 돼야 verification 테스트 진행가능
       usersRepository.save.mockResolvedValue(createAccountArgs);
+
+      // 또한 verificationsRepository도 create와 save함수를 테스트
       verificationsRepository.create.mockReturnValue({
         user: createAccountArgs,
       });
+      // 이게 돼야 mailservice 테스트 진행가능
       verificationsRepository.save.mockResolvedValue({
         code: 'code',
       });
 
+      // UserService.createAccount를 실행하고 result에 결과값을 담았다고 가상환경에서 테스팅함
+      // 이 result변수는 하단에서 테스팅용으로 재활용
       const result = await service.createAccount(createAccountArgs);
 
+      // toHaveBeenCalledTimes : 이 함수가 한번만 호출될것을 기대함
       expect(usersRepository.create).toHaveBeenCalledTimes(1);
+      // toHaveBeenCalledWith : 이 함수가 어떤 args 함꼐 호출될것을 기대함 (여기서는 createAccountArgs)
       expect(usersRepository.create).toHaveBeenCalledWith(createAccountArgs);
 
+      // toHaveBeenCalledTimes : 이 함수가 한번만 호출될것을 기대함
       expect(usersRepository.save).toHaveBeenCalledTimes(1);
+      // toHaveBeenCalledWith : 이 함수가 어떤 args 함꼐 호출될것을 기대함 (여기서는 createAccountArgs)
       expect(usersRepository.save).toHaveBeenCalledWith(createAccountArgs);
 
+      // 위와 같음
       expect(verificationsRepository.create).toHaveBeenCalledTimes(1);
       expect(verificationsRepository.create).toHaveBeenCalledWith({
+        // verificationsRepository.create는 createAccountArgs가 호출돼야한다는 이야기
         user: createAccountArgs,
       });
 
+      // 위와 같음
       expect(verificationsRepository.save).toHaveBeenCalledTimes(1);
       expect(verificationsRepository.save).toHaveBeenCalledWith({
         user: createAccountArgs,
       });
 
+      // 위와같음
       expect(mailService.sendVerificationEmail).toHaveBeenCalledTimes(1);
+      // 여기선 두개의 인자와 같이 호출되길 기대하는데 각각의 인자타입은 String 과 String으로 기대함
       expect(mailService.sendVerificationEmail).toHaveBeenCalledWith(
         expect.any(String),
         expect.any(String)
       );
+      // 모든것이 다 정상작동하면 함수의 반환값은 ok:true이길 기대한다
       expect(result).toEqual({ ok: true });
     });
+    // end of create new user testing...
 
     it('should fail on exception', async () => {
       usersRepository.findOne.mockRejectedValue(new Error());
