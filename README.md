@@ -506,6 +506,23 @@ npm run test:watch
 - toHaveBeenCalled() 몇번 호출됐는지 상관없이 호출됐는지만 확인(안쓰여서 부가 설명)
 - npm run test:cov 얼마나 테스팅이 진행됐는지 퍼센테이지와 어디가 진행안됐는지 모니터링 해줌
 
+# 7.8
+
+- beforeAll 과 beforeEach차이
+  beforeAll 각 테스팅시 호출스택을 공유하고 beforeEach은 각 테스팅마다 호출을 별개의것으로 구분한다
+
+# 7.9 findById
+
+- mockResolvedValue와 mockReturnValue의 차이
+  반환값이 있을때 promise를 return 하는가 아닌가의 차이
+  반환값이 promise를 return하면 mockResolvedValue
+  (ex. save,findeOne..등 보통 여기선 DB를 제어하는 함수인경우)
+  반환값이 promise를 return하 않으면면 mockReturnValue
+  (ex. create..등 보통 여기선 일반 javascript 함수인경우 물론 예외도 있음)
+  가장 중요한건 mockResolvedValue와 mockReturnValue는 반환값을 mocking하는것
+
+# 7.12 verifyEmail 테스팅
+
 # 특정파일만 검사하고싶을때
 
 @blackstar0223 Check "collectCoverageFrom" in package.json.

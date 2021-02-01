@@ -107,6 +107,8 @@ export class UserService {
   // 전달받은 id로 유저를 찾아주는 기능
   async findById(id: number): Promise<UserProfileOutput> {
     try {
+      // findOne에서 아무것도 찾지 못하면 error를 발생시킬것임
+      // 에러가 난다면 catch로 토스!
       const user = await this.users.findOneOrFail({ id });
       return {
         ok: true,
@@ -150,6 +152,7 @@ export class UserService {
     }
   }
 
+  // 이메일 인증
   async verifyEmail(code: string): Promise<VerifyEmailOutput> {
     try {
       // verification을 통하여 user를 불러오고 싶으면 확실하게 설정해줘야 불러올수있음
@@ -162,8 +165,8 @@ export class UserService {
         verification.user.verified = true;
         // 이때 password의 select:false 설정으로 인하여 password는 제외하고 save됨
         await this.users.save(verification.user);
-        // 그리고 헤당 verification을 삭제해줌 (해당 인증과정이 끝나서 더이상 필요없는 데이터니깐)
 
+        // 그리고 헤당 verification을 삭제해줌 (해당 인증과정이 끝나서 더이상 필요없는 데이터니깐)
         await this.verifications.delete(verification.id);
         return { ok: true };
       }

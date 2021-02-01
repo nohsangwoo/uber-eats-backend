@@ -7,6 +7,7 @@ import { User, UserRole } from './entities/user.entity';
 import { Verification } from './entities/verification.entity';
 import { UserService } from './users.service';
 
+//repository에서 사용되는 함수 반환값 mocking 모음
 const mockRepository = () => ({
   findOne: jest.fn(),
   save: jest.fn(),
@@ -85,6 +86,7 @@ describe('UserService', () => {
     expect(service).toBeDefined();
   });
 
+  // createAccount 함수 작동 테스트
   describe('createAccount', () => {
     // createAccount의 전달 받는 인자를 속이기 위해 가짜로 데이터를 생성
     const createAccountArgs = {
@@ -171,23 +173,30 @@ describe('UserService', () => {
     });
     // end of create new user testing...
 
+    // 어떤 exception이라도 발생하면 fail해야한다는것을 테스팅
     it('should fail on exception', async () => {
+      //  usersRepository.findOn에 에러를 발생시키고
       usersRepository.findOne.mockRejectedValue(new Error());
+      // result 를 담고
       const result = await service.createAccount(createAccountArgs);
+      // 그 결과값이 false이길 기대함
       expect(result).toEqual({ ok: false, error: "Couldn't create account" });
     });
   });
+  // createAccount 함수 작동 테스트 끝
 
+  // login 함수 작동 테스트
   describe('login', () => {
+    // 로긴에서 전달받는 인자값 mocking
     const loginArgs = {
       email: 'bs@email.com',
       password: 'bs.password',
     };
+
+    // 유저가 존재하지 않을때 테스팅
     it('should fail if user does not exist', async () => {
       usersRepository.findOne.mockResolvedValue(null);
-
       const result = await service.login(loginArgs);
-
       expect(usersRepository.findOne).toHaveBeenCalledTimes(1);
       expect(usersRepository.findOne).toHaveBeenCalledWith(
         expect.any(Object),
@@ -199,7 +208,9 @@ describe('UserService', () => {
       });
     });
 
+    // password가 틀린경우 테스팅
     it('should fail if the password is wrong', async () => {
+      // checkPassword를 false로 설정하는 mocking
       const mockedUser = {
         checkPassword: jest.fn(() => Promise.resolve(false)),
       };
@@ -232,7 +243,10 @@ describe('UserService', () => {
       id: 1,
     };
     it('should find an existing user', async () => {
+      // user.service.ts에 있는 findById에서 실행되는 findOneOrFail의 반환값을 mocking해줌
+      // (findById를 테스팅 하기위해 미리 세팅)
       usersRepository.findOneOrFail.mockResolvedValue(findByIdArgs);
+      // user.service.ts에 있는 findById 함수를 실행하고 결과값을 저장함
       const result = await service.findById(1);
       expect(result).toEqual({ ok: true, user: findByIdArgs });
     });
@@ -244,6 +258,7 @@ describe('UserService', () => {
     });
   });
 
+  // email을 변경할때의 테스팅
   describe('editProfile', () => {
     it('should change email', async () => {
       const oldUser = {
@@ -262,12 +277,15 @@ describe('UserService', () => {
         email: editProfileArgs.input.email,
       };
 
+      // editProfile이 실행되기 위해서 안에 사용되는 함수반환값 mocking
       usersRepository.findOne.mockResolvedValue(oldUser);
       verificationsRepository.create.mockReturnValue(newVerification);
       verificationsRepository.save.mockResolvedValue(newVerification);
 
+      // editProfile 실행!(본격 테스팅)
       await service.editProfile(editProfileArgs.userId, editProfileArgs.input);
 
+      // 그다음 expect 실행(기대하는 결과 및 실행모양?)
       expect(usersRepository.findOne).toHaveBeenCalledTimes(1);
       expect(usersRepository.findOne).toHaveBeenCalledWith(
         editProfileArgs.userId
@@ -287,6 +305,7 @@ describe('UserService', () => {
       );
     });
 
+    // editprofile에서 password가 변경된 경우
     it('should change password', async () => {
       const editProfileArgs = {
         userId: 1,
@@ -311,18 +330,22 @@ describe('UserService', () => {
 
   describe('verifyEmail', () => {
     it('should verify email', async () => {
+      // 반환되는 반환값을 mocking하는것
       const mockedVerification = {
         user: {
           verified: false,
         },
         id: 1,
       };
+      // verifyEmail를 실행하기위한 모킹
+      // verifyEmail안에서 verifications.findOn의 반환값을 모킹
       verificationsRepository.findOne.mockResolvedValue(mockedVerification);
 
       const result = await service.verifyEmail('');
 
       expect(verificationsRepository.findOne).toHaveBeenCalledTimes(1);
       expect(verificationsRepository.findOne).toHaveBeenCalledWith(
+        // 특정히 정확히 정해진 정확한 값은 없지만 형식은 Oject여야한다.
         expect.any(Object),
         expect.any(Object)
       );
