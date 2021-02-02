@@ -26,6 +26,7 @@ export class RestaurantResolver {
   async createRestaurant(
     // 로그인된 유저인지 인증단계를 거쳐야함
     // AuthUser는 커스텀 데코레이터임
+    // 그리고 User정보를 authUser로 담아주고 createRestaurant의 첫번째 인자로 전달해줌
     @AuthUser() authUser: User,
     // DTO를 사용하여 input validation을 진행해줌
     //for graphql and typescript 양쪽에서 다 적용됨

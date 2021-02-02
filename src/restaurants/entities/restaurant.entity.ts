@@ -38,6 +38,9 @@ export class Restaurant extends CoreEntity {
   @ManyToOne(
     type => Category,
     category => category.restaurants,
+    // 카테고리를 지울때 restaurant는 지우면 안되기 때문에 nullable:true설정
+    // 카테고리가 지워지면 자동으로 restaurant의 카테고리 필드는 null로 채워짐
+    // 또한 카테고리가 존재하지않는 상태로 restaurant를 생성가능
     { nullable: true, onDelete: 'SET NULL' }
   )
   category: Category;
@@ -48,6 +51,7 @@ export class Restaurant extends CoreEntity {
   @ManyToOne(
     type => User,
     user => user.restaurants,
+    // user가 지워지면 해당 user에 연결된 restaurant도 같이 지워지는 종속관계를 설정해줌
     { onDelete: 'CASCADE' }
   )
   owner: User;

@@ -557,7 +557,7 @@ npm install eslint eslint-plugin-react eslint-babel –save-dev
 
 # 10 RESTAURANT CRUD
 
-# 10.1 RESTAURANT MODELS
+# 10.0 RESTAURANT MODELS
 
 ## Restaurant model
 
@@ -571,3 +571,13 @@ npm install eslint eslint-plugin-react eslint-babel –save-dev
 
 - relation 정의 (Restaurant와 Category의 관계 정의)
   OneToMany and ManyToOne
+
+# 10.1 relationship and inputtype
+
+- inputType 설정
+  relation이 정의된 entity간은 서로 @InputType의 첫번째 인자에
+  인풋시 정의될 인풋호출명?을 설정한다
+
+# 10.2 restaurant 기본 구성 설정 및 Code Cleanup
+
+# 10.3 createRestaurant
