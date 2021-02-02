@@ -18,18 +18,22 @@ export class Restaurant extends CoreEntity {
   @Length(5) //for validaton
   name: string;
 
+  // 배경이미지 url주소 필드
   @Field(type => String)
   @Column()
   @IsString()
   coverImg: string;
 
+  // 주소 필드
   // 값을 채워넣지 않으면 기본값으로 '강남'을 채워넣겠다는 뜻
-  @Field(type => String, { defaultValue: '강남' })
-  @Column()
+  @Field(type => String, { defaultValue: '강남' }) //for graphql
+  @Column() //for typeorm
   @IsString()
   address: string;
 
   //nullable은 이 값이 필수로 채워지지 않아도 된다라는 뜻
+  // 카테고리와의 관계를 정의
+  // 여러개의 restaurant은 각각 한개의 Category를 가질수 있음
   @Field(type => Category, { nullable: true })
   @ManyToOne(
     type => Category,
@@ -38,6 +42,8 @@ export class Restaurant extends CoreEntity {
   )
   category: Category;
 
+  //  restaurant에서 user를 가져와 사용가능
+  // 위와 같음 다만 이경우 user가 삭제되면 그에 연결된 restaurant도 같이 삭제되는 종속관계인 CASCADE를 정의함
   @Field(type => User)
   @ManyToOne(
     type => User,

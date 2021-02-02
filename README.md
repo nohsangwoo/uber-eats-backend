@@ -523,6 +523,12 @@ npm run test:watch
 
 # 7.12 verifyEmail 테스팅
 
+# 8 UNIT TESTING JWT AND MAIL
+
+# 8.1 jwt service unit test
+
+# 8.2 mail service unit test
+
 # 특정파일만 검사하고싶을때
 
 @blackstar0223 Check "collectCoverageFrom" in package.json.
@@ -546,3 +552,22 @@ const { user } = await this.userService.findById(decoded['id']);
 #mac 연결
 
 npm install eslint eslint-plugin-react eslint-babel –save-dev
+
+# 9 E2E Testing 나중에 보기
+
+# 10 RESTAURANT CRUD
+
+# 10.1 RESTAURANT MODELS
+
+## Restaurant model
+
+- name
+- category(foreign key)
+- address
+- coverImage
+
+- create restaurant.entity.ts
+- create category.entity.ts
+
+- relation 정의 (Restaurant와 Category의 관계 정의)
+  OneToMany and ManyToOne

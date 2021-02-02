@@ -4,7 +4,9 @@ import * as FormData from 'form-data';
 import { CONFIG_OPTIONS } from 'src/common/common.constants';
 import { MailService } from './mail.service';
 
+// import된 got을 모킹
 jest.mock('got');
+// import된 form-data을 모킹
 jest.mock('form-data');
 
 const TEST_DOMAIN = 'test-domain';

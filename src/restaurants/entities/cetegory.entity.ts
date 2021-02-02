@@ -24,6 +24,8 @@ export class Category extends CoreEntity {
   @IsString()
   slug: string;
 
+  // restaurant와의 관계 정리 1:N관계
+  // 1개의 cateogry는 여러개의 restaurant를 포함할수있다.
   @Field(type => [Restaurant], { nullable: true })
   @OneToMany(
     type => Restaurant,
