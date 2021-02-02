@@ -35,7 +35,7 @@ export class JwtMiddleware implements NestMiddleware {
       } catch (e) {}
       // next() : 현재 라우터에서 판단하지 않고 다음 라우터로 넘기겠다.
       // 상단작업에서 req, res작업을 해준이후에는 next()함수를 호출해줌
-      next();
     }
+    next();
   }
 }
