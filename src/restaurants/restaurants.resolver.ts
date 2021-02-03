@@ -46,9 +46,9 @@ export class RestaurantResolver {
   @Role(['Owner'])
   editRestaurant(
     //AuthUser는 graphql에서 사용 가능하도록 설정된 context(User의 data)를 가져와 사용하는것
-    @AuthUser() AuthUser: User,
+    @AuthUser() owner: User,
     @Args('input') editRestaurantInput: EditRestaurantInput
-  ): EditRestaurantOutput {
-    return { ok: true };
+  ): Promise<EditRestaurantOutput> {
+    return this.restaurantService.editRestaurant(owner, editRestaurantInput);
   }
 }

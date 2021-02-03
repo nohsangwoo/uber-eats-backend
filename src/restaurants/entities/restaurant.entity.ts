@@ -26,7 +26,8 @@ export class Restaurant extends CoreEntity {
 
   // 주소 필드
   // 값을 채워넣지 않으면 기본값으로 '강남'을 채워넣겠다는 뜻
-  @Field(type => String, { defaultValue: '강남' }) //for graphql
+  // @Field(type => String, { defaultValue: '강남' }) //for graphql
+  @Field(type => String, { defaultValue: '강남' })
   @Column() //for typeorm
   @IsString()
   address: string;

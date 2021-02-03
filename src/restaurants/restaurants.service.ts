@@ -28,29 +28,6 @@ export class RestaurantService {
     private readonly categories: CategoryRepository
   ) {}
 
-  // 카테고리를 가져오거나 또는 만들어버림
-  async getOrCreate(name: string): Promise<Category> {
-    // slug란 일련의 규칙으로 통일된 무엇가를 뜻함
-    // 1. 카테고리이름의 앞뒤 빈칸을 모두 지워줌
-    // 2. 카테고리이름을 소문자로 만들어준다
-    const categoryName = name.trim().toLowerCase();
-    // 3.. categoryName중 빈칸이 있다면 모든 빈칸은 "-" 로 대체 한다.
-    const categorySlug = categoryName.replace(/ /g, '-');
-    // 검색은 category DB의 slug 필드로 검색함
-    // 검색하는 방법 ({검색할 필드: 검색할 단어})
-    // fineOne 처음 검색되는 한개만 검색결과를 반환하고 처음 발견되는 검색결과를 반환하고 검색을 중지함
-    // (unique한 단어를 검색할때는 검색결과가 한개이상 나올이유가 없으니 최적화의 개념임)
-    let category = await this.categories.findOne({ slug: categorySlug });
-    // 해당 카테고리가 존재하지 않으면 해당 카테고리를 DB에 새로 저장
-    if (!category) {
-      // 저장되는 방식은 원본(name)과 변환된 검색용 단어(slug)를 오브젝트형식으로 저장한다.
-      category = await this.categories.save(
-        this.categories.create({ slug: categorySlug, name: categoryName })
-      );
-    }
-    return category;
-  }
-
   async createRestaurant(
     // 이 owner는  @AuthUser() 로 인증과정을 거쳐서 전달받은 User정보이다.
     owner: User,
@@ -125,6 +102,8 @@ export class RestaurantService {
       // 업데이트하는경우에는 배열안에다 넣어줌 create안에 넣어주는게 아님
       await this.restaurants.save([
         {
+          // update를 한다면 id를 같이 보내줘야함
+          // 만약 id를 보내지 않는다면 새로운 객체를 insert하겠다는 의미가 됨
           id: editRestaurantInput.restaurantId,
           // editRestaurantInput의 값은 옵셔널로 지정돼서 모든 인자가 무조건 전달 받는것은 아님
           // edit하고 싶은 것만 전달받아서 스프레드식으로 업데이트 해줌

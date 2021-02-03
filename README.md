@@ -627,3 +627,8 @@ restaurant의 resolver에는 user를 위한 기능, delivery를 위한기능, ow
 
 이번엔 catogory repository를 custom하는데
 해당 category repository를 로드할 때마다 getOrCreate를 실행해줌
+
+# 10.10
+
+// update를 한다면 id를 같이 보내줘야함
+// 만약 id를 보내지 않는다면 새로운 객체를 insert하겠다는 의미가 됨
