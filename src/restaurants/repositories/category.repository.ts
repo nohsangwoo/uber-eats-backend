@@ -1,6 +1,8 @@
 import { EntityRepository, Repository } from 'typeorm';
 import { Category } from '../entities/cetegory.entity';
 
+// custom repository하는법
+// extends Repository<Category> 하면됨
 @EntityRepository(Category)
 export class CategoryRepository extends Repository<Category> {
   async getOrCreate(name: string): Promise<Category> {

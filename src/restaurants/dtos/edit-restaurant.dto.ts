@@ -11,6 +11,7 @@ import { CreateRestaurantInput } from './create-restaurant.dto';
 export class EditRestaurantInput extends PartialType(CreateRestaurantInput) {
   // 대신 restaurantId은 필수로 포함되어야함
   @Field(type => Number)
+  // 수정할 restaurant의 id를 받아옴
   restaurantId: number;
 }
 

@@ -581,3 +581,49 @@ npm install eslint eslint-plugin-react eslint-babel –save-dev
 # 10.2 restaurant 기본 구성 설정 및 Code Cleanup
 
 # 10.3 createRestaurant
+
+category가 존재하지 않으면 그 category를 새로 만들고 싶고
+존재한다면 그 category를 get하고 싶음
+
+또한 어떻게 category를 찾을지도 정의해야함(slug)
+
+# 10.4 Roles part one 메타데이터 사용(SetMetadata 사용법)
+
+- SetMetadata를 이용한 role Decorator만들기
+
+restaurant의 resolver에는 user를 위한 기능, delivery를 위한기능, owner(사장)을 위한 기능이 각각있는데
+이 구분을 SetMetadata로 지정해서 구분해줌
+
+# 10.5 // 모든resolver에서 AuthGuard를 사용하고싶다면 APP_GUARD를 이용하면됨
+
+- 메타데이터가 설정됐으면 해당 resolver는 public이면 안됨
+  (즉 메타데이터가 설정됐다면 user의 role을 확인해야 한다는 뜻)
+- 메타데이터가 설정안됐다면 user auithentication을 신경쓰지 않는다는 의미
+  예컨데 user의 createAccount나 login에는 메타데이터가 필요하지 않음
+  (누구나 만들거나 로그인 시도 할수있어야하니깐)
+
+- 설정한 metadata를 불러와서 사용하는 방법
+  여기선 auth.guard.ts에서 설정된role메타데이터를 불러와서 사용함
+
+- authGuard는 CanActivate를 상속받음
+  따라서 AuthGuard 는 true 또는 false만 return 함
+  true를 반환하면 request진행이 허용됨
+  false를 반환하면 request진행이 불가함을 결정
+
+- 메타데이터를 설정했다는건 로그인된 상태이길 기대하는 것임
+  //정리 : 메타데이터로 owner만 접근 가능하게 resolver에서 setmetadator로 설정된 resolver가 있는데
+  //만약 로그인한 유저가 client이거나 deliver라면 해당 resolver의 기능은 사용할수없고
+  // 오직 owner의 권한을 가진 user가 로그인해야만 해당 기능을 사용 가능함
+
+# 10.6 recap role part
+
+# 10.7~8 editRestaurant
+
+- @RelationId()
+  정의된 relation 대상의 id를 가져옴
+- 132
+
+# 10.9 custom repository 방법 3가지
+
+이번엔 catogory repository를 custom하는데
+해당 category repository를 로드할 때마다 getOrCreate를 실행해줌

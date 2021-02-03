@@ -42,8 +42,10 @@ export class RestaurantResolver {
   @Mutation(returns => EditRestaurantOutput)
   // 접속한 사용자가 Client, owner, deliver중 owner일때만 작동 가능한 기능이다라고 user-validation을 진행
   // Role은 커스텀 데코레이터임
+  // Owner가 로그인한 상태에서만 editRestaurant 접근 가능
   @Role(['Owner'])
   editRestaurant(
+    //AuthUser는 graphql에서 사용 가능하도록 설정된 context(User의 data)를 가져와 사용하는것
     @AuthUser() AuthUser: User,
     @Args('input') editRestaurantInput: EditRestaurantInput
   ): EditRestaurantOutput {

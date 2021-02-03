@@ -56,6 +56,8 @@ export class Restaurant extends CoreEntity {
   )
   owner: User;
 
+  // 이경우 restaurant와 user의 관계에서 user의 id를 가져오는데
+  // 이때 설정된 ownerId는 restaurant.owner에서 뽑아온다는 의미
   @RelationId((restaurant: Restaurant) => restaurant.owner)
   ownerId: number;
 }

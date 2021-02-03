@@ -37,6 +37,7 @@ export class UserResolver {
 
   // 로그인한상태가 내가 맞는지 확인
   @Query(returns => User)
+  //client,delivery,owner 모든 사용자가 접근 가능함
   @Role(['Any'])
   // 유저의 인증과정을 커스텀된 데코레이터로 인증하고
   // 해당 데코레이터는 인증에 성공하면 User의 정보를 return 해줌
@@ -49,6 +50,7 @@ export class UserResolver {
 
   // user의 profile을 볼수있는 query
   @Query(returns => UserProfileOutput)
+  //client,delivery,owner 모든 사용자가 접근 가능함
   @Role(['Any'])
   // client로부터 전달받은 userProfileInput의 userId로 user정보를 찾아 반환한다
   async userProfile(
@@ -60,6 +62,7 @@ export class UserResolver {
 
   // user정보를 수정하는 mutaiton
   @Mutation(returns => EditProfileOutput)
+  //client,delivery,owner 모든 사용자가 접근 가능함
   @Role(['Any'])
   async editProfile(
     // AuthUser로 유저인증하고 user값을 authUser에 반환하여 저장함

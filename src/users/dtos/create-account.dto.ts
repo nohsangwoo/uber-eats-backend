@@ -8,7 +8,11 @@ export class CreateAccountInput extends PickType(User, [
   'email',
   'password',
   'role',
-]) {}
+]) {
+  // 필드 추가
+  @Field(type => String)
+  categoryName: string;
+}
 
 // user생성할때 outputDTO
 @ObjectType()

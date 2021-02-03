@@ -9,7 +9,7 @@ export const AuthUser = createParamDecorator(
     // (app.module.ts의 graphql.forRoot에서 설정된 context의 값을 보면 user라는 key에 저장했으니 뽑아올때도 gqlContext['user] 식으로 가져옴 )
     const gqlContext = GqlExecutionContext.create(context).getContext();
     const user = gqlContext['user'];
-    console.log(user);
+    // console.log(user);
     return user;
   }
 );
