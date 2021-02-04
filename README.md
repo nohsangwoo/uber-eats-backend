@@ -632,3 +632,9 @@ restaurant의 resolver에는 user를 위한 기능, delivery를 위한기능, ow
 
 // update를 한다면 id를 같이 보내줘야함
 // 만약 id를 보내지 않는다면 새로운 객체를 insert하겠다는 의미가 됨
+
+# 10.11 delete restaurant
+
+1. resolve 만들고 필요한 인자값은 restaurantId, 반환되는 결과값은 ok error
+2. DTO만들기
+3. service에 실제 사용되는 함수 구현

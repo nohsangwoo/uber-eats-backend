@@ -7,6 +7,10 @@ import {
   CreateRestaurantOutput,
 } from './dtos/create-restaurant.dto';
 import {
+  DeleteRestaurantInput,
+  DeleteRestaurantOutput,
+} from './dtos/delete-restaurant.dto';
+import {
   EditRestaurantInput,
   EditRestaurantOutput,
 } from './dtos/edit-restaurant.dto';
@@ -121,6 +125,47 @@ export class RestaurantService {
       return {
         ok: false,
         error: 'Could not edit Restaurant',
+      };
+    }
+  }
+
+  // 레스토랑 삭제기능
+  async deleteRestaurant(
+    // 로그인한 사용자의 정보를 가져옴
+    owner: User,
+    { restaurantId }: DeleteRestaurantInput
+  ): Promise<DeleteRestaurantOutput> {
+    try {
+      // 레스토랑에서 id로 검색하여 하나라도 결과값이 나오면 즉시 검색중단
+      // (어차피 유니크 속성이라 중복되는값이 없고 더 검색해봐야 리소스 낭비이기때문에)
+      const restaurant = await this.restaurants.findOne(restaurantId);
+      //레스토랑을 찾지 못했다면 찾지 못했다는 에러메시지를 false와 함께 반환
+      if (!restaurant) {
+        return {
+          ok: false,
+          error: 'Restaurant not found',
+        };
+      }
+      // 로그인한 사용자의 id와 레스토랑의 주인 id 가 같지 않다면
+      // 삭제할수 없다는 메시지와 false값을 반환
+      if (owner.id !== restaurant.ownerId) {
+        return {
+          ok: false,
+          error: "You can't delete a restaurant that you don't own",
+        };
+      }
+
+      //위 단계를 통과하여 restaurant의 findOne값이 존재한다면
+      // argument로 전달받은 restauranId를 기준으로 해당 id와 같은 레스토랑을 삭제
+      await this.restaurants.delete(restaurantId);
+      return {
+        ok: true,
+      };
+    } catch {
+      //어쨌든 위 과정에서 의도하지 않은 에러가 나온다면 에러메시지와함께 false반환
+      return {
+        ok: false,
+        error: 'Could not delete restaurant.',
       };
     }
   }
