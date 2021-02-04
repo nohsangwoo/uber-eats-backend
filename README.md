@@ -700,3 +700,11 @@ restaurant의 resolver에는 user를 위한 기능, delivery를 위한기능, ow
 
 이런결과값을 가짐
 (즉 각각의 category결과값에대한 restaurant가 count된 값을 계산해서 반환함)
+
+# 10.14 category
+
+- category에 해당하는 레스토랑을 검색
+  (category를 통하여 restaurant를 검색하는것)
+- relation옵션
+  category를 통하여 restaurant를 검색할 수 있다는것은 category와 restaurant는 relataion으로 서로 묶여있다는 의미이다
+  따라서 이경우 findOne같은 함수로 검색하여 category를 통하여 restaurant를 검색할때는 relations:['restaurant']를 옵션으로 추가해줘야한다

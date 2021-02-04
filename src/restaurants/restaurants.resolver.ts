@@ -13,6 +13,7 @@ import { Role } from 'src/auth/role.decorator';
 import { User, UserRole } from 'src/users/entities/user.entity';
 import { UsersModule } from 'src/users/users.module';
 import { AllCategoriesOutput } from './dtos/all-categories.dto';
+import { CategoryInput, CategoryOutput } from './dtos/category.dto';
 import {
   CreateRestaurantInput,
   CreateRestaurantOutput,
@@ -115,5 +116,11 @@ export class CategoryResolver {
   @Query(type => AllCategoriesOutput) //for graphql
   allCategories(): Promise<AllCategoriesOutput> {
     return this.restaurantService.allCategories();
+  }
+
+  // category에 해당하는 레스토랑을 검색
+  @Query(type => CategoryOutput)
+  category(@Args() categoryInput: CategoryInput): Promise<CategoryOutput> {
+    return this.restaurantService.findCategoryBySlug(categoryInput);
   }
 }

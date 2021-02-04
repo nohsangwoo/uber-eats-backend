@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { AllCategoriesOutput } from './dtos/all-categories.dto';
+import { CategoryInput, CategoryOutput } from './dtos/category.dto';
 import {
   CreateRestaurantInput,
   CreateRestaurantOutput,
@@ -195,5 +196,34 @@ export class RestaurantService {
   //countRestaurants 으로 보낸 category에 해당하는 restaurant을 count하는 것
   countRestaurants(category: Category) {
     return this.restaurants.count({ category });
+  }
+
+  // category에 해당하는 레스토랑을 검색
+  async findCategoryBySlug({ slug }: CategoryInput): Promise<CategoryOutput> {
+    try {
+      // category를 통하여 restaurant를 검색하는것
+      // category를 통하여 restaurant를 검색할 수 있다는것은 category와 restaurant는 relataion으로 서로 묶여있다는 의미이다
+      // 따라서 이경우 findOne같은 함수로 검색하여 category를 통하여 restaurant를 검색할때는 relations:['restaurant']를 옵션으로 추가해줘야한다
+
+      const category = await this.categories.findOne(
+        { slug },
+        { relations: ['restaurants'] }
+      );
+      if (!category) {
+        return {
+          ok: false,
+          error: 'Category not found',
+        };
+      }
+      return {
+        ok: true,
+        category,
+      };
+    } catch {
+      return {
+        ok: false,
+        error: 'Could not load category',
+      };
+    }
   }
 }
