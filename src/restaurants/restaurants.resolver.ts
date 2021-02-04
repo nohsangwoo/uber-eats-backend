@@ -1,9 +1,18 @@
 import { SetMetadata } from '@nestjs/common';
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Int,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from '@nestjs/graphql';
 import { AuthUser } from 'src/auth/auth-user.decorator';
 import { Role } from 'src/auth/role.decorator';
 import { User, UserRole } from 'src/users/entities/user.entity';
 import { UsersModule } from 'src/users/users.module';
+import { AllCategoriesOutput } from './dtos/all-categories.dto';
 import {
   CreateRestaurantInput,
   CreateRestaurantOutput,
@@ -16,6 +25,7 @@ import {
   EditRestaurantInput,
   EditRestaurantOutput,
 } from './dtos/edit-restaurant.dto';
+import { Category } from './entities/cetegory.entity';
 import { Restaurant } from './entities/restaurant.entity';
 import { RestaurantService } from './restaurants.service';
 
@@ -64,6 +74,46 @@ export class RestaurantResolver {
     @AuthUser() owner: User,
     @Args('input') deleteRestaurantInput: DeleteRestaurantInput
   ): Promise<DeleteRestaurantOutput> {
-    return;
+    return this.restaurantService.deleteRestaurant(
+      owner,
+      deleteRestaurantInput
+    );
+  }
+
+  @Mutation(returns => EditRestaurantOutput)
+  @Role(['Owner'])
+  deleteedRestaurant(
+    //AuthUser는 graphql에서 사용 가능하도록 설정된 context(User의 data)를 가져와 사용하는것
+    @AuthUser() owner: User,
+    @Args('input') deleteRestaurantInput: DeleteRestaurantInput
+  ): Promise<DeleteRestaurantOutput> {
+    return this.restaurantService.deleteRestaurant(
+      owner,
+      deleteRestaurantInput
+    );
+  }
+}
+
+//category의 resolver라고 설정
+//category resolver를 따로 만들지 않고 restaurant resolver파일에 추가해서 사용
+@Resolver(of => Category)
+export class CategoryResolver {
+  constructor(private readonly restaurantService: RestaurantService) {}
+
+  //매번 request마다 계산된 행동을 해줌
+  //db와 별개의 움직임
+  @ResolveField(type => Int) //for graphql
+  //restaurantCount라는 dynamic field를 만들었음
+  // field형식으로 사용되는restaurantCount의 반환값을 각각 계산해준다
+  //즉 restaurantCount는 entity마냥 field형식으로 graphql의 return 값중 하나로 사용될텐데
+  // 해당 반환값의 부모는 각각의 category이다(직접 사용해보면 금방 이해함 readme.md #10.13참고)
+  restaurantCount(@Parent() category: Category): Promise<number> {
+    return this.restaurantService.countRestaurants(category);
+  }
+
+  //단순히 모든 카테고리를 찾아주는 기능
+  @Query(type => AllCategoriesOutput) //for graphql
+  allCategories(): Promise<AllCategoriesOutput> {
+    return this.restaurantService.allCategories();
   }
 }

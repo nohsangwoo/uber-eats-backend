@@ -638,3 +638,65 @@ restaurant의 resolver에는 user를 위한 기능, delivery를 위한기능, ow
 1. resolve 만들고 필요한 인자값은 restaurantId, 반환되는 결과값은 ok error
 2. DTO만들기
 3. service에 실제 사용되는 함수 구현
+
+# 10.12 category part one
+
+- 모든 카테고리를 찾아주는 함수 => input이 필요하지않음
+  category part를 새로운 모듈로 만들지 않는 이유는 단지 규모가 너무 작아서 그렇기 때문 모듈을 따로 나눠도 상관없음
+
+- @ResolveField
+  매번 request마다 계산된 행동을 해줌
+  (db와 별개의 움직임 graphql에서 자체적으로 동작하는 함수)
+
+# 10.13 category part two => restaurant count
+
+- restaurantCount라는 dynamic field를 만들었음
+  해당 카테고리에 속하는 restaurant의 개수를 계산해줌
+- @Parent()
+  restaurantCount는 entity마냥 field형식으로 graphql의 return 값중 하나로 사용되고 Parent는 category라고 연결해줌
+- ex
+
+```
+{
+  allCategories {
+    ok
+    error
+    categories {
+      id
+      slug
+      name
+      restaurantCount
+    }
+  }
+}
+```
+
+이런식으로 사용된다고했을때
+
+```
+{
+  "data": {
+    "allCategories": {
+      "ok": true,
+      "error": null,
+      "categories": [
+        {
+          "id": 1,
+          "slug": "korean-bbq",
+          "name": "korean bbq",
+          "restaurantCount": 0
+        },
+        {
+          "id": 2,
+          "slug": "the-bestest-grater-food-restraurant",
+          "name": "the bestest grater food restraurant",
+          "restaurantCount": 1
+        }
+      ]
+    }
+  }
+}
+```
+
+이런결과값을 가짐
+(즉 각각의 category결과값에대한 restaurant가 count된 값을 계산해서 반환함)
