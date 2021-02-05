@@ -720,3 +720,22 @@ restaurant의 resolver에는 user를 위한 기능, delivery를 위한기능, ow
 3. 불러온 25개의 restaurant 데이터를 category에 추가해줌
    (obect형식)
 4. category 총 개수, category를 25개씩 나눈 총 페이지 수
+
+# 10.16 restaurant with pagination
+
+모든 레스토랑 검색
+
+- findAndCount는
+  // findAndCount는 array를 반환하는데 총 검색된 데이터와 count 된 개수를 array안에 포함해서 반환한다.
+
+# 10.17 Restaurant and search
+
+아이디로 레스트랑을 검색하던가 레스토랑 이름으로 레스토랑을 검색하는 두가지 방법을 구현
+findRestaurantById
+searchRestaurantByName
+
+- Like사용법 sql 명령어중 하나임
+  // like는 비슷한 값을 찾아주는것
+  // 여기선 query라는 단어가 앞뒤 중간 어디라도 포함된다면 검색해달라는 뜻
+  // 만약 Like(`${query}%`) 이런식이라면 query라는 단어로 시작되는 데이터를 검색해달라는 뜻
+  name: Like(`%${query}%`),

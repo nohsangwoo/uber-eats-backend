@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { AllCategoriesOutput } from './dtos/all-categories.dto';
 import { CategoryInput, CategoryOutput } from './dtos/category.dto';
 import {
@@ -16,6 +16,12 @@ import {
   EditRestaurantInput,
   EditRestaurantOutput,
 } from './dtos/edit-restaurant.dto';
+import { RestaurantInput, RestaurantOutput } from './dtos/restaurant.dto';
+import { RestaurantsInput, RestaurantsOutput } from './dtos/restaurants.dto';
+import {
+  SearchRestaurantInput,
+  SearchRestaurantOutput,
+} from './dtos/search-restaurant.dto';
 import { Category } from './entities/cetegory.entity';
 import { Restaurant } from './entities/restaurant.entity';
 import { CategoryRepository } from './repositories/category.repository';
@@ -228,12 +234,12 @@ export class RestaurantService {
         // 그다음 페이지가 2라면 2-1*25니깐 25만큼 skip
         skip: (page - 1) * setPageContents,
       });
-      // 위에서 부분적으로 불러온 restaunrants을 category에 추가해준다
-      category.restaurants = restaurants;
+
       const totalResults = await this.countRestaurants(category);
 
       return {
         ok: true,
+        restaurants,
         category,
         totalPages: Math.ceil(totalResults / setPageContents),
       };
@@ -242,6 +248,81 @@ export class RestaurantService {
         ok: false,
         error: 'Could not load category',
       };
+    }
+  }
+
+  // 모든 레스토랑을 검색함 (pagination적용)
+  async allRestaurants({ page }: RestaurantsInput): Promise<RestaurantsOutput> {
+    try {
+      // find의 옵션을 잘 사용해서 검색
+      // findAndCount는 array를 반환하는데 총 검색된 데이터와 count 된 개수를 array안에 포함해서 반환한다.
+      const [restaurants, totalResults] = await this.restaurants.findAndCount({
+        // 앞부분데이터를 얼마나 skip을 할껀지
+        skip: (page - 1) * 25,
+        //각 페이지별 로딩되는 데이터는 25개씩
+        take: 25,
+      });
+      return {
+        ok: true,
+        results: restaurants,
+        totalPages: Math.ceil(totalResults / 25),
+        totalResults,
+      };
+    } catch {
+      return {
+        ok: false,
+        error: 'Could not load restaurants',
+      };
+    }
+  }
+
+  // id를 기준으로 레스토랑을 검색
+  async findRestaurantById({
+    restaurantId,
+  }: RestaurantInput): Promise<RestaurantOutput> {
+    try {
+      // 레스토랑 id를 전달받아서 한개라도 검색되면 바로 값을 반환과 동시에 검색 중단
+      // unique한 데이터이기때문에 한개라도 검색된다면 더 이상 검색 동작을 진행할 이유없음
+      const restaurant = await this.restaurants.findOne(restaurantId);
+      // 레스토랑이 없을때 핸들링
+      if (!restaurant) {
+        return {
+          ok: false,
+          error: 'Restaurant not found',
+        };
+      }
+      // 레스토랑을 찾았을때 핸들링
+      return {
+        ok: true,
+        restaurant,
+      };
+
+      // 어던 에러가 발생할때 핸들링
+    } catch {
+      return {
+        ok: false,
+        error: 'Could not find restaurant',
+      };
+    }
+  }
+
+  // 레스토랑이름으로 레스토랑 검색
+  async searchRestaurantByName({
+    query,
+    page,
+  }: SearchRestaurantInput): Promise<SearchRestaurantOutput> {
+    try {
+      // 레스토랑의 이름으로 검색하여 검색된 레스토랑의 총 데이터를 반환하고 그다음 카운트된 레스토랑의 개수를 반환
+      const [restaurants, totalResults] = await this.restaurants.findAndCount({
+        where: {
+          // like는 비슷한 값을 찾아주는것
+          // 여기선 query라는 단어가 앞뒤 중간 어디라도 포함된다면 검색해달라는 뜻
+          // 만약 Like(`${query}%`) 이런식이라면 query라는 단어로 시작되는 데이터를 검색해달라는 뜻
+          name: Like(`%${query}%`),
+        },
+      });
+    } catch {
+      return { ok: false, error: 'Could not search for restaurants' };
     }
   }
 }

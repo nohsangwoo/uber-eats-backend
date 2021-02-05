@@ -5,6 +5,7 @@ import {
   PaginationOutput,
 } from 'src/common/dtos/pagination.dto';
 import { Category } from '../entities/cetegory.entity';
+import { Restaurant } from '../entities/restaurant.entity';
 
 @InputType()
 export class CategoryInput extends PaginationInput {
@@ -16,6 +17,9 @@ export class CategoryInput extends PaginationInput {
 // 반환되는 값이 null일수도있다(값이 존재하지 않을수도 있다)
 @ObjectType()
 export class CategoryOutput extends PaginationOutput {
+  @Field(type => [Restaurant], { nullable: true })
+  restaurants?: Restaurant[];
+
   @Field(type => Category, { nullable: true })
   category?: Category;
 }
