@@ -739,3 +739,15 @@ searchRestaurantByName
   // 여기선 query라는 단어가 앞뒤 중간 어디라도 포함된다면 검색해달라는 뜻
   // 만약 Like(`${query}%`) 이런식이라면 query라는 단어로 시작되는 데이터를 검색해달라는 뜻
   name: Like(`%${query}%`),
+
+# 10.18 ILike sql문 사용법
+
+Like는 대문자 소문자를 구분검색 ILike는 대소문자 구분없이 검색
+
+- Raw는 nest에서 제공하는 typeorm이 아닌 수동으로 sql문을 사용하고 싶을때
+
+For those who use MySQL, LIKE is already case-insensitive. If you want to search case-sensitively, you have to use BINARY.
+이미 sql의 like는 대소문자를 구분하지 않음
+오히려 대소문자를 구분하고 싶다면 BINARY를 사용해야함
+아래 예시 참조
+ex) Raw(name => `${name} LIKE BINARY '%${query}%'`)

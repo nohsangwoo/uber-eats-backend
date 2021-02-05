@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
-import { Like, Repository } from 'typeorm';
+import { Like, Raw, Repository } from 'typeorm';
 import { AllCategoriesOutput } from './dtos/all-categories.dto';
 import { CategoryInput, CategoryOutput } from './dtos/category.dto';
 import {
@@ -318,9 +318,23 @@ export class RestaurantService {
           // like는 비슷한 값을 찾아주는것
           // 여기선 query라는 단어가 앞뒤 중간 어디라도 포함된다면 검색해달라는 뜻
           // 만약 Like(`${query}%`) 이런식이라면 query라는 단어로 시작되는 데이터를 검색해달라는 뜻
-          name: Like(`%${query}%`),
+          // `${name} ILIKE '%${query}%'` 이건 sql문임
+          name: Raw(name => `${name} ILIKE '%${query}%'`),
         },
+        // pagination을 위한 옵션
+        skip: (page - 1) * 25,
+        take: 25,
       });
+      return {
+        ok: true,
+        // 검색된 레스토랑들
+        //(이름으로 검색하면 중복된 레스토랑이 검색될 가능성이 있으니깐 복수의 개념)
+        restaurants,
+        // 이름으로 검색된 레스토랑의 총 개수
+        totalResults,
+        // 이름으로 검색된 레스토랑의 총 페이지 개수
+        totalPages: Math.ceil(totalResults / 25),
+      };
     } catch {
       return { ok: false, error: 'Could not search for restaurants' };
     }
