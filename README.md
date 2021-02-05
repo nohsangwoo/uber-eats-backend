@@ -708,3 +708,15 @@ restaurant의 resolver에는 user를 위한 기능, delivery를 위한기능, ow
 - relation옵션
   category를 통하여 restaurant를 검색할 수 있다는것은 category와 restaurant는 relataion으로 서로 묶여있다는 의미이다
   따라서 이경우 findOne같은 함수로 검색하여 category를 통하여 restaurant를 검색할때는 relations:['restaurant']를 옵션으로 추가해줘야한다
+
+# 10.15 pagination feat category
+
+- category에 해당하는 레스토랑을 검색시 pagination기능을 추가
+- pagination을 수동으로 구현함
+
+1. pagination에 필요한 dto 구성
+2. restaurant정보를 무조건 다 불러오는게 아니라 25개씩 나눠서 불러옴
+   (전엔 모든 카테고리에서 restaurant를 불러왔는데 그게아니라 따로 나눠서 25개씩 조건에 따라 나눠서 불러옴)
+3. 불러온 25개의 restaurant 데이터를 category에 추가해줌
+   (obect형식)
+4. category 총 개수, category를 25개씩 나눈 총 페이지 수

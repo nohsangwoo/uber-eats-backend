@@ -199,25 +199,43 @@ export class RestaurantService {
   }
 
   // category에 해당하는 레스토랑을 검색
-  async findCategoryBySlug({ slug }: CategoryInput): Promise<CategoryOutput> {
+  async findCategoryBySlug({
+    slug,
+    page,
+  }: CategoryInput): Promise<CategoryOutput> {
     try {
       // category를 통하여 restaurant를 검색하는것
       // category를 통하여 restaurant를 검색할 수 있다는것은 category와 restaurant는 relataion으로 서로 묶여있다는 의미이다
       // 따라서 이경우 findOne같은 함수로 검색하여 category를 통하여 restaurant를 검색할때는 relations:['restaurant']를 옵션으로 추가해줘야한다
-
-      const category = await this.categories.findOne(
-        { slug },
-        { relations: ['restaurants'] }
-      );
+      const category = await this.categories.findOne({ slug });
       if (!category) {
         return {
           ok: false,
           error: 'Category not found',
         };
       }
+      // 여기까지 온거면 카테고리가 있다는거고 뭔가 찾았다는 뜻
+      // restaurants변수에 category조건에 맞는 restaurant를
+      // where을 이용하여 category에 해당하는 restaurant를 가져온다
+      const setPageContents = 25;
+      const restaurants = await this.restaurants.find({
+        where: {
+          category,
+        },
+        //한 페이지당 25개씩 표시
+        take: setPageContents,
+        // 첫번째 페이지에선 page는 기본값이 1이니깐 1-1*25하면 0만큼 skip한다
+        // 그다음 페이지가 2라면 2-1*25니깐 25만큼 skip
+        skip: (page - 1) * setPageContents,
+      });
+      // 위에서 부분적으로 불러온 restaunrants을 category에 추가해준다
+      category.restaurants = restaurants;
+      const totalResults = await this.countRestaurants(category);
+
       return {
         ok: true,
         category,
+        totalPages: Math.ceil(totalResults / setPageContents),
       };
     } catch {
       return {

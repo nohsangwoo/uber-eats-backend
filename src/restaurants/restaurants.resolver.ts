@@ -120,7 +120,9 @@ export class CategoryResolver {
 
   // category에 해당하는 레스토랑을 검색
   @Query(type => CategoryOutput)
-  category(@Args() categoryInput: CategoryInput): Promise<CategoryOutput> {
+  category(
+    @Args('input') categoryInput: CategoryInput
+  ): Promise<CategoryOutput> {
     return this.restaurantService.findCategoryBySlug(categoryInput);
   }
 }
