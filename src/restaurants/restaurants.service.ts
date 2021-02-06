@@ -4,6 +4,7 @@ import { User } from 'src/users/entities/user.entity';
 import { Like, Raw, Repository } from 'typeorm';
 import { AllCategoriesOutput } from './dtos/all-categories.dto';
 import { CategoryInput, CategoryOutput } from './dtos/category.dto';
+import { CreateDishInput, CreateDishOutput } from './dtos/create-dish.dto';
 import {
   CreateRestaurantInput,
   CreateRestaurantOutput,
@@ -283,7 +284,10 @@ export class RestaurantService {
     try {
       // 레스토랑 id를 전달받아서 한개라도 검색되면 바로 값을 반환과 동시에 검색 중단
       // unique한 데이터이기때문에 한개라도 검색된다면 더 이상 검색 동작을 진행할 이유없음
-      const restaurant = await this.restaurants.findOne(restaurantId);
+      // relation관계의 menu도 포함해서 검색
+      const restaurant = await this.restaurants.findOne(restaurantId, {
+        relations: ['menu'],
+      });
       // 레스토랑이 없을때 핸들링
       if (!restaurant) {
         return {
@@ -338,5 +342,14 @@ export class RestaurantService {
     } catch {
       return { ok: false, error: 'Could not search for restaurants' };
     }
+  }
+
+  async createDish(
+    owner: User,
+    createDishInput: CreateDishInput
+  ): Promise<CreateDishOutput> {
+    return {
+      ok: false,
+    };
   }
 }

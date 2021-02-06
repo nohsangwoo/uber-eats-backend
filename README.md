@@ -751,3 +751,43 @@ For those who use MySQL, LIKE is already case-insensitive. If you want to search
 오히려 대소문자를 구분하고 싶다면 BINARY를 사용해야함
 아래 예시 참조
 ex) Raw(name => `${name} LIKE BINARY '%${query}%'`)
+
+# 11.0 dish entity
+
+-
+
+1.  dish.entity.ts만든다
+2.  app.module에 엔티티 추가
+3.  restaurant와 @OneToMany관계 설정
+    restaurant와의 관계는 레스토랑이 one dish가 many
+    (즉 하나의 restaurant은 여러개의 dish를 가지고있을수있다)
+4.  이때 dish는 restaurant에 {onDelete:CASCADE}속성을 가짐
+    (restaurant가 삭제된다면 restaurant에 연결된 모든 dish가 같이 삭제됨)
+5.  dish.entity.ts에서 @RelationId()데코레이션을 이용하여 restaurantId 을 가져옴
+    (RelationId는 foreign key이다)
+
+# 11.1 dish option
+
+예를들면 피자를 주문할때 선택하는 맛(옵션)
+ex..피글빼주세요, 치즈 더 추가해주세요..등등
+
+- create-dish
+
+1. create dish시 DishOption과 관련된 항목을 dish.entity에 추가
+   DishOption은 type:json 형식이다
+   (구조화된 데이터를 저장하거나 특정 형태를 가진 데이터를 저장해야할때 json type을 사용)
+   완전 정석으로 하려면 json type이 아니라 새로운 DishOption entity를 만들고 relation 정의를 해주고...등등 해줘야함
+2. create-dish.dto.ts 만들어준다
+3. dish resolver를 restaurant.resolver.ts파일에 추가해줌
+4. createDish기능을 dish resolver에 추가
+5. createDish의 실제로 작동되는 기능은 restaurants.service.ts 에 추가
+6. 이때 레스토랑 검색시 relation관계에 있는 menu도 같이 검색가능하게 만들기위해
+
+```
+findRestaurantById의 레스토랑 검색하는 부분을
+const restaurant = await this.restaurants.findOne(restaurantId, {
+        relations: ['menu'],  //<== 추가된 부분
+      });
+```
+
+로 변경
