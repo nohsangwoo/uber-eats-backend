@@ -10,6 +10,7 @@ import { CoreEntity } from 'src/common/entities/core.entity';
 import { InternalServerErrorException } from '@nestjs/common';
 import { IsBoolean, IsEmail, IsEnum, IsString } from 'class-validator';
 import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
+import { Order } from 'src/orders/entities/order.entity';
 
 // 이 셋중 하나여야 한다는 의미의 규칙
 export enum UserRole {
@@ -54,6 +55,23 @@ export class User extends CoreEntity {
     restaurant => restaurant.owner
   )
   restaurants: Restaurant[];
+
+  // User는 Order와 OneToMany관계를 가짐
+  // 한개의 User는 여러개의 Order를 가짐(customer의 경우)
+  @Field(type => [Order])
+  @OneToMany(
+    type => Order,
+    order => order.customer
+  )
+  orders: Order[];
+
+  //한개의 user는 여러개의 order를 가짐(rider의 경우)
+  @Field(type => [Order])
+  @OneToMany(
+    type => Order,
+    order => order.driver
+  )
+  rides: Order[];
 
   // insert되기 직전에
   // update되기 직전에 실행되는 내용

@@ -1,6 +1,7 @@
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { IsString, Length } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
+import { Order } from 'src/orders/entities/order.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Column, Entity, ManyToOne, OneToMany, RelationId } from 'typeorm';
 import { Category } from './cetegory.entity';
@@ -49,6 +50,7 @@ export class Restaurant extends CoreEntity {
 
   //  restaurant에서 user를 가져와 사용가능
   // 위와 같음 다만 이경우 user가 삭제되면 그에 연결된 restaurant도 같이 삭제되는 종속관계인 CASCADE를 정의함
+  // 한개의 유저는 여러개의 레스토랑을 가짐(owner의 경우)
   @Field(type => User)
   @ManyToOne(
     type => User,
@@ -57,6 +59,15 @@ export class Restaurant extends CoreEntity {
     { onDelete: 'CASCADE' }
   )
   owner: User;
+
+  // Order.entity와 OneToMany관계를 가짐
+  // 한개의 restaurant는 여러개의 order를 가질수있음
+  @Field(type => [Order])
+  @OneToMany(
+    type => Order,
+    order => order.restaurant
+  )
+  orders: Order[];
 
   // 이경우 restaurant와 user의 관계에서 user의 id를 가져오는데
   // 이때 설정된 ownerId는 restaurant.owner에서 뽑아온다는 의미

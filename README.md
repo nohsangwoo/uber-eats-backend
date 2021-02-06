@@ -795,3 +795,18 @@ const restaurant = await this.restaurants.findOne(restaurantId, {
 # 11.3 create dish service안에 createDish의 method만들기
 
 # 11.4 delete dish, edit dish
+
+# 11.5 Order Entity
+
+주문기능
+
+- nest g mo orders
+
+- ManyToMany관계
+  서로 여러개를 가짐 dish는 order를 여러개 가지고 order또한 dish를 여러개 가짐
+
+- order.entity.ts 작성(DB 테이블 만들기)
+
+- 테이블간 relation을 정의
+
+- relation정의된 field는 @column() 데코레이션 안써도됨
