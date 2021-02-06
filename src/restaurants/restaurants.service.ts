@@ -24,6 +24,7 @@ import {
   SearchRestaurantOutput,
 } from './dtos/search-restaurant.dto';
 import { Category } from './entities/cetegory.entity';
+import { Dish } from './entities/dish.entity';
 import { Restaurant } from './entities/restaurant.entity';
 import { CategoryRepository } from './repositories/category.repository';
 
@@ -37,6 +38,8 @@ export class RestaurantService {
 
     @InjectRepository(Restaurant)
     private readonly restaurants: Repository<Restaurant>, // restaurants DB를 사용하겠다는 말
+    @InjectRepository(Dish)
+    private readonly dishes: Repository<Dish>, //Dish의 DB를 사용하겠다는말
     // Repository<Category>를 extends하고있어서 CategoryRepository를 불러오기만 함
     private readonly categories: CategoryRepository
   ) {}
@@ -344,12 +347,47 @@ export class RestaurantService {
     }
   }
 
+  // dish만들기 (레스토랑의 메뉴 추가 기능)
   async createDish(
     owner: User,
     createDishInput: CreateDishInput
   ): Promise<CreateDishOutput> {
-    return {
-      ok: false,
-    };
+    try {
+      // 레스토랑에서 전달받은 레스토랑의 id를 기준으로 resaturant가 존재하는지 검사
+      const restaurant = await this.restaurants.findOne(
+        createDishInput.restaurantId
+      );
+      // 레스토랑이 없다면 에러핸들링
+      if (!restaurant) {
+        return {
+          ok: false,
+          error: 'Restaurant not found',
+        };
+      }
+      // 로그인된 id와 메뉴를 추가하려는 레스토랑의 소유주 id가 같지 않다면 이또한 에러 핸들링(권한이 있는지 확인하는것)
+      if (owner.id !== restaurant.ownerId) {
+        return {
+          ok: false,
+          error: "You can't do that.",
+        };
+      }
+      // 위 과정을 다 통과했다면
+      // 해당 레스토랑에 의존하는 Dish(메뉴)를 만들어준다
+      // create로 object생성후 save로 DB에 저장
+      await this.dishes.save(
+        this.dishes.create({ ...createDishInput, restaurant })
+      );
+      return {
+        ok: true,
+      };
+
+      // 어쨌든 뭔가 에러가 났다면 에러 핸들링
+    } catch (error) {
+      console.log(error);
+      return {
+        ok: false,
+        error: 'Could not create dish',
+      };
+    }
   }
 }

@@ -4,6 +4,14 @@ import { CoreEntity } from 'src/common/entities/core.entity';
 import { Column, Entity, ManyToOne, RelationId } from 'typeorm';
 import { Restaurant } from './restaurant.entity';
 
+@InputType('DishChoiceInputType', { isAbstract: true })
+@ObjectType()
+class DishChoice {
+  @Field(type => String)
+  name: string;
+  @Field(type => Int, { nullable: true })
+  extra?: number;
+}
 // json 형태의  DishOption반환 형식인데
 //일종의 가상 entity같은 느낌임...
 @InputType('DishOptionInputType', { isAbstract: true })
@@ -11,10 +19,10 @@ import { Restaurant } from './restaurant.entity';
 class DishOption {
   @Field(type => String)
   name: string;
-  @Field(type => [String], { nullable: true })
-  choices?: string[];
-  @Field(type => Int)
-  extra: number;
+  @Field(type => [DishChoice], { nullable: true })
+  choices?: DishChoice[];
+  @Field(type => Int, { nullable: true })
+  extra?: number;
 }
 
 // 음식메뉴의 정보 entity(테이블)

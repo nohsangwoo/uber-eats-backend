@@ -160,11 +160,14 @@ export class CategoryResolver {
 // dish resolver 작성
 @Resolver(of => Dish)
 export class DishResolver {
+  // 또다른 리졸버니깐 restaurantService도 다시 불러와야한다
   constructor(private readonly restaurantService: RestaurantService) {}
 
+  // dish만들기 (레스토랑의 메뉴 추가 기능)
   @Mutation(type => CreateDishOutput)
   @Role(['Owner'])
   createDish(
+    // AuthUser로 http에 저장된 User정보를 일련의 과정을 거쳐 graphql에서도 사용할수있게 만들어진 User데이터를 owner에 담아온다
     @AuthUser() owner: User,
     @Args('input') createDishInput: CreateDishInput
   ) {
