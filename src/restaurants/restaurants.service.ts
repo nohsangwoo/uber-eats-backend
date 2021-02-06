@@ -375,6 +375,9 @@ export class RestaurantService {
       // 해당 레스토랑에 의존하는 Dish(메뉴)를 만들어준다
       // create로 object생성후 save로 DB에 저장
       await this.dishes.save(
+        // restaurant.id로 추가하지않고 restaurant를 추가 하지 않는 이유 :
+        // typeorm이 자동으로 restaurant의 id를 찾아서 restaurantId에 추가 해준다
+        // relation관계니깐 자동으로 찾아주는듯
         this.dishes.create({ ...createDishInput, restaurant })
       );
       return {
