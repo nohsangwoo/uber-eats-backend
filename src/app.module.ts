@@ -22,6 +22,7 @@ import { RestaurantsModule } from './restaurants/restaurants.module';
 import { Dish } from './restaurants/entities/dish.entity';
 import { OrdersModule } from './orders/orders.module';
 import { Order } from './orders/entities/order.entity';
+import { OrderItem } from './orders/entities/order-item.entity';
 
 @Module({
   imports: [
@@ -66,7 +67,15 @@ import { Order } from './orders/entities/order.entity';
       logging:
         process.env.NODE_ENV !== 'prod' && process.env.NODE_ENV !== 'test',
       // entity를 사용하려면(DB 구조) entity항목을 여기에 추가해줘야함
-      entities: [User, Verification, Restaurant, Category, Dish, Order],
+      entities: [
+        User,
+        Verification,
+        Restaurant,
+        Category,
+        Dish,
+        Order,
+        OrderItem,
+      ],
     }),
     GraphQLModule.forRoot({
       // 스키마 파일을 따로 만들어두지 않고 자동으로 생성해줌

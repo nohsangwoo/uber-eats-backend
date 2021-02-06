@@ -16,7 +16,7 @@ class DishChoice {
 //일종의 가상 entity같은 느낌임...
 @InputType('DishOptionInputType', { isAbstract: true })
 @ObjectType()
-class DishOption {
+export class DishOption {
   @Field(type => String)
   name: string;
   @Field(type => [DishChoice], { nullable: true })

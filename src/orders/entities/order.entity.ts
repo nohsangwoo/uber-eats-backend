@@ -5,6 +5,7 @@ import {
   ObjectType,
   registerEnumType,
 } from '@nestjs/graphql';
+import { IsEnum, IsNumber } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Dish } from 'src/restaurants/entities/dish.entity';
 import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
@@ -17,6 +18,7 @@ import {
   ManyToMany,
   ManyToOne,
 } from 'typeorm';
+import { OrderItem } from './order-item.entity';
 
 // 주문 현황을 위한 enum : 이것중 하나여야만 함!
 export enum OrderStatus {
@@ -68,20 +70,22 @@ export class Order extends CoreEntity {
   // ManyToMany관계 : 서로 여러개를 가짐 dish는 order를 여러개 가지고 order또한 dish를 여러개 가짐
   //  주문의 내용엔 여러개의 메뉴가 있어야 하니깐
   // 그리고 메뉴는 여러개의 주문을 가질수있음(많은 사용자가 하나의 메뉴를 동시에 주문할 수 있다는거랑 같은뜻)
-  @Field(type => [Dish])
-  @ManyToMany(type => Dish)
+  @Field(type => [OrderItem])
+  @ManyToMany(type => OrderItem)
   //   JoinTable은 소유하고있는 쪽의 relation에만 추가해주면됨
   @JoinTable()
-  dishes: Dish[];
+  items: OrderItem[];
 
   //  주문한 메뉴들의 총 가격
-  @Column() //for typeorm
+  @Column({ nullable: true }) //for typeorm
   //   $12.55같은 값도 나올수있으니깐 Float형식 반환
-  @Field(type => Float)
+  @Field(type => Float, { nullable: true })
+  @IsNumber()
   total: number;
 
   //   주문 현황 표시기
   @Column({ type: 'enum', enum: OrderStatus }) //for typeorm
   @Field(type => OrderStatus)
+  @IsEnum(OrderStatus)
   status: OrderStatus;
 }

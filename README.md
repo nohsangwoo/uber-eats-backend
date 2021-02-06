@@ -792,13 +792,13 @@ const restaurant = await this.restaurants.findOne(restaurantId, {
 
 로 변경
 
-# 11.3 create dish service안에 createDish의 method만들기
+# 11.2 create dish service안에 createDish의 method만들기
 
-# 11.4 delete dish, edit dish
+# 11.3 edit dish, delete dish
 
-# 11.5 Order Entity
+# 11.4 Order Entity
 
-주문기능
+주문 기능을 위해 order모듈 생성 및 entity파일 생성
 
 - nest g mo orders
 
@@ -810,3 +810,13 @@ const restaurant = await this.restaurants.findOne(restaurantId, {
 - 테이블간 relation을 정의
 
 - relation정의된 field는 @column() 데코레이션 안써도됨
+
+# 11.5
+
+- createOrder의 resolver,service, appModule 및 DTO 생성
+
+# 11.6 dish option을 위한 추가 작업
+
+- order-item 만들기
+- relation은 반대쪽에 항상 설정해줘야하는건아님(접근을 원할때만 설정)
+  ex) ManyToOne설정을 했다면 반대편에도 OneToMany설정을 해줘야하는가? ㄴㄴ
