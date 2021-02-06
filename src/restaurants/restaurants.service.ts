@@ -9,10 +9,12 @@ import {
   CreateRestaurantInput,
   CreateRestaurantOutput,
 } from './dtos/create-restaurant.dto';
+import { DeleteDishInput, DeleteDishOutput } from './dtos/delete-dish.dto';
 import {
   DeleteRestaurantInput,
   DeleteRestaurantOutput,
 } from './dtos/delete-restaurant.dto';
+import { EditDishInput, EditDishOutput } from './dtos/edit-dish.dto';
 import {
   EditRestaurantInput,
   EditRestaurantOutput,
@@ -390,6 +392,96 @@ export class RestaurantService {
       return {
         ok: false,
         error: 'Could not create dish',
+      };
+    }
+  }
+
+  // 메뉴의 주인을 확인?
+  async checkDishOwner(ownerId: number, dishId: number) {}
+
+  // 메뉴 수정하는기능
+  async editDish(
+    // 유저정보 전달받고
+    owner: User,
+    //input 인자 전달받고
+    editDishInput: EditDishInput
+  ): Promise<EditDishOutput> {
+    try {
+      // 일단 메뉴를 수정하려면 수정하려는 메뉴를 찾아와서 정보를 불러옴
+      // 전달받은 메뉴의 아이디로 메뉴를 불러오는데 이때 메뉴에 속해있는 restaurant필드는 realation설정이 돼있기때문에
+      //relation옵션으로 해당 메뉴의 레스토랑 정보를 같이 불러온다
+      const dish = await this.dishes.findOne(editDishInput.dishId, {
+        relations: ['restaurant'],
+      });
+      // 메뉴가 없다면 수정할 수 없으니깐 에러 핸들링
+      if (!dish) {
+        return {
+          ok: false,
+          error: 'Dish not found',
+        };
+      }
+      //메뉴가 있지만 로그인한 유저의 id와 해당 메뉴가 의존하고있는 레스토랑의 owner id가 같지 않다면
+      //권한 없음을 에러 핸들링
+      if (dish.restaurant.ownerId !== owner.id) {
+        return {
+          ok: false,
+          error: "You can't do that.",
+        };
+      }
+
+      //위 과정을 다 통과했다면
+      //메뉴를 수정해줌
+      // DB를 update한다면 update하려는 대상의id를 추가해줘야함
+      //여기선 dishId가 대상
+      await this.dishes.save([
+        {
+          id: editDishInput.dishId,
+          //수정하려는 메뉴정보를 업데이트
+          ...editDishInput,
+        },
+      ]);
+      // 업데이트가 성공적으로 완료되면 ok:true 반환
+      return {
+        ok: true,
+      };
+      // 업데이트시 어떤 에러든 발생하면 해당 에러 핸들링
+    } catch {
+      return {
+        ok: false,
+        error: 'Could not update dish',
+      };
+    }
+  }
+
+  // 메뉴 삭제 기능
+  async deleteDish(
+    owner: User,
+    { dishId }: DeleteDishInput
+  ): Promise<DeleteDishOutput> {
+    try {
+      const dish = await this.dishes.findOne(dishId, {
+        relations: ['restaurant'],
+      });
+      if (!dish) {
+        return {
+          ok: false,
+          error: 'Dish not found',
+        };
+      }
+      if (dish.restaurant.ownerId !== owner.id) {
+        return {
+          ok: false,
+          error: "You can't do that.",
+        };
+      }
+      await this.dishes.delete(dishId);
+      return {
+        ok: true,
+      };
+    } catch {
+      return {
+        ok: false,
+        error: 'Could not delete dish',
       };
     }
   }
