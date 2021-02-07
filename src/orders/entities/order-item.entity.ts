@@ -1,7 +1,19 @@
-import { Field, InputType, ObjectType } from '@nestjs/graphql';
+import { Field, InputType, Int, ObjectType } from '@nestjs/graphql';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Dish, DishOption } from 'src/restaurants/entities/dish.entity';
 import { Column, Entity, ManyToOne } from 'typeorm';
+
+// Json형식의 entity를따로 만들어줌
+@InputType('OrderItemOptionInputType', { isAbstract: true })
+@ObjectType()
+export class OrderItemOption {
+  @Field(type => String)
+  name: string;
+  @Field(type => String, { nullable: true })
+  choice?: String;
+  @Field(type => Int, { nullable: true })
+  extra?: number;
+}
 
 @InputType('OrderItemInputType', { isAbstract: true })
 @ObjectType()
@@ -18,7 +30,7 @@ export class OrderItem extends CoreEntity {
   // order-item은 레스토랑의 주인이 언제든지 변경할수있기때문에
   // 단순히 텍스트적인 개념으로만 저장되게 설정
   // 만약 order와 relation과 연결하면 이전에 주문한 내용들이 영향을 받게되기때문에 연결안함
-  @Field(type => [DishOption], { nullable: true })
+  @Field(type => [OrderItemOption], { nullable: true })
   @Column({ type: 'json', nullable: true })
-  options?: DishOption[];
+  options?: OrderItemOption[];
 }

@@ -34,5 +34,13 @@ export class OrderService {
         error: 'Restaurant not found',
       };
     }
+    // 레스토랑 을 찾았다면 주문내용 Object생성 및 DB저장
+    const order = await this.orders.save(
+        this.orders.create({
+          customer,
+          restaurant,
+        }),
+      );
+      console.log(order);
   }
 }

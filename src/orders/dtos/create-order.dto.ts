@@ -1,6 +1,6 @@
 import { Field, InputType, Int, ObjectType, PickType } from '@nestjs/graphql';
 import { CoreOutput } from 'src/common/dtos/output.dto';
-import { DishOption } from 'src/restaurants/entities/dish.entity';
+import { OrderItemOption } from '../entities/order-item.entity';
 
 // 주문시 옵션을 선택할때
 @InputType()
@@ -10,8 +10,8 @@ class CreateOrderItemInput {
 
   //   Json형식의 Object entity..
   //   order Item엔 옵션이 없을수도있으니 nullable:ture
-  @Field(type => DishOption, { nullable: true })
-  options?: DishOption[];
+  @Field(type => [OrderItemOption], { nullable: true })
+  options?: OrderItemOption[];
 }
 
 // 주문을 생성할때
