@@ -830,3 +830,7 @@ const restaurant = await this.restaurants.findOne(restaurantId, {
 # 11.8 자잘한것들 수정
 
 그리고 createOrder 테스트(client 권한으로)
+
+# 11.9
+
+service 추가

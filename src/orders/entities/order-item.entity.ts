@@ -1,6 +1,6 @@
 import { Field, InputType, Int, ObjectType } from '@nestjs/graphql';
 import { CoreEntity } from 'src/common/entities/core.entity';
-import { Dish, DishOption } from 'src/restaurants/entities/dish.entity';
+import { Dish } from 'src/restaurants/entities/dish.entity';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
 // Json형식의 entity를따로 만들어줌
@@ -10,7 +10,7 @@ export class OrderItemOption {
   @Field(type => String)
   name: string;
   @Field(type => String, { nullable: true })
-  choice?: String;
+  choices: String;
   @Field(type => Int, { nullable: true })
   extra?: number;
 }
