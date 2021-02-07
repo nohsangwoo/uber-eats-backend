@@ -83,6 +83,7 @@ export class Order extends CoreEntity {
   total: number;
 
   //   주문 현황 표시기
+  // 형식은 enum이고 ,enum의 출처는OrderStatus, 그리고 기본으로 아무것도 입력안됐다면 기본으로 OrderStatus.Pending의 내용이
   @Column({ type: 'enum', enum: OrderStatus, default: OrderStatus.Pending }) //for typeorm
   @Field(type => OrderStatus)
   @IsEnum(OrderStatus)
