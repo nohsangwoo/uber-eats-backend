@@ -12,19 +12,18 @@ export class OrderService {
   constructor(
     //   DB를 사용하기 위해서 설정
     @InjectRepository(Order)
-    private readonly orders: Repository<Order>
+    private readonly orders: Repository<Order>,
     @InjectRepository(Restaurant)
-    private readonly restaurants: Repository<Restaurant>,
+    private readonly restaurants: Repository<Restaurant>
   ) {}
 
-
-//   주문 만들기
+  //   주문 만들기
   async crateOrder(
     //  resolver를 통해 전달받은 client권한일때의 user정보
     customer: User,
-    { restaurantId, items }: CreateOrderInput,
+    { restaurantId, items }: CreateOrderInput
   ): Promise<CreateOrderOutput> {
-      //주문을 하려면 어떤 레스토랑에서 주문을해야하는지 알아야하니깐
+    //주문을 하려면 어떤 레스토랑에서 주문을해야하는지 알아야하니깐
     //   레스토랑을 검색한다
     const restaurant = await this.restaurants.findOne(restaurantId);
     // 레스토랑이 검색되지 않았을때의 에러 핸들링
@@ -36,11 +35,11 @@ export class OrderService {
     }
     // 레스토랑 을 찾았다면 주문내용 Object생성 및 DB저장
     const order = await this.orders.save(
-        this.orders.create({
-          customer,
-          restaurant,
-        }),
-      );
-      console.log(order);
+      this.orders.create({
+        customer,
+        restaurant,
+      })
+    );
+    console.log(order);
   }
 }

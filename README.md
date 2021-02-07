@@ -826,3 +826,5 @@ const restaurant = await this.restaurants.findOne(restaurantId, {
   ex) ManyToOne설정을 했다면 반대편에도 OneToMany설정을 해줘야하는가? ㄴㄴ
 
 # 11.7 실제로 createOrder기능 만들기
+
+# 11.8 자잘한것들 수정
