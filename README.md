@@ -815,8 +815,14 @@ const restaurant = await this.restaurants.findOne(restaurantId, {
 
 - createOrder의 resolver,service, appModule 및 DTO 생성
 
+# Json형식의 object Type Entity
+
+- 일종의 가상 entity같은 느낌...entity인데 json형식임
+
 # 11.6 dish option을 위한 추가 작업
 
 - order-item 만들기
 - relation은 반대쪽에 항상 설정해줘야하는건아님(접근을 원할때만 설정)
   ex) ManyToOne설정을 했다면 반대편에도 OneToMany설정을 해줘야하는가? ㄴㄴ
+
+# 11.7 실제로 createOrder기능 만들기

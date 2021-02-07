@@ -12,7 +12,7 @@ class DishChoice {
   @Field(type => Int, { nullable: true })
   extra?: number;
 }
-// json 형태의  DishOption반환 형식인데
+// json으로 이루어진 Object형태의  DishOption반환 형식인데
 //일종의 가상 entity같은 느낌임...
 @InputType('DishOptionInputType', { isAbstract: true })
 @ObjectType()

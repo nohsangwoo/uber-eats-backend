@@ -15,12 +15,11 @@ export class OrderResolver {
   //   로그인한 유저의 권한은 client여야 한다
   @Role(['Client'])
   async createOrder(
+    //   주문시 권한은 client이니깐 그에따른 변수이름은 customer로 보기좋게 설정
     @AuthUser() customer: User,
     @Args('input')
     createOrderInput: CreateOrderInput
   ): Promise<CreateOrderOutput> {
-    return {
-      ok: true,
-    };
+    return this.ordersService.crateOrder(customer, createOrderInput);
   }
 }
