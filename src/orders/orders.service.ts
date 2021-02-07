@@ -42,22 +42,49 @@ export class OrderService {
     // 레스토랑 을 찾았다면 주문내용 Object생성 및 DB저장
     // 아이템의 length만큼 반복하는데
     //각각의 아이템을 DB에 저장하는 절차
-    items.forEach(async item => {
+    // items의 길이 만큼 반복
+    for (const item of items) {
       // order item을 추가할 메뉴를 찾음
       const dish = await this.dishes.findOne(item.dishId);
       //   메뉴를 찾지 못했을때 에러 핸들링
       if (!dish) {
-        // abort this whole thing
+        return {
+          ok: false,
+          error: 'Dish not found.',
+        };
       }
-
-      //   메뉴를 찾았다면 DB에 저장
-      await this.orderItems.save(
+      // 메뉴를 찾았다면 정상진행 ㄱ
+      console.log(`Dish price: ${dish.price}`);
+      //options의 길이만큼 반복해주고 각 반복시마다의 해당 객체는 itemOption으로 빠짐
+      for (const itemOption of item.options) {
+        const dishOption = dish.options.find(
+          dishOption => dishOption.name === itemOption.name
+        );
+        //만약 옵션이 있다면 extra를 찾는다
+        if (dishOption) {
+          //extra가 있다면
+          if (dishOption.extra) {
+            console.log(`$USD + ${dishOption.extra}`);
+            // extra가 없다면
+          } else {
+            const dishOptionChoice = dishOption.choices.find(
+              optionChoice => optionChoice.name === itemOption.choice
+            );
+            if (dishOptionChoice) {
+              if (dishOptionChoice.extra) {
+                console.log(`$USD + ${dishOptionChoice.extra}`);
+              }
+            }
+          }
+        }
+      }
+      /*await this.orderItems.save(
         this.orderItems.create({
           dish,
           options: item.options,
         })
-      );
-    });
+       ); */
+    }
     /* const order = await this.orders.save(
       this.orders.create({
         customer,
