@@ -84,9 +84,15 @@ import { OrderItem } from './orders/entities/order-item.entity';
       autoSchemaFile: true,
       // http의 request object를 graphql 형식으로 use라는 값에 담아 모든 resolver에서 사용가능하게 설정
       // 이렇게되면 매번 모든 request를 get할시에 적용된다.
-      context: ({ req }) => {
-        console.log(req);
-        return { user: req['user'] };
+      context: ({ req, connection }) => {
+        // request가 있으면 http의 user정보를빼와서 반환해줄텐데
+        // 하지만 request가 없음
+        if (req) {
+          return { user: req['user'] };
+          // 그래서 connection이 작동할꺼임
+        } else {
+          console.log(connection);
+        }
       },
     }),
     JwtModule.forRoot({

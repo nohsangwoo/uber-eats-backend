@@ -61,8 +61,22 @@ export class OrderResolver {
     return this.ordersService.editOrder(user, editOrderInput);
   }
 
+  // subscript을 사용 하는방법
+  @Mutation(returns => Boolean)
+  potatoReady() {
+    //hotPotatos라는 트리거를 이용하여 subscription을 작동시킴
+    pubsub.publish('hotPotatos', {
+      // @Subscription안에있는 메소드 이름을 사용
+      // publish의 payload는 object여야 함 이때 mutation function(메소드)과 이름이 같으면 됨(이경우는 readyPotato)
+      readyPotato: 'YOur potato is ready. love you.',
+    });
+    return true;
+  }
+
+  // subscription을 하는 방법(상용구라고 생각하면됨)
   @Subscription(returns => String)
-  hotPotatos() {
+  readyPotato() {
+    // 이 subscript을 사용할때의 트리거는 hotPotatos라는 striong
     return pubsub.asyncIterator('hotPotatos');
   }
 }
