@@ -839,3 +839,5 @@ service 추가
 
 forEach return할수없다(에러 핸들링이 불가능)
 따라서 forEach를 for로 변경 (orders.serivice.ts)
+
+# 11.11

@@ -19,6 +19,7 @@ export enum UserRole {
   Delivery = 'Delivery',
 }
 
+//eunm을 graphl에서 사용하기위한 정의
 registerEnumType(UserRole, { name: 'UserRole' }); //for graqhpl
 
 @InputType('UserInputType', { isAbstract: true })
