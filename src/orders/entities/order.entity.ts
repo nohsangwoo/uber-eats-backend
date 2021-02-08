@@ -16,6 +16,7 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  RelationId,
 } from 'typeorm';
 import { OrderItem } from './order-item.entity';
 
@@ -43,6 +44,10 @@ export class Order extends CoreEntity {
   )
   customer?: User;
 
+  // customer는 user와 relation관계가 맺어져서  연결된 customer의 id를 뽑아올수있다
+  @RelationId((order: Order) => order.customer)
+  customerId: number;
+
   //   주문당시 드라이버가 지정되지 않으니깐 일단 nullable:true정의
   @Field(type => User, { nullable: true })
   @ManyToOne(
@@ -52,6 +57,10 @@ export class Order extends CoreEntity {
     { onDelete: 'SET NULL', nullable: true }
   )
   driver?: User;
+
+  // driver는 user와 relation관계가 맺어져서  연결된 driver의 id를 뽑아올수있다
+  @RelationId((order: Order) => order.driver)
+  driverId: number;
 
   // restaurant.entity와 ManyToOne관계 가짐
   // 한개의 restaurant는 여러개의 order를 가질수있음

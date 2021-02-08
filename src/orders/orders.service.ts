@@ -5,6 +5,7 @@ import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
 import { User, UserRole } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateOrderInput, CreateOrderOutput } from './dtos/create-order.dto';
+import { GetOrderInput, GetOrderOutput } from './dtos/get-order.dto';
 import { GetOrdersInput, GetOrdersOutput } from './dtos/get-orders.dto';
 import { OrderItem } from './entities/order-item.entity';
 import { Order } from './entities/order.entity';
@@ -114,7 +115,7 @@ export class OrderService {
     }
   }
 
-  // 주문 상태 확인 기능
+  // 모든 주문 현황 가져옴
   async getOrders(
     user: User,
     { status }: GetOrdersInput
@@ -128,6 +129,8 @@ export class OrderService {
         orders = await this.orders.find({
           where: {
             customer: user,
+            // 전달받은 status가 있다면 status 현황도 검색 조건을 걸어준다
+            ...(status && { status }),
           },
         });
         // 만약 로그인한 유저가 Delivery라면 driver:user라는 조건에 들어맞는걸 모두 찾는다
@@ -136,6 +139,8 @@ export class OrderService {
         orders = await this.orders.find({
           where: {
             driver: user,
+            // 전달받은 status가 있다면 status 현황도 검색 조건을 걸어준다
+            ...(status && { status }),
           },
         });
         // 만약 로그인한 유저가 Owner라면 owner:user라는 조건에 들어맞는걸 모두 찾는다
@@ -150,7 +155,12 @@ export class OrderService {
         });
         // 그리고 찾아온 restaurants의 데이터에서 map을돌려 orders만 뽑아온다.
         // 뽑아온 데이터를 orders에 담는다
+
         orders = restaurants.map(restaurant => restaurant.orders).flat(1);
+
+        if (status) {
+          orders = orders.filter(order => order.status === status);
+        }
       }
 
       // 위 과정 client, delivery, owner중 누가 로그인 했든 orders를 조건에 맞게 가져와서 반환한다
@@ -158,10 +168,57 @@ export class OrderService {
         ok: true,
         orders,
       };
+      // 실패시 에러 핸들링
     } catch {
       return {
         ok: false,
         error: 'Could not get orders',
+      };
+    }
+  }
+
+  // 한개의 주문현황을 가져옴
+  async getOrder(
+    user: User,
+    { id: orderId }: GetOrderInput
+  ): Promise<GetOrderOutput> {
+    try {
+      const order = await this.orders.findOne(orderId, {
+        relations: ['restaurant'],
+      });
+      if (!order) {
+        return {
+          ok: false,
+          error: 'Order not found.',
+        };
+      }
+      let canSee = true;
+      if (user.role === UserRole.Client && order.customerId !== user.id) {
+        canSee = false;
+      }
+      if (user.role === UserRole.Delivery && order.driverId !== user.id) {
+        canSee = false;
+      }
+      if (
+        user.role === UserRole.Owner &&
+        order.restaurant.ownerId !== user.id
+      ) {
+        canSee = false;
+      }
+      if (!canSee) {
+        return {
+          ok: false,
+          error: 'You cant see that',
+        };
+      }
+      return {
+        ok: true,
+        order,
+      };
+    } catch {
+      return {
+        ok: false,
+        error: 'Could not load order.',
       };
     }
   }

@@ -60,6 +60,11 @@ export class Restaurant extends CoreEntity {
   )
   owner: User;
 
+  // 이경우 restaurant와 user의 관계에서 user의 id를 가져오는데
+  // 이때 설정된 ownerId는 restaurant.owner에서 뽑아온다는 의미
+  @RelationId((restaurant: Restaurant) => restaurant.owner)
+  ownerId: number;
+
   // Order.entity와 OneToMany관계를 가짐
   // 한개의 restaurant는 여러개의 order를 가질수있음
   @Field(type => [Order])
@@ -68,11 +73,6 @@ export class Restaurant extends CoreEntity {
     order => order.restaurant
   )
   orders: Order[];
-
-  // 이경우 restaurant와 user의 관계에서 user의 id를 가져오는데
-  // 이때 설정된 ownerId는 restaurant.owner에서 뽑아온다는 의미
-  @RelationId((restaurant: Restaurant) => restaurant.owner)
-  ownerId: number;
 
   // 한개의 restaurant는 여러개의 dish를 가지고있을수 있다.
   // 여러개의 dish를 가지고있는 field이름은 menu 이다
