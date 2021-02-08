@@ -75,7 +75,9 @@ export class OrderResolver {
 
   // subscription을 하는 방법(상용구라고 생각하면됨)
   @Subscription(returns => String)
-  readyPotato() {
+  @Role(['Any'])
+  readyPotato(@AuthUser() user: User) {
+    console.log(user);
     // 이 subscript을 사용할때의 트리거는 hotPotatos라는 striong
     return pubsub.asyncIterator('hotPotatos');
   }

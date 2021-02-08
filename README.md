@@ -902,3 +902,11 @@ arr4.flat(Infinity);
 
 - 서버에서 graphql subscription을 만들어두면 graphql에서 해당 기능을 listening중이고
   해당 subscription을 정해진 규칙을 이용하여 웹소켓을 통하여 실시간 통신함
+
+# 12.2 subscription Authentication part one
+
+- subscription 보호하기
+- app.module.ts graphql의 context 옵션 설정
+  http와 웹소켓을 동시에 사용하는방법을 알아내야함
+  // request가 있는 경우엔 request http headers에서 TOKEN KEY를 가져오고
+  // reuqest가 없는경우엔 graphql web socket connection 에서 TOEN KEY를 가져온다

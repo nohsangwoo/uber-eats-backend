@@ -87,12 +87,12 @@ import { OrderItem } from './orders/entities/order-item.entity';
       context: ({ req, connection }) => {
         // request가 있으면 http의 user정보를빼와서 반환해줄텐데
         // 하지만 request가 없음
-        if (req) {
-          return { user: req['user'] };
-          // 그래서 connection이 작동할꺼임
-        } else {
-          console.log(connection);
-        }
+        const TOKEN_KEY = 'x-jwt';
+        return {
+          // request가 있는 경우엔 request http headers에서 TOKEN KEY를 가져오고
+          // reuqest가 없는경우엔 graphql web socket connection 에서 TOEN KEY를 가져온다
+          token: req ? req.headers[TOKEN_KEY] : connection.context[TOKEN_KEY],
+        };
       },
     }),
     JwtModule.forRoot({
@@ -111,13 +111,14 @@ import { OrderItem } from './orders/entities/order-item.entity';
   controllers: [],
   providers: [],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(JwtMiddleware)
-      // 이 미들웨어를 정확이 어디 라우트에 적용하고 싶은지 설정가능
-      //  forRoutes를 통해 "/graphql"라우트이고 메소드가 post인 경우에만 적용
-      // 만약 특정 경로만 제외하고 싶다면 forRoutes 대신 exclude를 사용하여 경로와 메소드를 지정하면 해당 조건을 제외하는 구간에서 전부 미들웨어를 적용해줌
-      .forRoutes({ path: '/graphql', method: RequestMethod.POST });
-  }
-}
+export class AppModule {}
+// export class AppModule implements NestModule {
+//   configure(consumer: MiddlewareConsumer) {
+//     consumer
+//       .apply(JwtMiddleware)
+//       // 이 미들웨어를 정확이 어디 라우트에 적용하고 싶은지 설정가능
+//       //  forRoutes를 통해 "/graphql"라우트이고 메소드가 post인 경우에만 적용
+//       // 만약 특정 경로만 제외하고 싶다면 forRoutes 대신 exclude를 사용하여 경로와 메소드를 지정하면 해당 조건을 제외하는 구간에서 전부 미들웨어를 적용해줌
+//       .forRoutes({ path: '/graphql', method: RequestMethod.POST });
+//   }
+// }
