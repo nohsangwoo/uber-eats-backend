@@ -78,11 +78,16 @@ import { OrderItem } from './orders/entities/order-item.entity';
       ],
     }),
     GraphQLModule.forRoot({
+      // subscriptions의 웹소켓을 활성화하기위한 설정
+      installSubscriptionHandlers: true,
       // 스키마 파일을 따로 만들어두지 않고 자동으로 생성해줌
       autoSchemaFile: true,
       // http의 request object를 graphql 형식으로 use라는 값에 담아 모든 resolver에서 사용가능하게 설정
       // 이렇게되면 매번 모든 request를 get할시에 적용된다.
-      context: ({ req }) => ({ user: req['user'] }),
+      context: ({ req }) => {
+        console.log(req);
+        return { user: req['user'] };
+      },
     }),
     JwtModule.forRoot({
       privateKey: process.env.PRIVATE_KEY,

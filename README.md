@@ -880,3 +880,16 @@ arr4.flat(Infinity);
   (1.유저가 주문함 2. 레스토랑이 주문받고 요리 시작 3. 요리완성..등등...)
 
 - 에러를 직접 핸들링하거나 상상할수 있는 에러나 해커의 공격을 최대한으로 상상하여 방어적으로 코드를 작성하는것을 defensive programming 이라고 하는듯
+
+# 12 Subscriptions part
+
+# 12.0
+
+- graphql-subscriptions 설치
+  npm install graphql-subscriptions
+
+- const pubsub = new PubSub() 을 이용하여 구현
+
+- app.module.ts의 Graphql설정에서 installSubscriptionHandlers: true을 옵션으로 주고 subscription웹소켓을 활성화 시킴
+  (다만 이럴때 원래 서버는 http request를 먼저 받아와야하는데 웹소켓을 먼저 받아오는 방식으로 활성화돼서 작동이안됨 )
+  따라서 웹소캣에서 http를 받아오려면 또다른 설정이 필요함
