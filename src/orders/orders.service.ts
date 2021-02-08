@@ -5,10 +5,11 @@ import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
 import { User, UserRole } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateOrderInput, CreateOrderOutput } from './dtos/create-order.dto';
+import { EditOrderInput, EditOrderOutput } from './dtos/edit-order.dto';
 import { GetOrderInput, GetOrderOutput } from './dtos/get-order.dto';
 import { GetOrdersInput, GetOrdersOutput } from './dtos/get-orders.dto';
 import { OrderItem } from './entities/order-item.entity';
-import { Order } from './entities/order.entity';
+import { Order, OrderStatus } from './entities/order.entity';
 
 @Injectable()
 export class OrderService {
@@ -177,6 +178,31 @@ export class OrderService {
     }
   }
 
+  // 주문 현황을 볼수있는지 없는지 권한 확인 하는것
+  canSeeOrder(user: User, order: Order): boolean {
+    let canSee = true;
+    // 만약 로그인한 유저정보(user.role )와 client(UserRole.Client)가 같은데 주문한 유저의 아이디(order.customerId)와 로그인한 유저 아이디(user.id)가 같지 않으면
+    //canSee는 false를 입력받고 canSeeOrder는 false를 반환받으니 볼수있는 권한이 없다! 라고 해석됨
+    if (user.role === UserRole.Client && order.customerId !== user.id) {
+      canSee = false;
+    }
+    // 위와 마찬가지 개념임
+    // 만약 로그인한 유저정보(user.role )와 (UserRole.Delivery)가 같은데 주문한 유저의 아이디(order.driverId)와 로그인한 유저 아이디(user.id)가 같지 않으면
+    //canSee는 false를 입력받고 canSeeOrder는 false를 반환받으니 볼수있는 권한이 없다! 라고 해석됨
+    if (user.role === UserRole.Delivery && order.driverId !== user.id) {
+      canSee = false;
+    }
+    // 위와 마찬가지 개념임
+    // 만약 로그인한 유저정보(user.role )와 (UserRole.Owner)가 같은데 주문한 유저의 아이디(order.restaurant.ownerId )와 로그인한 유저 아이디(user.id)가 같지 않으면
+    //canSee는 false를 입력받고 canSeeOrder는 false를 반환받으니 볼수있는 권한이 없다! 라고 해석됨
+    if (user.role === UserRole.Owner && order.restaurant.ownerId !== user.id) {
+      canSee = false;
+    }
+    // 위 단계에서 아무것도 걸리지않고 잘 통과하면 canSee는 true이고
+    // canSeeOrder true를 반환하니 즉 로그인한 유저가 주문현황을 볼수있는 권한이 있다! 라는 해석
+    return canSee;
+  }
+
   // 한개의 주문현황을 가져옴
   async getOrder(
     user: User,
@@ -192,20 +218,7 @@ export class OrderService {
           error: 'Order not found.',
         };
       }
-      let canSee = true;
-      if (user.role === UserRole.Client && order.customerId !== user.id) {
-        canSee = false;
-      }
-      if (user.role === UserRole.Delivery && order.driverId !== user.id) {
-        canSee = false;
-      }
-      if (
-        user.role === UserRole.Owner &&
-        order.restaurant.ownerId !== user.id
-      ) {
-        canSee = false;
-      }
-      if (!canSee) {
+      if (!this.canSeeOrder(user, order)) {
         return {
           ok: false,
           error: 'You cant see that',
@@ -219,6 +232,88 @@ export class OrderService {
       return {
         ok: false,
         error: 'Could not load order.',
+      };
+    }
+  }
+
+  // 주문 수정 에서 수정 가능한 내용은 오직 status일뿐 나머지 주문내용은 변경하지 못함
+  async editOrder(
+    user: User,
+    { id: orderId, status }: EditOrderInput
+  ): Promise<EditOrderOutput> {
+    try {
+      // 전달받은 주문 아이디를 가지고 검색하는데
+      // orders 테이블에는 realation 상태의 restaurant가 묶여있으니 이것을 relations: ['restaurant'],옵션으로 같이 불러온다
+      const order = await this.orders.findOne(orderId, {
+        relations: ['restaurant'],
+      });
+      // 만약 수정하려는 orders의 정보가 없다면 에러핸들링
+      if (!order) {
+        return {
+          ok: false,
+          error: 'Order not found.',
+        };
+      }
+      // 볼수있는 권한이 없다면 에러핸들링
+      if (!this.canSeeOrder(user, order)) {
+        return {
+          ok: false,
+          error: "Can't see this.",
+        };
+      }
+
+      // 위 과정을 잘 통과했다면 canEdit=true
+      let canEdit = true;
+      // 로그인한 유저와 UserRole.Clientr가 같다면 수정가능한 권한 아님
+      // 즉 client는 수정이 불가능함
+      if (user.role === UserRole.Client) {
+        canEdit = false;
+      }
+      // 로그인한 유저와 UserRole.Owner가 같은데
+      if (user.role === UserRole.Owner) {
+        // status 와 OrderStatus.Cooking 이 같지 않고
+        // 동시에 status 와 OrderStatus.Cooked가 같지 않다면
+        //수정 불가능한 상태
+        // 즉 Owner는 cooking이거나 cooked의 상태에서만 변경가능
+        if (status !== OrderStatus.Cooking && status !== OrderStatus.Cooked) {
+          canEdit = false;
+        }
+      }
+      // 로그인한 유저와 UserRole.Delivery가 같은데
+      if (user.role === UserRole.Delivery) {
+        if (
+          //  status와  OrderStatus.PickedUp 이 같지 않고
+          // 동시에 status 와 OrderStatus.Delivered이 같지 않다면
+          //  수정 가능한 상태 아님
+          // 즉 배달원은 PickedUp이거나 Delivered상태에서만 변경가능
+          status !== OrderStatus.PickedUp &&
+          status !== OrderStatus.Delivered
+        ) {
+          canEdit = false;
+        }
+      }
+      // 만약 수정가능한 상태가 아니라면 에러 핸들링
+      if (!canEdit) {
+        return {
+          ok: false,
+          error: "You can't do that.",
+        };
+      }
+      // 수정 가능한 상태라면 전달받은 order Id를 기준으로 status를 update함
+      await this.orders.save([
+        {
+          id: orderId,
+          status,
+        },
+      ]);
+      return {
+        ok: true,
+      };
+      // 뭔가 에러가 발생한경우 에러 핸들링
+    } catch {
+      return {
+        ok: false,
+        error: 'Could not edit order.',
       };
     }
   }
