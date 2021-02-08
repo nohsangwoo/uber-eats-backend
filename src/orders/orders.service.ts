@@ -2,9 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Dish } from 'src/restaurants/entities/dish.entity';
 import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
-import { User } from 'src/users/entities/user.entity';
+import { User, UserRole } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateOrderInput, CreateOrderOutput } from './dtos/create-order.dto';
+import { GetOrdersInput, GetOrdersOutput } from './dtos/get-orders.dto';
 import { OrderItem } from './entities/order-item.entity';
 import { Order } from './entities/order.entity';
 
@@ -109,6 +110,58 @@ export class OrderService {
       return {
         ok: false,
         error: 'Could not create order.',
+      };
+    }
+  }
+
+  // 주문 상태 확인 기능
+  async getOrders(
+    user: User,
+    { status }: GetOrdersInput
+  ): Promise<GetOrdersOutput> {
+    try {
+      //orders라는 변수는 Order의 배열형식으로 구성됐다
+      let orders: Order[];
+      // 만약 로그인한 유저가 client라면 customer:user라는 조건에 들어맞는걸 모두 찾는다
+      // 찾은내용은 orders에 담는다
+      if (user.role === UserRole.Client) {
+        orders = await this.orders.find({
+          where: {
+            customer: user,
+          },
+        });
+        // 만약 로그인한 유저가 Delivery라면 driver:user라는 조건에 들어맞는걸 모두 찾는다
+        //찾은 내용은 orders에 담는다
+      } else if (user.role === UserRole.Delivery) {
+        orders = await this.orders.find({
+          where: {
+            driver: user,
+          },
+        });
+        // 만약 로그인한 유저가 Owner라면 owner:user라는 조건에 들어맞는걸 모두 찾는다
+        //찾은 내용은 restaurants 담는다
+        //다만 이때 restaurant에는 주문받은 orders라는 정보가 relations관계로 담겨져있는데 이것을  relations: ['orders'],옵션으로 가져온다
+      } else if (user.role === UserRole.Owner) {
+        const restaurants = await this.restaurants.find({
+          where: {
+            owner: user,
+          },
+          relations: ['orders'],
+        });
+        // 그리고 찾아온 restaurants의 데이터에서 map을돌려 orders만 뽑아온다.
+        // 뽑아온 데이터를 orders에 담는다
+        orders = restaurants.map(restaurant => restaurant.orders).flat(1);
+      }
+
+      // 위 과정 client, delivery, owner중 누가 로그인 했든 orders를 조건에 맞게 가져와서 반환한다
+      return {
+        ok: true,
+        orders,
+      };
+    } catch {
+      return {
+        ok: false,
+        error: 'Could not get orders',
       };
     }
   }
