@@ -916,3 +916,5 @@ arr4.flat(Infinity);
 - auth.guard.ts 수정 & userModule에서 UsersModule을 import해줌
 
 - 이설정으로 이제 subscript 웹소켓일때와 http일때 둘다 인증과정 확인가능
+
+# 12.4 pubsub
