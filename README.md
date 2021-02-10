@@ -956,6 +956,4 @@ subscript에서 전달받은 payload를 기준으로 custom function을 만들�
 
 - owner가 음식 준비를 완료하고 픽업할 준비가 되면 trigger되는 subscription이다
 
-```
-
-```
+# 12.9 cookedOrders

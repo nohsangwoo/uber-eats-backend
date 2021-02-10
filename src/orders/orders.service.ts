@@ -1,7 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PubSub } from 'graphql-subscriptions';
-import { NEW_PENDING_ORDER, PUB_SUB } from 'src/common/common.constants';
+import {
+  NEW_COOKED_ORDER,
+  NEW_PENDING_ORDER,
+  PUB_SUB,
+} from 'src/common/common.constants';
 import { Dish } from 'src/restaurants/entities/dish.entity';
 import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
 import { User, UserRole } from 'src/users/entities/user.entity';
@@ -308,12 +312,20 @@ export class OrderService {
         };
       }
       // 수정 가능한 상태라면 전달받은 order Id를 기준으로 status를 update함
-      await this.orders.save([
-        {
-          id: orderId,
-          status,
-        },
-      ]);
+      await this.orders.save({
+        id: orderId,
+        status,
+      });
+      //만약 업데이트를 시도한게  레스토랑 주인이라면
+      if (user.role === UserRole.Owner) {
+        // 그리고 또한 주문상태가 coooked라면
+        if (status === OrderStatus.Cooked) {
+          // trigger하여  subscription을 건든다
+          await this.pubSub.publish(NEW_COOKED_ORDER, {
+            cookedOrders: { ...order, status },
+          });
+        }
+      }
       return {
         ok: true,
       };
