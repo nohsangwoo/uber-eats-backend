@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { PubSub } from 'graphql-subscriptions';
 import {
   NEW_COOKED_ORDER,
+  NEW_ORDER_UPDATE,
   NEW_PENDING_ORDER,
   PUB_SUB,
 } from 'src/common/common.constants';
@@ -256,9 +257,7 @@ export class OrderService {
     try {
       // 전달받은 주문 아이디를 가지고 검색하는데
       // orders 테이블에는 realation 상태의 restaurant가 묶여있으니 이것을 relations: ['restaurant'],옵션으로 같이 불러온다
-      const order = await this.orders.findOne(orderId, {
-        relations: ['restaurant'],
-      });
+      const order = await this.orders.findOne(orderId);
       // 만약 수정하려는 orders의 정보가 없다면 에러핸들링
       if (!order) {
         return {
@@ -318,6 +317,7 @@ export class OrderService {
         id: orderId,
         status,
       });
+      const newOrder = { ...order, status };
       //만약 업데이트를 시도한게  레스토랑 주인이라면
       if (user.role === UserRole.Owner) {
         // 그리고 또한 주문상태가 coooked라면
@@ -327,10 +327,12 @@ export class OrderService {
             // 구독으로 값을 전달하는데 문제는 order의 값은 update되기 이전의 값이다
             // (create로 javascript를 위한 object를 만들지 않았기때문)
             // 따라서 이전 order의 값에 업데이트를 위해 저장된 statue값을 쌩으로 덮어씌워준다
-            cookedOrders: { ...order, status },
+            cookedOrders: newOrder,
           });
         }
       }
+      // orderUpdates subscription을 트리거로 구독 건들고 { orderUpdates: newOrder } payload로 전달
+      await this.pubSub.publish(NEW_ORDER_UPDATE, { orderUpdates: newOrder });
       return {
         ok: true,
       };

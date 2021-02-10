@@ -41,7 +41,7 @@ export class Order extends CoreEntity {
     type => User,
     user => user.orders,
     // 헤딩 유저가 삭제된다해도 주문은 안지워진다는뜻
-    { onDelete: 'SET NULL', nullable: true }
+    { onDelete: 'SET NULL', nullable: true, eager: true }
   )
   customer?: User;
 
@@ -55,7 +55,7 @@ export class Order extends CoreEntity {
     type => User,
     user => user.rides,
     // 헤딩 유저가 삭제된다해도 주문은 안지워진다는뜻
-    { onDelete: 'SET NULL', nullable: true }
+    { onDelete: 'SET NULL', nullable: true, eager: true }
   )
   driver?: User;
 
@@ -71,7 +71,9 @@ export class Order extends CoreEntity {
     type => Restaurant,
     restaurant => restaurant.orders,
     // 헤딩 유저가 삭제된다해도 주문은 안지워진다는뜻
-    { onDelete: 'SET NULL', nullable: true }
+    // eager 이제 이  restaurant는 별개의 옵션설정없이 기본적으로 불러와짐
+    // (원래는 relations: ['restaurant'] 이런 옵션설정해줘야 불러올수있었음)
+    { onDelete: 'SET NULL', nullable: true, eager: true }
   ) //for typeorm @column() 데코레이션 안써도됨
   restaurant?: Restaurant;
 
@@ -80,7 +82,7 @@ export class Order extends CoreEntity {
   //  주문의 내용엔 여러개의 메뉴가 있어야 하니깐
   // 그리고 메뉴는 여러개의 주문을 가질수있음(많은 사용자가 하나의 메뉴를 동시에 주문할 수 있다는거랑 같은뜻)
   @Field(type => [OrderItem])
-  @ManyToMany(type => OrderItem)
+  @ManyToMany(type => OrderItem, { eager: true })
   //   JoinTable은 소유하고있는 쪽의 relation에만 추가해주면됨
   @JoinTable()
   items: OrderItem[];

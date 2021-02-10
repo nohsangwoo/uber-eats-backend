@@ -983,3 +983,19 @@ subscript에서 전달받은 payload를 기준으로 custom function을 만들�
         status,
       });
 ```
+
+# 12.10 eager relation 은 DB에서 entity를 load할때마다 자동으로 load되는 relation을 정함
+
+그니깐
+
+```
+ const order = await this.orders.findOne(orderId, {
+        relations: ['restaurant'],
+      });
+```
+
+이런식으로 relations: ['restaurant'], 옵션 안줘도 relation관계 데이터가 default로 불러와질수있게 설정하는것
+
+- 별개로 lazy relation이라는게 있는데 이건 order에 있는 restaurant정보를 가져오고싶다면
+  await order.restaurant.fineOnd(.....)
+  이런형식으로 사용
