@@ -3,7 +3,7 @@ import { Args, Mutation, Query, Resolver, Subscription } from '@nestjs/graphql';
 import { PubSub } from 'graphql-subscriptions';
 import { AuthUser } from 'src/auth/auth-user.decorator';
 import { Role } from 'src/auth/role.decorator';
-import { PUB_SUB } from 'src/common/common.constants';
+import { NEW_PENDING_ORDER, PUB_SUB } from 'src/common/common.constants';
 import { User } from 'src/users/entities/user.entity';
 import { CreateOrderInput, CreateOrderOutput } from './dtos/create-order.dto';
 import { EditOrderInput, EditOrderOutput } from './dtos/edit-order.dto';
@@ -64,36 +64,30 @@ export class OrderResolver {
     return this.ordersService.editOrder(user, editOrderInput);
   }
 
+  // subscription start---------------
   // subscript을 사용 하는방법
-  @Mutation(returns => Boolean)
-  async potatoReady(@Args('potatoId') potatoId: number) {
-    //hotPotatos라는 트리거를 이용하여 subscription을 작동시킴
-    await this.pubSub.publish('hotPotatos', {
-      // @Subscription안에있는 메소드 이름을 사용
-      // publish의 payload는 object여야 함 이때 mutation function(메소드)과 이름이 같으면 됨(이경우는 readyPotato)
-      readyPotato: potatoId,
-    });
-    return true;
-  }
-
-  // subscription을 하는 방법(상용구라고 생각하면됨)
-  @Subscription(returns => String, {
-    // 특정조건만 Subscription 할수있게 필터링해주는것
+  // 특정조건만 Subscription 할수있게 필터링해주는것
+  @Subscription(returns => Order, {
     // filter에는 3개의 인자를받는다(filter(payload,variables,context))
-    // 1. payload는 potatoReady 등 같은 함수에서 전달받은 값
+    // 1. payload는 구독상태의 pendingOrders 를 건드리는 함수에서 전달받은 값
     // 2. variable은 listening을 시작하기 전에 subscription에 준variables를 가진 object
-    //  ex
-    //  subscription{
-    //    readypotato(potatoId:1)   <= 여기서 1이 variable
-    //  }
-    filter: ({ readyPotato }, { potatoId }) => {
-      // readyPotato와 potatoId값이 같은 경우에만 subscription이 동작하겠다 라는뜻
-      return readyPotato === potatoId;
+    // 3. context는 https로 전달받은 값을 graphql에서 사용할수있게 변환해준 값을 전달받음
+    filter: ({ pendingOrders: { ownerId } }, _, { user }) => {
+      //ownerId는 order.service로 부터 전달받은 restaurant의 ownerId와  로그인한 user정보의 id가 같다면 subscription기능 활성화
+      return ownerId === user.id;
     },
+
+    // Subscription Resolve는 output의 모습을 바꿔줌
+    //payload는 pendingOrders: { order, ownerId: restaurant.ownerId },이상태의 object값이다
+    // 위 payload에서 oder를 추출하여 반환
+    resolve: ({ pendingOrders: { order } }) => order,
   })
-  @Role(['Any'])
-  readyPotato(@Args('potatoId') potatoId: number) {
-    // 이 subscript을 사용할때의 트리거는 hotPotatos라는 striong
-    return this.pubSub.asyncIterator('hotPotatos');
+  // 이 subscript을 사용할때의 트리거는 hotPotatos라는 striong
+  @Role(['Owner'])
+  pendingOrders() {
+    //subscription을 trigger하기위한 보일러플레이트(상용구)임
+    // subscription 에서 NEW_PENDING_ORDER를 기준으로 전달받아 작동할것임
+    return this.pubSub.asyncIterator(NEW_PENDING_ORDER);
   }
+  // end of subscription start---------------
 }

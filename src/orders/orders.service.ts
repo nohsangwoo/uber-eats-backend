@@ -1,5 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { PubSub } from 'graphql-subscriptions';
+import { NEW_PENDING_ORDER, PUB_SUB } from 'src/common/common.constants';
 import { Dish } from 'src/restaurants/entities/dish.entity';
 import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
 import { User, UserRole } from 'src/users/entities/user.entity';
@@ -22,7 +24,8 @@ export class OrderService {
     @InjectRepository(Restaurant)
     private readonly restaurants: Repository<Restaurant>,
     @InjectRepository(Dish)
-    private readonly dishes: Repository<Dish>
+    private readonly dishes: Repository<Dish>,
+    @Inject(PUB_SUB) private readonly pubSub: PubSub
   ) {}
 
   // 주문 만들기(client권한일때: 일반 주문 고객)
@@ -94,7 +97,7 @@ export class OrderService {
         // orderItems이라는 배열에  orderItem 추가
         orderItems.push(orderItem);
       }
-      await this.orders.save(
+      const order = await this.orders.save(
         this.orders.create({
           customer,
           restaurant,
@@ -104,6 +107,11 @@ export class OrderService {
           items: orderItems,
         })
       );
+      // subscription---------------------------------------------
+      // subscription으로 payload값은 pendingOrders: order 로 구성된 object
+      await this.pubSub.publish(NEW_PENDING_ORDER, {
+        pendingOrders: { order, ownerId: restaurant.ownerId },
+      });
       return {
         ok: true,
       };
