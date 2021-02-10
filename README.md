@@ -918,3 +918,10 @@ arr4.flat(Infinity);
 - 이설정으로 이제 subscript 웹소켓일때와 http일때 둘다 인증과정 확인가능
 
 # 12.4 pubsub
+
+- pubsub 사용방법 및 pobsub의 기능 좀더 살표보기
+
+# 12.5 Subscription Filter
+
+- filter설정을 안해주면 내가 원하지 않는 부분도 Subscription해버린다.
+  ex order id가 1인 내용만 Subscription하고싶은데 order id가 6이건 33이건 다른 조건도 Subscription해버린다던지...
