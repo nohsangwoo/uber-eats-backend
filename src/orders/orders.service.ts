@@ -15,6 +15,7 @@ import { CreateOrderInput, CreateOrderOutput } from './dtos/create-order.dto';
 import { EditOrderInput, EditOrderOutput } from './dtos/edit-order.dto';
 import { GetOrderInput, GetOrderOutput } from './dtos/get-order.dto';
 import { GetOrdersInput, GetOrdersOutput } from './dtos/get-orders.dto';
+import { TakeOrderInput, TakeOrderOutput } from './dtos/take-order.dto';
 import { OrderItem } from './entities/order-item.entity';
 import { Order, OrderStatus } from './entities/order.entity';
 
@@ -341,6 +342,59 @@ export class OrderService {
       return {
         ok: false,
         error: 'Could not edit order.',
+      };
+    }
+  }
+
+  // 배달원이 주문을 접수하는 기능
+  // 배달언이 주문 접수를 안했을때 order의 driver부분은 null상태
+  // 배달원이 주문접수를 하면 order에 주문접수한 driver정보(이 주문을 배달하기 위한 배달원의 정보)를 업데이트 하는것
+  async takeOrder(
+    //resolver로부터 전달받은 로그인한 유저정보
+    driver: User,
+    // resolver로부터 전달받은 takeOrder의 인자(playground로 부터 전달받은 인자)
+    { id: orderId }: TakeOrderInput
+  ): Promise<TakeOrderOutput> {
+    try {
+      // 전달받은 order id(배달원이 접수하려는 주문의 id)를 검색 후 order변수에 저장
+      const order = await this.orders.findOne(orderId);
+      //order정보가 없다면 에러핸들링
+      if (!order) {
+        return {
+          ok: false,
+          error: 'Order not found',
+        };
+      }
+      // 또한 만약 이미 다른 배달원이 먼저 접수했다면 에러핸들링
+      // (동시에 수많은 사람들이 동시에 접근할꺼기때문에 이런 안전장치가 필요함)
+      if (order.driver) {
+        return {
+          ok: false,
+          error: 'This order already has a driver',
+        };
+      }
+      // 위 단계를 모두 통과했다면 DB에 저장
+      // 로그인한 driver 정보(이 주문을 배달하기 위한 배달원의 정보)를 업데이트
+      await this.orders.save({
+        //업데이트를 위한 주문의 id
+        id: orderId,
+        // 이 주문을 배달하기 위한 배달원의 정보
+        driver,
+      });
+      //구독기능을 위한 trigger설정과 웹소켓에 전달하는 update된 order정보와 driver정보
+      // order에 driver가 추가되면 구독기능 동작
+      await this.pubSub.publish(NEW_ORDER_UPDATE, {
+        orderUpdates: { ...order, driver },
+      });
+      // DB업데이트 성공하면 true반환
+      return {
+        ok: true,
+      };
+      // 뭔가 에러가 일어나면 에러 핸들링
+    } catch {
+      return {
+        ok: false,
+        error: 'Could not upate order.',
       };
     }
   }

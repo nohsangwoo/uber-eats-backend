@@ -961,6 +961,8 @@ subscript에서 전달받은 payload를 기준으로 custom function을 만들�
 - create가 있는 상태의 반환값이랑 없는 상태의 반환값이다름
   (create가 있는경우는 order의 반환값이 모든 relation을 포함하여 잘 return됨)
 
+- delivery는 모든 order를 전부 실시간으로 subscription해야하니 filter function을 사용하지 않음
+
 ````
       const order = await this.orders.save(
         this.orders.create({
@@ -999,3 +1001,17 @@ subscript에서 전달받은 payload를 기준으로 custom function을 만들�
 - 별개로 lazy relation이라는게 있는데 이건 order에 있는 restaurant정보를 가져오고싶다면
   await order.restaurant.fineOnd(.....)
   이런형식으로 사용
+
+- editOrder가 성공적으로 update됐다면 subscription trigger를 작동하여 구독기능 작동
+
+# 12.11 orderUpdates
+
+- order정보가 수정되면 order와 '관련된' 모든 로그인된 사용자는 수정정보를 실시간으로 확인할 수 있다.
+
+# 12.12 take order
+
+// 배달원이 주문을 접수하는 기능
+// 배달언이 주문 접수를 안했을때 order의 driver부분은 null상태
+// 배달원이 주문접수를 하면 order에 주문접수한 driver정보(이 주문을 배달하기 위한 배달원의 정보)를 업데이트 하는것
+
+- 주문에 배달원 할당되면 미리 만들어둔 orderUpdates 구독기능을 동작시켜서 해당 주문과 관련된 로그인한 모든 user에게 실시간으로 변동사항을 알림

@@ -15,6 +15,7 @@ import { EditOrderInput, EditOrderOutput } from './dtos/edit-order.dto';
 import { GetOrderInput, GetOrderOutput } from './dtos/get-order.dto';
 import { GetOrdersInput, GetOrdersOutput } from './dtos/get-orders.dto';
 import { OrderUpdatesInput } from './dtos/order-updates.dto';
+import { TakeOrderInput, TakeOrderOutput } from './dtos/take-order.dto';
 import { Order } from './entities/order.entity';
 import { OrderService } from './orders.service';
 
@@ -97,7 +98,8 @@ export class OrderResolver {
   }
   // end of subscription start---------------
 
-  // 로그인한상태가 베딜원일때 작동함
+  // 로그인한상태가 베딜원일때 작동함 배달원은 모든 레스토랑의 모든 요리중인 모든 주문을 불러온다
+  // 배달원은 모든 요리중인 모든 주문을 불러와야하기때문에 filter를 사용하지 않는다
   @Subscription(returns => Order)
   @Role(['Delivery'])
   cookedOrders() {
@@ -105,10 +107,52 @@ export class OrderResolver {
     return this.pubSub.asyncIterator(NEW_COOKED_ORDER);
   }
 
-  //
-  @Subscription(returns => Order)
+  //orderUpdate시 구독기능
+  // 주문이 수정됐다면 subscription을 건드는 기능
+  @Subscription(returns => Order, {
+    // payload,variable,context순서
+    filter: (
+      // payload service에서 전달받은 인자
+      { orderUpdates: order }: { orderUpdates: Order },
+      // variable : playground에서 전달받은 인자
+      // 좌측 input은 Destructuring이고
+      // 우측 input:OrderUpdatesInput은 typescript를 위한 변수 형식
+      { input }: { input: OrderUpdatesInput },
+      //http에서 전달받은 user를 graphql형식으로 변환한 context에서 전달받은 user정보
+      { user }: { user: User }
+    ) => {
+      // depensive programing(안전장치를 몇번에 걸쳐 확실하게 다시 설정함)
+      // order정보가 수정됐을때 order와 관련된 모든 로그인된 사용자만 볼수있고
+      // 그 이외의 로그인했지만 해당 수정된 oder와 상관없는 로그인된 사용자는 볼수 없다
+      // order에 연결된 배달원 id와 로그인한 사람의 id가같지않거나 동시에
+      // order에 연결된 사용자 id와 로그인한 사람의 id와 같지않고
+      // order에 연결된 레스토랑 주인 id와 로그인한 사람의 id와 같지 않다면
+      //false를 반환
+      if (
+        order.driverId !== user.id &&
+        order.customerId !== user.id &&
+        order.restaurant.ownerId !== user.id
+      ) {
+        return false;
+      }
+      // service에서 전달받은 order id와 playground에서 전달받은 id가 같을때 구독기능이 작동함
+      return order.id === input.id;
+    },
+  })
+  // 로그인한 누구나 볼수있음
   @Role(['Any'])
   orderUpdates(@Args('input') orderUpdatesInput: OrderUpdatesInput) {
     return this.pubSub.asyncIterator(NEW_ORDER_UPDATE);
+  }
+
+  // 배달원이 order을 접수하는 기능
+  @Mutation(returns => TakeOrderOutput)
+  @Role(['Delivery'])
+  takeOrder(
+    // 로그인한 delivery의 user정보
+    @AuthUser() driver: User,
+    @Args('input') takeOrderInput: TakeOrderInput
+  ): Promise<TakeOrderOutput> {
+    return this.ordersService.takeOrder(driver, takeOrderInput);
   }
 }
