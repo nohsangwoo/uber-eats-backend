@@ -99,6 +99,7 @@ export class OrderResolver {
   @Subscription(returns => Order)
   @Role(['Delivery'])
   cookedOrders() {
+    // 구독의 상용구이고 trigger는 NEW_COOKED_ORDER
     return this.pubSub.asyncIterator(NEW_COOKED_ORDER);
   }
 }

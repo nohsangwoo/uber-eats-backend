@@ -956,4 +956,30 @@ subscript에서 전달받은 payload를 기준으로 custom function을 만들�
 
 - owner가 음식 준비를 완료하고 픽업할 준비가 되면 trigger되는 subscription이다
 
-# 12.9 cookedOrders
+# 12.9 cookedOrders delivery 만 볼수있는 구독 기능
+
+- create가 있는 상태의 반환값이랑 없는 상태의 반환값이다름
+  (create가 있는경우는 order의 반환값이 모든 relation을 포함하여 잘 return됨)
+
+````
+      const order = await this.orders.save(
+        this.orders.create({
+          customer,
+          restaurant,
+          total: orderFinalPrice,
+          // relationship을 저장하는것
+          // manyToMany임
+          items: orderItems,
+        })
+      );
+      ```
+````
+
+(create가 없는경우 업데이트된 상태를 반환못하고 또한 필드에 포함된 컬럼중 일부 컬럼만 반환됨)
+
+```
+    const newOrder = await this.orders.save({
+        id: orderId,
+        status,
+      });
+```

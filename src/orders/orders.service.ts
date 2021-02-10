@@ -311,6 +311,8 @@ export class OrderService {
           error: "You can't do that.",
         };
       }
+
+      // subscription -------------------------------
       // 수정 가능한 상태라면 전달받은 order Id를 기준으로 status를 update함
       await this.orders.save({
         id: orderId,
@@ -322,6 +324,9 @@ export class OrderService {
         if (status === OrderStatus.Cooked) {
           // trigger하여  subscription을 건든다
           await this.pubSub.publish(NEW_COOKED_ORDER, {
+            // 구독으로 값을 전달하는데 문제는 order의 값은 update되기 이전의 값이다
+            // (create로 javascript를 위한 object를 만들지 않았기때문)
+            // 따라서 이전 order의 값에 업데이트를 위해 저장된 statue값을 쌩으로 덮어씌워준다
             cookedOrders: { ...order, status },
           });
         }
