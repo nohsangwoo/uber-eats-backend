@@ -1015,3 +1015,16 @@ subscript에서 전달받은 payload를 기준으로 custom function을 만들�
 // 배달원이 주문접수를 하면 order에 주문접수한 driver정보(이 주문을 배달하기 위한 배달원의 정보)를 업데이트 하는것
 
 - 주문에 배달원 할당되면 미리 만들어둔 orderUpdates 구독기능을 동작시켜서 해당 주문과 관련된 로그인한 모든 user에게 실시간으로 변동사항을 알림
+
+# 13 PAYMENT 결제방식
+
+- stripe
+- braintree
+- 카카오페이
+- 나이스페이
+
+# 13.1 ~ 13.2 create Payment Module And setting
+
+- nest g module payments
+  모듈 만들고 세팅
+  resolver, service ,entity, dto, app.module.ts세팅 등등 간단한 기본세팅

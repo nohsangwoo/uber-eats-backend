@@ -11,6 +11,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { IsBoolean, IsEmail, IsEnum, IsString } from 'class-validator';
 import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
 import { Order } from 'src/orders/entities/order.entity';
+import { Payment } from 'src/payments/entities/payment.entity';
 
 // 이 셋중 하나여야 한다는 의미의 규칙
 export enum UserRole {
@@ -65,6 +66,14 @@ export class User extends CoreEntity {
     order => order.customer
   )
   orders: Order[];
+
+  // 결제 정보를 위한 relation설정
+  @Field(type => [Payment])
+  @OneToMany(
+    type => Payment,
+    payment => payment.user
+  )
+  payments: Payment[];
 
   //한개의 user는 여러개의 order를 가짐(rider의 경우)
   @Field(type => [Order])
