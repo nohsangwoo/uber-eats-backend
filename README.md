@@ -1032,3 +1032,7 @@ subscript에서 전달받은 payload를 기준으로 custom function을 만들�
 # 13.3 createPayment part
 
 - createPayment 부분
+
+# 13.4 getPayments
+
+- 레스토랑 주인이 결제정보 읽어오는 기능

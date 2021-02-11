@@ -7,6 +7,7 @@ import {
   CreatePaymentInput,
   CreatePaymentOuput,
 } from './dtos/create-payment.dto';
+import { GetPaymentsOutput } from './dtos/get-payments.dto';
 import { Payment } from './entities/payment.entity';
 
 // service 상용구 injectable데코레이터 선언
@@ -56,6 +57,21 @@ export class PaymentService {
       //   위 과정중 뭔가 에러가 나면 핸들링
     } catch {
       return { ok: false, error: 'Could not create payment.' };
+    }
+  }
+
+  async getPayments(user: User): Promise<GetPaymentsOutput> {
+    try {
+      const payments = await this.payments.find({ user: user });
+      return {
+        ok: true,
+        payments,
+      };
+    } catch {
+      return {
+        ok: false,
+        error: 'Could not load payments.',
+      };
     }
   }
 }
