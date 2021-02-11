@@ -10,9 +10,9 @@ import { Column, Entity, ManyToOne, RelationId } from 'typeorm';
 @Entity() //for typeorm
 export class Payment extends CoreEntity {
   // paddle이란 결제 api에서 받아올 transactionId
-  @Field(type => Int)
+  @Field(type => String)
   @Column()
-  transactionId: number;
+  transactionId: string;
 
   //   결제한 사람의 정보를 위한 user 정보
   @Field(type => User)

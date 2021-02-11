@@ -1028,3 +1028,7 @@ subscript에서 전달받은 payload를 기준으로 custom function을 만들�
 - nest g module payments
   모듈 만들고 세팅
   resolver, service ,entity, dto, app.module.ts세팅 등등 간단한 기본세팅
+
+# 13.3 createPayment part
+
+- createPayment 부분
