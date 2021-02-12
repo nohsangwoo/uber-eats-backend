@@ -3,7 +3,7 @@ import { Cron, Interval, SchedulerRegistry, Timeout } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
 import { User } from 'src/users/entities/user.entity';
-import { Repository } from 'typeorm';
+import { LessThan, Repository } from 'typeorm';
 import {
   CreatePaymentInput,
   CreatePaymentOuput,
@@ -53,6 +53,22 @@ export class PaymentService {
           restaurant,
         })
       );
+
+      // for promote ------------------------
+      // isPromoted를 true값으로 추가
+      restaurant.isPromoted = true;
+      // 현재 날짜를 가져옴
+      const date = new Date();
+      // date.getDate()는 날짜 추출
+      // date.setDate()는 milliseconds까지 return함
+      // 즉 현재 날짜를 기준으로 milliseconds까지 기입된 정확한 기준으로 7일 후 날짜 정보를 가져옴
+      date.setDate(date.getDate() + 7);
+      // 언제까지 실행할껀지의 날짜 정보를 promotedUntil에 넣어준다
+      restaurant.promotedUntil = date;
+
+      // 위에서 계산한 7일후의 정확한 날짜(millisecond단위)와 promote의 현상태를 DB에 저장함
+      this.restaurants.save(restaurant);
+      // end of promote ------------------------
       return {
         ok: true,
       };
@@ -77,30 +93,24 @@ export class PaymentService {
     }
   }
 
-  // 크론패턴으로 얼마나 반복할건지 정의
-  //30초 매분 매시 매일 매달 매주 마다 실행함 즉
-  // 즉 매분 초침이 30초를 가리킬때 실행함(무한반복)
-  // 이 Cron기능을 제어하기위해서 myJob이라는 이름을 붙여줌
-  @Cron('30 * * * * *', {
-    name: 'myJob',
-  })
-  checkForPayments() {
-    console.log('Checking for payments....(cron)');
-    // 해당 기능을 제어하기위한 설정
-    // 이건 크론잡이 얼마나 실행됐나를 가져옴
-    const job = this.schedulerRegistry.getCronJob('myJob');
-    // 매분 30초마다 실행되는 checkForPayments()함수를 멈춤
-    job.stop();
-  }
-
-  // 실행된 순간을 기준으로 5초마다 반복한다는뜻임(고정된 시간 아님)
-  @Interval(5000)
-  checkForPaymentsI() {
-    console.log('Checking for payments....(interval)');
-  }
-
-  @Timeout(20000)
-  afterStarts() {
-    console.log('Congrats!');
+  // 날짜가 만료됐음에도 여전히 promote되고있는 restaurant를 체크하는것
+  // 2초마다 반복
+  @Interval(2000)
+  async checkPromotedRestaurants() {
+    // isPromoted가 true인거랑
+    // 현재 날짜보다 promotedUntil가 이전의 상태인것을 검색한다(날짜가 지난것)
+    const restaurants = await this.restaurants.find({
+      isPromoted: true,
+      //LessThan: typeorm 기능 ::: 오늘 날짜보다 적은 것
+      promotedUntil: LessThan(new Date()),
+    });
+    console.log(restaurants);
+    // 지난것을 검색했으면 검색된 restaurant를 반복해서 각각
+    // isPromote=false  promotedUntil=null 처리 해서 DB에 저장해준다(update)
+    restaurants.forEach(async restaurant => {
+      restaurant.isPromoted = false;
+      restaurant.promotedUntil = null;
+      await this.restaurants.save(restaurant);
+    });
   }
 }

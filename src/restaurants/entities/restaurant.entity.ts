@@ -82,4 +82,14 @@ export class Restaurant extends CoreEntity {
     dish => dish.restaurant
   )
   menu: Dish[]; //for typescript
+
+  // promote됐는지 확인용
+  @Field(type => Boolean)
+  @Column({ default: false }) //for typeorm
+  isPromoted: boolean;
+
+  // 얼마나 promote할건지
+  @Field(type => Date, { nullable: true })
+  @Column({ nullable: true })
+  promotedUntil: Date;
 }

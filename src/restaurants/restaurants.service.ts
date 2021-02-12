@@ -234,6 +234,11 @@ export class RestaurantService {
         where: {
           category,
         },
+        order: {
+          // isPromoted의 정렬이 내림차순 순
+          // promote된 상태가 제일 먼저 검색되는 순..
+          isPromoted: 'DESC',
+        },
         //한 페이지당 25개씩 표시
         take: setPageContents,
         // 첫번째 페이지에선 page는 기본값이 1이니깐 1-1*25하면 0만큼 skip한다
@@ -267,6 +272,12 @@ export class RestaurantService {
         skip: (page - 1) * 25,
         //각 페이지별 로딩되는 데이터는 25개씩
         take: 25,
+        // isPromoted의 정렬이 내림차순 순
+        // promote된 상태가 제일 먼저 검색되는 순..
+
+        order: {
+          isPromoted: 'DESC',
+        },
       });
       return {
         ok: true,

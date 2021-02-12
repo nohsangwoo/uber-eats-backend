@@ -1064,3 +1064,50 @@ subscript에서 전달받은 payload를 기준으로 custom function을 만들�
 (따로 연장 버튼을 클릭해야 로그인 연장) 또는 일정 기간동안 아무작업을 안하면 로그인된다던지...
 
 스케쥴을 미리만들어두고 특정 타이밍에 추가하거나 삭제하거나... 등등 고급제어가 가능
+
+// 크론패턴으로 얼마나 반복할건지 정의
+//30초 매분 매시 매일 매달 매주 마다 실행함 즉
+// 즉 매분 초침이 30초를 가리킬때 실행함(무한반복)
+// 이 Cron기능을 제어하기위해서 myJob이라는 이름을 붙여줌
+ex)
+
+```
+@Cron('30 * * * * *', {
+  name: 'myJob',
+})
+checkForPayments() {
+  console.log('Checking for payments....(cron)');
+  // 해당 기능을 제어하기위한 설정
+  // 이건 크론잡이 얼마나 실행됐나를 가져옴
+  const job = this.schedulerRegistry.getCronJob('myJob');
+  // 매분 30초마다 실행되는 checkForPayments()함수를 멈춤
+  job.stop();
+}
+
+// 실행된 순간을 기준으로 5초마다 반복한다는뜻임(고정된 시간 아님)
+@Interval(5000)
+checkForPaymentsI() {
+  console.log('Checking for payments....(interval)');
+}
+
+@Timeout(20000)
+afterStarts() {
+  console.log('Congrats!');
+}
+
+```
+
+# 13.6 Promoting Restaurants
+
+payment를 create할때 restaurant를 promote하는 방법
+
+레스토랑 프로모션 기간 기능 추가(7일)
+(이때 뭐 이벤트처럼 프로모션기간의 레스토랑을 상단에 뜨게 해준다던지... 그런 기능들)
+
+# 13.7 Promoting Restaurants part Two
+
+// 날짜가 만료됐음에도 여전히 promote되고있는 restaurant를 체크하는것
+그리고 검색된 레스토랑이 있다면 프로모션 상태를 off해준다
+(isPromote=false promotedUntil=null 처리 해서 DB에 저장해준다(update))
+
+# 13.8 end of backend
