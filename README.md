@@ -1036,3 +1036,31 @@ subscript에서 전달받은 payload를 기준으로 custom function을 만들�
 # 13.4 getPayments
 
 - 레스토랑 주인이 결제정보 읽어오는 기능
+
+# 13.5 @nestjs/schedule
+
+- npm install --save @nestjs/schedule
+
+- 원하는 time interval 또는 정해진 시간과 날짜에 function을 실행할 수 있게 만듬
+
+- cron pattern
+  https://docs.nestjs.com/techniques/task-scheduling
+  여기서 예시 확인
+  (크론은 정확한 시간을 기준으로 반복하는것임)
+
+- @Interval()
+  ex
+  @Interval(5000)은 실행된 순간을 기준으로 5초마다 반복한다는뜻임(고정된 시간 아님)
+
+- @Timeout()
+  ex
+  @Timeout(20000)은 20초 뒤에 딱 한번만 실행됨
+  @Timeout('notification',20000) 이런식으로 이름을 지정해서 실행하면
+  이 Timeout을 제어할 수 있음
+
+  Timeout뿐만아니라 이름을 붙이면 해당 기능을 제어가능하다.
+
+예를 들면 이 기능들을 조합해서 로그인후 30분마다 로그아웃해주는 기능을 만든다던지..
+(따로 연장 버튼을 클릭해야 로그인 연장) 또는 일정 기간동안 아무작업을 안하면 로그인된다던지...
+
+스케쥴을 미리만들어두고 특정 타이밍에 추가하거나 삭제하거나... 등등 고급제어가 가능

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Cron, Interval, SchedulerRegistry, Timeout } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
 import { User } from 'src/users/entities/user.entity';
@@ -18,7 +19,8 @@ export class PaymentService {
     @InjectRepository(Payment)
     private readonly payments: Repository<Payment>,
     @InjectRepository(Restaurant)
-    private readonly restaurants: Repository<Restaurant>
+    private readonly restaurants: Repository<Restaurant>,
+    private schedulerRegistry: SchedulerRegistry
   ) {}
 
   //   결제 생성
@@ -73,5 +75,32 @@ export class PaymentService {
         error: 'Could not load payments.',
       };
     }
+  }
+
+  // 크론패턴으로 얼마나 반복할건지 정의
+  //30초 매분 매시 매일 매달 매주 마다 실행함 즉
+  // 즉 매분 초침이 30초를 가리킬때 실행함(무한반복)
+  // 이 Cron기능을 제어하기위해서 myJob이라는 이름을 붙여줌
+  @Cron('30 * * * * *', {
+    name: 'myJob',
+  })
+  checkForPayments() {
+    console.log('Checking for payments....(cron)');
+    // 해당 기능을 제어하기위한 설정
+    // 이건 크론잡이 얼마나 실행됐나를 가져옴
+    const job = this.schedulerRegistry.getCronJob('myJob');
+    // 매분 30초마다 실행되는 checkForPayments()함수를 멈춤
+    job.stop();
+  }
+
+  // 실행된 순간을 기준으로 5초마다 반복한다는뜻임(고정된 시간 아님)
+  @Interval(5000)
+  checkForPaymentsI() {
+    console.log('Checking for payments....(interval)');
+  }
+
+  @Timeout(20000)
+  afterStarts() {
+    console.log('Congrats!');
   }
 }
