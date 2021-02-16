@@ -14,6 +14,7 @@ export class MailService {
 
   //  이 밑에 부분은 그냥 보일러플레이트(상용구)라고 보면됨 메일 사용하는 방법은 이렇게 사용하면 된다~ 이거임
   async sendEmail(
+    email: string,
     subject: string,
     template: string,
     emailVars: EmailVar[]
@@ -21,7 +22,7 @@ export class MailService {
     const form = new FormData();
     form.append('from', `ffss from Uber Eats <mailgun@${this.options.domain}>`);
     // form사용방법
-    form.append('to', `fairyfloss0909@gmail.com`);
+    form.append('to', email);
     form.append('subject', subject);
     form.append('template', template);
     emailVars.forEach(eVar => form.append(`v:${eVar.key}`, eVar.value));
@@ -49,7 +50,7 @@ export class MailService {
 
   sendVerificationEmail(email: string, code: string) {
     // 제목 , template이름, 사용되는(전달되는)  변수
-    this.sendEmail('Verify Your Email', 'confirm-user-eats-account', [
+    this.sendEmail(email, 'Verify Your Email', 'confirm-user-eats-account', [
       { key: 'code', value: code },
       { key: 'username', value: email },
     ]);
