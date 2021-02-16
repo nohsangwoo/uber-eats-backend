@@ -19,10 +19,7 @@ export class MailService {
     emailVars: EmailVar[]
   ): Promise<boolean> {
     const form = new FormData();
-    form.append(
-      'from',
-      `Nico from Nuber Eats <mailgun@${this.options.domain}>`
-    );
+    form.append('from', `ffss from Uber Eats <mailgun@${this.options.domain}>`);
     // form사용방법
     form.append('to', `fairyfloss0909@gmail.com`);
     form.append('subject', subject);
@@ -52,7 +49,7 @@ export class MailService {
 
   sendVerificationEmail(email: string, code: string) {
     // 제목 , template이름, 사용되는(전달되는)  변수
-    this.sendEmail('Verify Your Email', 'verify-email', [
+    this.sendEmail('Verify Your Email', 'confirm-user-eats-account', [
       { key: 'code', value: code },
       { key: 'username', value: email },
     ]);

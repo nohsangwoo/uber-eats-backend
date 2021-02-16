@@ -46,14 +46,16 @@ export class UserService {
         this.users.create({ email, password, role })
       );
 
-      // 인증 과정을 거쳐서 인증이 확인되면 최종적으로 계정을 생성하겠다는 뜻
+      // 인증 과정을 거쳐서 인증이 확인되면 최종적으로 계정을 생성하기위한 사전작업
+      // verifications테이블에 일단 가입하려는 user의정보를 올려두고 인증 안된상태로 놔둠
+      // 나중에 인증 완료되면 verifications테이블에 저장된 user정보를 삭제
       const verification = await this.verifications.save(
         this.verifications.create({
           user,
         })
       );
 
-      //
+      // 위에 verifications테이블에 저장후 메일보냄
       this.mailService.sendVerificationEmail(user.email, verification.code);
       return { ok: true };
     } catch (e) {

@@ -416,6 +416,8 @@ verification code를 사용해서 그들의verification을 찾음, 그걸 지우
 
 # 6.5 mailugun setup
 
+https://app.mailgun.com/app/dashboard 참고
+
 - mail 모듈 관련 세팅
 
 사용자 인증이끝나면 verifycation의 항목을 지워줌
