@@ -264,14 +264,15 @@ export class RestaurantService {
 
   // 모든 레스토랑을 검색함 (pagination적용)
   async allRestaurants({ page }: RestaurantsInput): Promise<RestaurantsOutput> {
+    let pageSize = 25;
     try {
       // find의 옵션을 잘 사용해서 검색
       // findAndCount는 array를 반환하는데 총 검색된 데이터와 count 된 개수를 array안에 포함해서 반환한다.
       const [restaurants, totalResults] = await this.restaurants.findAndCount({
         // 앞부분데이터를 얼마나 skip을 할껀지
-        skip: (page - 1) * 25,
+        skip: (page - 1) * pageSize,
         //각 페이지별 로딩되는 데이터는 25개씩
-        take: 25,
+        take: pageSize,
         // isPromoted의 정렬이 내림차순 순
         // promote된 상태가 제일 먼저 검색되는 순..
 
@@ -282,7 +283,7 @@ export class RestaurantService {
       return {
         ok: true,
         results: restaurants,
-        totalPages: Math.ceil(totalResults / 25),
+        totalPages: Math.ceil(totalResults / pageSize),
         totalResults,
       };
     } catch {

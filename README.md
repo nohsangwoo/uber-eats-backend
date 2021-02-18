@@ -1125,3 +1125,7 @@ payment를 create할때 restaurant를 promote하는 방법
   )
   category: Category;
 ```
+
+# restaurant.service.ts
+
+pageSize변수로 페이지당 컨텐츠개수조절
