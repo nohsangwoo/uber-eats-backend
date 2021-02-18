@@ -44,7 +44,7 @@ export class Restaurant extends CoreEntity {
     // 카테고리를 지울때 restaurant는 지우면 안되기 때문에 nullable:true설정
     // 카테고리가 지워지면 자동으로 restaurant의 카테고리 필드는 null로 채워짐
     // 또한 카테고리가 존재하지않는 상태로 restaurant를 생성가능
-    { nullable: true, onDelete: 'SET NULL' }
+    { nullable: true, onDelete: 'SET NULL', eager: true }
   )
   category: Category;
 

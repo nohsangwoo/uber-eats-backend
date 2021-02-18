@@ -1113,3 +1113,15 @@ payment를 create할때 restaurant를 promote하는 방법
 (isPromote=false promotedUntil=null 처리 해서 DB에 저장해준다(update))
 
 # 13.8 end of backend
+
+# restaurant.entoty.tsx category eager 추가
+
+```
+  @Field(type => Category, { nullable: true })
+  @ManyToOne(
+    type => Category,
+    category => category.restaurants,
+    { nullable: true, onDelete: 'SET NULL', eager: true } <=== 추가
+  )
+  category: Category;
+```
