@@ -10,10 +10,12 @@ export class PaginationInput {
 
 //pagination output dto
 @ObjectType()
+// 총 페이지
 export class PaginationOutput extends CoreOutput {
   @Field(type => Int, { nullable: true })
   totalPages?: number;
 
+  // 검색된 총 결과물 개수
   @Field(type => Int, { nullable: true })
   totalResults?: number;
 }

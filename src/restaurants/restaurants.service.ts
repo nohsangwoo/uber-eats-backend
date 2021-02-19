@@ -248,11 +248,17 @@ export class RestaurantService {
 
       const totalResults = await this.countRestaurants(category);
 
+      console.log(
+        '작동=======================================================================================',
+        totalResults / setPageContents
+      );
+
       return {
         ok: true,
         restaurants,
         category,
         totalPages: Math.ceil(totalResults / setPageContents),
+        totalResults,
       };
     } catch {
       return {
