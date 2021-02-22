@@ -1135,3 +1135,5 @@ pageSize변수로 페이지당 컨텐츠개수조절
 - myRestaurants owner가 자기가 등록한 레스토랑 정보를 전부 보고싶음
 
 - myRestaurant owner가 자기가 등록한 레스토랑 중 하나의 정보를 알고싶음
+
+- restaurant.entity.ts에 category relation에 eager:true 설정
