@@ -1204,3 +1204,7 @@ https://github.com/aws/aws-sdk-js 참고
 15. backend에서 보일러 플레이트 대로 세팅끝내고 사용
     https://s3.console.aws.amazon.com/s3/home 확인가능
 16. 이때 백엔드의 버킷이름과 동일하게 aws s3에서도 버킷을 생성해줘야함
+
+# 20.4 backend cors설정(백엔드로 접근가능하게)
+
+- main.ts에서 app.enableCors() 적용
