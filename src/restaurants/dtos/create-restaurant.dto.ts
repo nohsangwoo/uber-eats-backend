@@ -1,4 +1,4 @@
-import { Field, InputType, ObjectType, PickType } from '@nestjs/graphql';
+import { Field, InputType, Int, ObjectType, PickType } from '@nestjs/graphql';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 import { Restaurant } from '../entities/restaurant.entity';
 
@@ -24,4 +24,7 @@ export class CreateRestaurantInput extends PickType(Restaurant, [
 
 // 위와 같은 개념이지만 CoreOutput의 모든 내용을 불러와서 Validation 목록을 만듬
 @ObjectType()
-export class CreateRestaurantOutput extends CoreOutput {}
+export class CreateRestaurantOutput extends CoreOutput {
+  @Field(type => Int)
+  restaurantId?: number;
+}

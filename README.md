@@ -1208,3 +1208,5 @@ https://github.com/aws/aws-sdk-js 참고
 # 20.4 backend cors설정(백엔드로 접근가능하게)
 
 - main.ts에서 app.enableCors() 적용
+
+# 20.5 CreateRestaurantOutput DTO에 restaurantId?: number; 추가
