@@ -96,6 +96,42 @@ entity
 
 # 3 TypeORM AND NEST
 
+```
+I found another solution.
+
+To find a table to look up, put the schema name in front of table name in the query sentence.
+
+just put the schema name front of table name(with dot)!
+
+(윈도우유저 pgadmin4 사용중 user테이블 조회안될때) 저처럼 user이름이 뭔가랑 중복돼서(뭐랑중복됐는진 모르겠음) 제대로 표시안되면 찾으려는 테이블이름앞에 스키마이름을 붙여주면 제대로 조회됩니다.
+
+ex)
+
+SELECT * FROM user => SELECT * FROM public.user
+
+DELET FROM user WHERE ID=1 => DELET FROM public.user WHERE ID=1
+
+스키마 이름 찾는법?
+
+1 sqlshell 접속
+
+2 \list (모든 DB조회)
+
+3 \c DB이름 사용자이름 (DB선택)
+
+4 \dt ( 선택한 DB안의 모든 table 정보 조회)
+
+또는 최상위 경로에서
+
+select nspname from pg_catalog.pg_namespace
+
+이 쿼리날리면 모든 스키마 명 검색됨
+
+이러면 스키마 이름이 나타남
+
+If someone has a similar problem with me, please refer to it.
+```
+
 entity를 생성하고 사용하고 싶으면 app.module.ts에서 typeorm.forRoot(typeorm옵션 설정)의 항목중 entities항목에 사용하고자 하는 entity를 추가해줘야함
 
 # 3.1 DATA MAPPER pattern 을 이용
@@ -1137,3 +1173,5 @@ pageSize변수로 페이지당 컨텐츠개수조절
 - myRestaurant owner가 자기가 등록한 레스토랑 중 하나의 정보를 알고싶음
 
 - restaurant.entity.ts에 category relation에 eager:true 설정
+
+# 20.2 file upload

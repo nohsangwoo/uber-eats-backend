@@ -95,7 +95,7 @@ export class PaymentService {
 
   // 날짜가 만료됐음에도 여전히 promote되고있는 restaurant를 체크하는것
   // 2초마다 반복
-  @Interval(2000)
+  @Interval(20000)
   async checkPromotedRestaurants() {
     // isPromoted가 true인거랑
     // 현재 날짜보다 promotedUntil가 이전의 상태인것을 검색한다(날짜가 지난것)
