@@ -68,6 +68,7 @@ export class RestaurantService {
       await this.restaurants.save(newRestaurant);
       return {
         ok: true,
+        restaurantId: newRestaurant.id,
       };
       // 에러롤 수동으로 처리해주는 과정
     } catch {
