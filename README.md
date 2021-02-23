@@ -1174,4 +1174,33 @@ pageSize변수로 페이지당 컨텐츠개수조절
 
 - restaurant.entity.ts에 category relation에 eager:true 설정
 
-# 20.2 file upload
+# 20.2 file upload part one
+
+basic setting up
+
+# 20.3 file upload
+
+-apply aws sdk
+https://github.com/aws/aws-sdk-js 참고
+
+계정 로그인후
+
+1. https://console.aws.amazon.com/iam/home?#/home 접속
+2. 사용자 클릭(user)
+3. 사용자 추가 클릭
+4. 사용자이름 nestUpload 하단에 select AWS access type에는 프로그래매틱 액세스 체크
+   (AWS와 통신하는 서버라는 의미)
+5. attach existing policies directly(기본정책 직접연결)클릭
+6. s3검색
+7. 검색결과에서 AmazonS3FullAccess 선택
+8. 하단의 set permissions boundary 클릭(권한 경계 설정)
+9. create user without a permission boundary 선택((권한 경계 없이 user 생성)
+10. next클릭
+11. tag설정 skip(next 클릭)
+12. 최종 검토(확인) 후 마지막 사용자 생성 클릭
+13. 액세스 키 ID와 비밀 액세스 키 어딘가에 저장
+    (특히 비밀 액세스키는 딱 한번밖에 안보여주니 꼭 저장)
+14. 업로드를 위한 아마존 세팅끝
+15. backend에서 보일러 플레이트 대로 세팅끝내고 사용
+    https://s3.console.aws.amazon.com/s3/home 확인가능
+16. 이때 백엔드의 버킷이름과 동일하게 aws s3에서도 버킷을 생성해줘야함
