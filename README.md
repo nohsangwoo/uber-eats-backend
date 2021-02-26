@@ -1210,3 +1210,13 @@ https://github.com/aws/aws-sdk-js 참고
 - main.ts에서 app.enableCors() 적용
 
 # 20.5 CreateRestaurantOutput DTO에 restaurantId?: number; 추가
+
+# 22.6 create-order.dto.ts의 CreateOrderOutput에 orderId 반환 추가
+
+```
+@ObjectType()
+export class CreateOrderOutput extends CoreOutput {
+  @Field(type => Int, { nullable: true })
+  orderId?: number;
+}
+```
