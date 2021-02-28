@@ -7,7 +7,6 @@ import { OrderItemOption } from '../entities/order-item.entity';
 class CreateOrderItemInput {
   @Field(type => Int)
   dishId: number;
-
   //   Json형식의 Object entity..
   //   order Item엔 옵션이 없을수도있으니 nullable:ture
   @Field(type => [OrderItemOption], { nullable: true })

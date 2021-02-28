@@ -54,18 +54,23 @@ export class OrderService {
           error: 'Restaurant not found',
         };
       }
+
       // 주문 최종 가격 계산을 위한 변수 초기화
       let orderFinalPrice = 0;
       // orderItems의 형식은 OrderItem의 배열 형식이다
       const orderItems: OrderItem[] = [];
+
       for (const item of items) {
         const dish = await this.dishes.findOne(item.dishId);
+
         if (!dish) {
           return {
             ok: false,
             error: 'Dish not found.',
           };
         }
+
+        // 여기가 문제
         // extra의 총합을 계산하기위한 변수
         let dishFinalPrice = dish.price;
         for (const itemOption of item.options) {
@@ -76,7 +81,7 @@ export class OrderService {
           // 위 조건에따라 DB에서 칮은 dishOption이 존재한다면
           if (dishOption) {
             // 그리고 dishOption안에 extra가 존재한다면
-            if (dishOption.extra) {
+            if (dishOption.extra || dishOption.extra === 0) {
               // dishOption.extra를 찾을때 마다 dishFinalPrice에 추가해준다
               dishFinalPrice = dishFinalPrice + dishOption.extra;
             } else {
@@ -91,6 +96,7 @@ export class OrderService {
             }
           }
         }
+
         // 모든 가격의 총 합을 계산해준다 (DB저장용)
         orderFinalPrice = orderFinalPrice + dishFinalPrice;
         //dish와 options로 이루어진 orderItem을 만들고
@@ -120,6 +126,7 @@ export class OrderService {
       });
       return {
         ok: true,
+        orderId: order.id,
       };
       // 무언가 에러가 난다면 에러핸들링
     } catch {

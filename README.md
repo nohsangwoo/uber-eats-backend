@@ -1220,3 +1220,7 @@ export class CreateOrderOutput extends CoreOutput {
   orderId?: number;
 }
 ```
+
+# 23.1 fix bugs...
+
+createOrder부분 mutation끝나고 orderId반환안하는거랑 dish option중 extra가 0원인경우 에러나는부분 수정
