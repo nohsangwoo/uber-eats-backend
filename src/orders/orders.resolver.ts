@@ -112,7 +112,8 @@ export class OrderResolver {
   @Subscription(returns => Order, {
     // payload,variable,context순서
     filter: (
-      // payload service에서 전달받은 인자
+      // payload: service에서 전달받은 인자
+      // service에서 이 subscription으로 전달하는 인자
       { orderUpdates: order }: { orderUpdates: Order },
       // variable : playground에서 전달받은 인자
       // 좌측 input은 Destructuring이고

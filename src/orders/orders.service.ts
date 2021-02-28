@@ -331,7 +331,7 @@ export class OrderService {
       if (user.role === UserRole.Owner) {
         // 그리고 또한 주문상태가 coooked라면
         if (status === OrderStatus.Cooked) {
-          // trigger하여  subscription을 건든다
+          // NEW_COOKED_ORDER로 trigger하여  subscription을 건든다
           await this.pubSub.publish(NEW_COOKED_ORDER, {
             // 구독으로 값을 전달하는데 문제는 order의 값은 update되기 이전의 값이다
             // (create로 javascript를 위한 object를 만들지 않았기때문)
@@ -340,7 +340,7 @@ export class OrderService {
           });
         }
       }
-      // orderUpdates subscription을 트리거로 구독 건들고 { orderUpdates: newOrder } payload로 전달
+      // NEW_ORDER_UPDATE의 subscription을 트리거로 구독 건들고 { orderUpdates: newOrder } payload로 전달
       await this.pubSub.publish(NEW_ORDER_UPDATE, { orderUpdates: newOrder });
       return {
         ok: true,
