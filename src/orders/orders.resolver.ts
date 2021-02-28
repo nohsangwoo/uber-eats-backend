@@ -36,7 +36,7 @@ export class OrderResolver {
     @Args('input')
     createOrderInput: CreateOrderInput
   ): Promise<CreateOrderOutput> {
-    return this.ordersService.crateOrder(customer, createOrderInput);
+    return this.ordersService.createOrder(customer, createOrderInput);
   }
 
   // 모든 주문 현황을 가져옴

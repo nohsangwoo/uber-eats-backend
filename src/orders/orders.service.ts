@@ -35,7 +35,7 @@ export class OrderService {
   ) {}
 
   // 주문 만들기(client권한일때: 일반 주문 고객)
-  async crateOrder(
+  async createOrder(
     // customer의 User 정보를 resolver로부터 받아온다
     // CreateOrderInput라는 DTO를 통해 인자를 전달받는다
     //전달받은 인자를  es6  destructuring 을 통해 추출한다
@@ -85,7 +85,7 @@ export class OrderService {
               // dishOption.extra를 찾을때 마다 dishFinalPrice에 추가해준다
               dishFinalPrice = dishFinalPrice + dishOption.extra;
             } else {
-              const dishOptionChoice = dishOption.choices.find(
+              const dishOptionChoice = dishOption.choices?.find(
                 optionChoice => optionChoice.name === itemOption.choice
               );
               if (dishOptionChoice) {
@@ -129,7 +129,8 @@ export class OrderService {
         orderId: order.id,
       };
       // 무언가 에러가 난다면 에러핸들링
-    } catch {
+    } catch (e) {
+      console.log(e);
       return {
         ok: false,
         error: 'Could not create order.',
