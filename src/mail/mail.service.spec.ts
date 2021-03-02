@@ -4,9 +4,7 @@ import * as FormData from 'form-data';
 import { CONFIG_OPTIONS } from 'src/common/common.constants';
 import { MailService } from './mail.service';
 
-// import된 got을 모킹
 jest.mock('got');
-// import된 form-data을 모킹
 jest.mock('form-data');
 
 const TEST_DOMAIN = 'test-domain';
@@ -44,7 +42,7 @@ describe('MailService', () => {
       jest.spyOn(service, 'sendEmail').mockImplementation(async () => true);
       service.sendVerificationEmail(
         sendVerificationEmailArgs.email,
-        sendVerificationEmailArgs.code
+        sendVerificationEmailArgs.code,
       );
       expect(service.sendEmail).toHaveBeenCalledTimes(1);
       expect(service.sendEmail).toHaveBeenCalledWith(
@@ -53,7 +51,7 @@ describe('MailService', () => {
         [
           { key: 'code', value: sendVerificationEmailArgs.code },
           { key: 'username', value: sendVerificationEmailArgs.email },
-        ]
+        ],
       );
     });
   });
@@ -65,7 +63,7 @@ describe('MailService', () => {
       expect(got.post).toHaveBeenCalledTimes(1);
       expect(got.post).toHaveBeenCalledWith(
         `https://api.mailgun.net/v3/${TEST_DOMAIN}/messages`,
-        expect.any(Object)
+        expect.any(Object),
       );
       expect(ok).toEqual(true);
     });
