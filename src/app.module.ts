@@ -85,6 +85,8 @@ import { UploadsModule } from './uploads/uploads.module';
       ],
     }),
     GraphQLModule.forRoot({
+      // prod모드가 아니면 playground사용가능
+      playground: process.env.NODE_ENV !== 'prod',
       // subscriptions의 웹소켓을 활성화하기위한 설정
       installSubscriptionHandlers: true,
       // 스키마 파일을 따로 만들어두지 않고 자동으로 생성해줌

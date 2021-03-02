@@ -1263,3 +1263,45 @@ createOrder부분 mutation끝나고 orderId반환안하는거랑 dish option중 
 2. 설치후 overview의 postgres오른쪽 에있는 아이콘 클릭하면 새창에서 데이터베이스 제어 창 뜸
    거기서 settings tap => database credentials 확인하면 DB정보가 다 있음
    (host, port,user등등...)
+
+- heroku deploy중 ssl관련
+  https://stackoverflow.com/questions/61097695/self-signed-certificate-error-during-query-the-heroku-hosted-postgres-database
+
+- ssl off 에러 해결
+  (콘솔창에 입력)
+  heroku config:set PGSSLMODE=no-verify
+
+- production오류 나는경우
+  app.module.ts에서
+
+1.
+
+```
+  NODE_ENV: Joi.string()
+    .valid('dev', 'prod', 'test')
+    .required(),
+```
+
+부분을
+
+```
+NODE_ENV: Joi.string()
+.valid('dev', 'production오류', 'test')
+.required(),
+```
+
+로변경
+
+2.
+
+```
+ignoreEnvFile: process.env.NODE_ENV === 'prod',
+```
+
+을
+
+```
+ignoreEnvFile: process.env.NODE_ENV === 'production',
+```
+
+로 변경
