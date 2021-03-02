@@ -1307,3 +1307,6 @@ ignoreEnvFile: process.env.NODE_ENV === 'production',
 로 변경
 
 - git저장소로 heroku연결시 git push -u origin master하면 자동으로 헤로쿠에도 연동돼서 업데이트됨
+
+- postgres 무료버젼은 db주소가 계속 바뀌기 때문에 app.module.ts설정을 변경해줌
+  대신 모든 정보를 제공하는 uri를 받아옴
