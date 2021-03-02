@@ -1241,3 +1241,25 @@ createOrder부분 mutation끝나고 orderId반환안하는거랑 dish option중 
 - Procfile (확장자 없는 파일을 root에 만들어줌)
   heroku에 deploy 할때 옵션
   https://devcenter.heroku.com/articles/procfile 참고
+
+- main.ts에서 port도 변경해줘야함
+
+```
+ await app.listen(process.env.PORT || 4000);
+```
+
+- heroku logs --tail
+  실시간 에러 확인
+- 헤로쿠 env도 지정해줘야함
+  heroku config --help하면 도움말 확인가능
+- heroku config:set [environment variable의 이름] = [value(값)]
+  heroku config:set NODE_ENV=prod
+  (NODE_ENV상태를 지정해줌)
+- 또는 홈페이지에서 환경변수 추가해줌
+
+- DATABASE설정
+
+1. overview => configure dynos => add-ons => find more add-ons => heroku postgres 설치
+2. 설치후 overview의 postgres오른쪽 에있는 아이콘 클릭하면 새창에서 데이터베이스 제어 창 뜸
+   거기서 settings tap => database credentials 확인하면 DB정보가 다 있음
+   (host, port,user등등...)
