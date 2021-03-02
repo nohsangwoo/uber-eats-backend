@@ -1237,3 +1237,7 @@ createOrder부분 mutation끝나고 orderId반환안하는거랑 dish option중 
 6. git commit -am "make it better"
 7. git push heroku master
 8. git push -u origin master(깃 레포지토리에 업데이트는 따로해줘야함 헤로쿠랑 업로드랑 별개)
+
+- Procfile (확장자 없는 파일을 root에 만들어줌)
+  heroku에 deploy 할때 옵션
+  https://devcenter.heroku.com/articles/procfile 참고
