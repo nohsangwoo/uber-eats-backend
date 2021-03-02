@@ -1224,3 +1224,16 @@ export class CreateOrderOutput extends CoreOutput {
 # 23.1 fix bugs...
 
 createOrder부분 mutation끝나고 orderId반환안하는거랑 dish option중 extra가 0원인경우 에러나는부분 수정
+
+# 24 DEPLOY TO PRODUCTION
+
+처음엔 nest build를 실행하여 dist폴더안에 javascript로 변환된 파일들이 모임
+
+1. heroku cli 설치
+2. heroku login
+3. git init (이미 존재하면 안해도됨)
+4. 이후 진행
+5. git add .
+6. git commit -am "make it better"
+7. git push heroku master
+8. git push -u origin master(깃 레포지토리에 업데이트는 따로해줘야함 헤로쿠랑 업로드랑 별개)
