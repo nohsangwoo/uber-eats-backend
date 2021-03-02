@@ -1305,3 +1305,5 @@ ignoreEnvFile: process.env.NODE_ENV === 'production',
 ```
 
 로 변경
+
+- git저장소로 heroku연결시 git push -u origin master하면 자동으로 헤로쿠에도 연동돼서 업데이트됨
