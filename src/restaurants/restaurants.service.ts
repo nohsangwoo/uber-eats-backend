@@ -9,6 +9,10 @@ import {
   CreateRestaurantInput,
   CreateRestaurantOutput,
 } from './dtos/create-restaurant.dto';
+import {
+  CreateCategoryInput,
+  CreateCategoryOutput,
+} from './dtos/createCategory';
 import { DeleteDishInput, DeleteDishOutput } from './dtos/delete-dish.dto';
 import {
   DeleteRestaurantInput,
@@ -49,9 +53,13 @@ export class RestaurantService {
     try {
       const newRestaurant = this.restaurants.create(createRestaurantInput);
       newRestaurant.owner = owner;
+      // 입력받은 categoryName을  categories  레포지토리안에서 검색한다음
+      // 있으면 데이터를 가져와서 category에 넣어주고
+      // 없으면 새로 오브젝트를 만들어서 category에 넣어줌
       const category = await this.categories.getOrCreate(
         createRestaurantInput.categoryName,
       );
+      // 새롭게 만드려는 category 컬럼에 지정한 카테고리를 넣어줌
       newRestaurant.category = category;
       await this.restaurants.save(newRestaurant);
       return {
@@ -136,6 +144,49 @@ export class RestaurantService {
       return {
         ok: false,
         error: 'Could not delete restaurant.',
+      };
+    }
+  }
+
+  // 만들어보자아-----------------
+  async createCategory(
+    owner: User,
+    createCategoryInput: CreateCategoryInput,
+  ): Promise<CreateCategoryOutput> {
+    try {
+      console.log(owner, createCategoryInput);
+      const categoryName = createCategoryInput?.name.trim().toLowerCase();
+      const categorySlug = categoryName.replace(/ /g, '-');
+      let category = await this.categories.findOne({
+        slug: categorySlug,
+      });
+      const coverImg = createCategoryInput?.coverImg;
+      console.log('categoryName: ', categoryName);
+      console.log('coverImg: ', coverImg);
+      console.log('categorySlug: ', categorySlug);
+      console.log('category: ', category);
+
+      if (!category) {
+        category = await this.categories.save(
+          this.categories.create({
+            name: categoryName,
+            coverImg,
+            slug: categorySlug,
+          }),
+        );
+        return {
+          ok: true,
+        };
+      } else {
+        return {
+          ok: false,
+          error: 'Category name already exists and Could not create',
+        };
+      }
+    } catch {
+      return {
+        ok: false,
+        error: 'Could not create category',
       };
     }
   }

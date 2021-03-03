@@ -18,6 +18,10 @@ import {
   CreateRestaurantInput,
   CreateRestaurantOutput,
 } from './dtos/create-restaurant.dto';
+import {
+  CreateCategoryInput,
+  CreateCategoryOutput,
+} from './dtos/createCategory';
 import { DeleteDishInput, DeleteDishOutput } from './dtos/delete-dish.dto';
 import {
   DeleteRestaurantInput,
@@ -119,9 +123,19 @@ export class RestaurantResolver {
 export class CategoryResolver {
   constructor(private readonly restaurantService: RestaurantService) {}
 
+  // DB에 없고 apollo graphql단에서 처리되는 기능들
   @ResolveField(type => Int)
   restaurantCount(@Parent() category: Category): Promise<number> {
     return this.restaurantService.countRestaurants(category);
+  }
+
+  @Mutation(type => CreateCategoryOutput)
+  @Role(['Owner'])
+  createCategory(
+    @AuthUser() owner: User,
+    @Args('input') createCategoryInput: CreateCategoryInput,
+  ): Promise<CreateCategoryOutput> {
+    return this.restaurantService.createCategory(owner, createCategoryInput);
   }
 
   @Query(type => AllCategoriesOutput)
