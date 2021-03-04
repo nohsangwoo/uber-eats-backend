@@ -32,6 +32,7 @@ import {
   EditRestaurantInput,
   EditRestaurantOutput,
 } from './dtos/edit-restaurant.dto';
+import { GetDishInput, GetDishOutput } from './dtos/get-dish';
 import { MyRestaurantInput, MyRestaurantOutput } from './dtos/my-restaurant';
 import { MyRestaurantsOutput } from './dtos/my-restaurants.dto';
 import { RestaurantInput, RestaurantOutput } from './dtos/restaurant.dto';
@@ -154,6 +155,15 @@ export class CategoryResolver {
 @Resolver(of => Dish)
 export class DishResolver {
   constructor(private readonly restaurantService: RestaurantService) {}
+
+  @Query(returns => GetDishOutput)
+  @Role(['Owner'])
+  getDish(
+    @AuthUser() owner: User,
+    @Args('input') getDishInput: GetDishInput,
+  ): Promise<RestaurantOutput> {
+    return this.restaurantService.findDishById(getDishInput);
+  }
 
   @Mutation(type => CreateDishOutput)
   @Role(['Owner'])
