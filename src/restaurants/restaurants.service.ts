@@ -162,10 +162,6 @@ export class RestaurantService {
         slug: categorySlug,
       });
       const coverImg = createCategoryInput?.coverImg;
-      console.log('categoryName: ', categoryName);
-      console.log('coverImg: ', coverImg);
-      console.log('categorySlug: ', categorySlug);
-      console.log('category: ', category);
 
       if (!category) {
         category = await this.categories.save(
@@ -298,6 +294,7 @@ export class RestaurantService {
     query,
     page,
   }: SearchRestaurantInput): Promise<SearchRestaurantOutput> {
+    console.log(query);
     try {
       const [restaurants, totalResults] = await this.restaurants.findAndCount({
         where: {
