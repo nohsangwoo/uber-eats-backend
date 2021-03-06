@@ -50,7 +50,7 @@
 
 # DATABASE 관계도
 
-![1-diagram](./README_IMAGE/diagram.png)
+![1-diagram](./README_IMAGE/entity_relationship_diagram.png)
 
 # 1 Graphql API
 
