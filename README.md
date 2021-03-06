@@ -1,10 +1,10 @@
 <div>
   
 # Uber Eats BackEnd
+- Uber eats clone의 백엔드입니다. heroku에 배포했으며 사용된 기술과 개념등을 설명합니다.
 - https://github.com/nohsangwoo/uber-eats-frontend 와 연동됩니다(FrontEnd)
 - deploy: https://uber-eats-clone-fe-noh.netlify.app/
     (백엔드배포된 서비스의 상태가 무료버전이라 처음 접속시 sleep된상태에서 깨어나느라 조금 시간이 걸림(1~2분정도 기다려야함))
-# 설명에 첨부된 gif파일 크기로 인하여 readme파일을 불러오는데 시간이 좀더 소요될 수 있습니다. 많이 기다려주세요.
 
 <br><br>
 
