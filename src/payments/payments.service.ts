@@ -38,6 +38,7 @@ export class PaymentService {
           error: 'You are not allowed to do this.',
         };
       }
+
       await this.payments.save(
         this.payments.create({
           transactionId,
