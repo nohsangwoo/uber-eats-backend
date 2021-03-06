@@ -179,3 +179,116 @@ entity에 변화가 있을때 custom으로 무엇인가 작업을 할때 사용�
 - isAbstract
   해당 DTO를 그대로 가져다 쓰는게아니라 추상적으로 어딘가에 복사하여 사용한다는 의미
   어쨌든 objecttype과 동시에 설정 하려면 해당 옵션을 true로 설정
+
+# User authentication
+
+- jsonwebtoken을 이용하여 토큰 생성 및 user verify진행
+  (src/mail/mail.service.ts)참고
+
+# user verify(with mailgun api)
+
+- sandbox버젼이라 인증 이메일 보낼때마다 mailgun에 수동으로 등록해야함
+  또는 카드 등록후 무제한으로 사용하면됨(하지만 현재 불가)
+- email 서비스는 mailgun을 사용
+  https://www.mailgun.com/ 참고
+- 회원가입후 인증번호 확인 시스템을 구현
+- got라이브러리로 post요청
+  (src/mail/mail.service.ts)참고
+
+# dependency injection
+
+- service를 export하여 어디서 사용할것인가를 설정
+
+- 위 export한 service를 app.module에서 불러와 전역에서 사용가능하게 만들수도있다
+
+- 또한 특정 module에서 끌어와 해당 모듈에서만 사용가능하게 consumer를 건들여 설정하는 방법이 있음
+
+# @Global() 데코레이터
+
+해당 모듈은 다른모듈 어디서든 제약없이 불러다 사용할 수 있다는 의미
+
+# 인증 과정
+
+1. login하면 token생성 jsonwebtoken을 이용하여 암호화 함.
+2. http header로 해당 token정보를 보냄 (headers['x-jwt'])란 곳으로 저장됨
+   //middleware--start
+3. 생성된 token의 정보로 무엇인가 요청할때마다 권한종류를 알아내기위해verify작업 함.(암호화된 token을 해독하는 작업)
+4. 위에서 decoded된 token의 정보(login한 user)를 request object에 붙여서 보냄
+   //middleware---end
+5. 이제 middleware단에서 변경된 request object를 모든 resolver에서 사용가능
+
+# token 받아오기, (JWT Middleware 미들웨어 설치 방법)
+
+- http headers 를 활용하는 방식으로 받아온다
+
+- request.headers['x-jwt']에 저장된 토큰값을 뽑아와서 서버단에 토큰값이랑 일치하는지 확인하는 작업진행
+
+- middleware설치 방법
+  main.ts => bootstrap에 설치하여 전구간에 사용가능하도록 설정
+  (이때 미들웨어는 function 형식이어야 함)
+  app.module.ts에서 consumer를 이용하여 일련의 상용구로 설치가능
+  (이때 미들웨어는 class형식이어야 함)
+
+# export module
+
+- jwtmiddleware.ts에서 UserService를 사용하고싶을때
+  users.module.ts에서 exports:[UserService] 설정을 해주면 됨
+
+# request context (appmodule)
+
+req단에 저장된 데이터를 graphql단에 끌어와 사용하는 방법
+
+request context는 각 request에서 사용이 가능하다.
+context가 함수로 정의되면 매 request마다 호출된다.
+이것은 req property를 포함한 object를 express로 부터 받는다
+
+즉 context에 저장된 데이터는 graphql의 어떤 쿼리문이나 mutation문에서든 불러올수있다.
+
+- context적용방법
+  in (app.module.ts에서 imports)
+  ```
+  GraphQLModule.forRoot({
+    autoSchemaFile: true,
+    context: ({ req }) => ({ user: req['user'] }),
+  }),
+  ```
+  해석:
+  jwtmiddleware로부터 저장된 req['user']의 값을 불러와
+  user라는 키값에 할당된 오브젝트를 모든 구역의 graphql에서 불러올수있음
+
+1. apollo server나 graphql의 모든 resolver에서 사용가능하도록 설정해줌(ex..req)
+2. JWTmiddleware를 거쳐서 graqhql context에 request user를 전달해줌
+   token을 전달한 http와 같음
+
+- in (user.resolver.ts에서)
+
+```
+  me(@context() context){
+    console.log(context.user);
+  }
+```
+
+# AuthGuard
+
+- Guard Concept
+
+1. implements CanActivate해서 사용
+   (보일러플레이트 src/auth/auth.guard참고)
+   CanActivate => true를 return 하면 request를 진행시키고 false를 return 하면 request를 멈춤
+2. function의 기능을 보충해줌 조건에 따라 true false로 함수의 기능을 사용할지 차단할지 설정해줌
+   (이안에서 사용될 함수의 이름은 canActivate)
+3. 위에서 http형식의 context를 graphql형식으로 변환해서 가져옴
+4. 전달받은 내용을 가지고 조건을 걸어서 true or false를 return함
+
+   - ExecutionContext는 (app.module.ts => graphqlmodule.forRoot => 전역 사용하게 가능한 context)에서 전역설정된 http의 context를 가져다 사용하겠다는말
+   - 그 가져온 데이터값을 context라는 변수에 넣어줌끌어와 사용하는 작업)
+   - 위에서 가져온 http의 context를 graphql에서 사용할수있게 변환후 gqlContext라는 변수에 넣어줌
+     (src/auth/auth-user.decorator.ts)참고
+
+5. 인증과정을 통하여 request를 진행시킬지 말지 결정가능
+
+- authentication
+  누가 자원을 요청하는지 확인하는 과정(token으로 identity를 확인하는 작업)
+
+- authorization
+  user가 어떤일을 하기전에 permission을 가지고있는지 확인하는 작업(ex. userRole)
