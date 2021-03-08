@@ -16,7 +16,7 @@ jest.mock('got', () => {
 const GRAPHQL_ENDPOINT = '/graphql';
 
 const testUser = {
-  email: 'nico@las.com',
+  email: 'test@gmail.com',
   password: '12345',
 };
 
@@ -258,7 +258,7 @@ describe('UserModule (e2e)', () => {
   });
 
   describe('editProfile', () => {
-    const NEW_EMAIL = 'nico@new.com';
+    const NEW_EMAIL = 'test@gmail.com';
     it('should change email', () => {
       return privateTest(`
             mutation {

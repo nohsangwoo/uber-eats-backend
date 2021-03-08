@@ -21,14 +21,14 @@
 | ✔ User / Delivery Man/ <br>Restaurant Owner Profile |   ✔ Premium Feature<br>(Online Payment)   |
 |                                                     | ✔ Sales Dashboard<br>(Data Visualization) |
 
-| Nest Concepts |            Feature            |
-| :-----------: | :---------------------------: |
-|   ✔ Modules   | ✔ Online Payments<br>(paddle) |
-|   ✔ Guards    |         ✔ Google Maps         |
-| ✔ MiddleWares |        ✔ Unit Testing         |
-| ✔ Decorators  |     ✔ End to End Testing      |
-|               |        ✔ Tailwind CSS         |
-|               |     ✔ JWT Authentication      |
+| Nest Concepts |            Feature             |
+| :-----------: | :----------------------------: |
+|   ✔ Modules   | ✔ Online Payments<br>(paypal)) |
+|   ✔ Guards    |         ✔ Google Maps          |
+| ✔ MiddleWares |         ✔ Unit Testing         |
+| ✔ Decorators  |      ✔ End to End Testing      |
+|               |         ✔ Tailwind CSS         |
+|               |      ✔ JWT Authentication      |
 
 <br><br>
 
@@ -449,7 +449,10 @@ Jest를 이용한 uit test방법
 # 7.0 unit test for user part
 
 user.service.spec.ts생성(테스트파일)
+
+```
 npm run test:watch
+```
 
 - beforeAll 테스트 모듈을 만들어줌
   \*\*즉 graphql등 과 상관없이 오직 UserService파일만을 위한 독립된 별개의 테스팅환경을 만들어주는것
@@ -457,156 +460,128 @@ npm run test:watch
 # 7.1 Jest 경로 에러 수정 및 Mocking
 
 - Jest 경로 에러 수정은 package.json에서 수정해줌
+
+```
   "jest": {
   "moduleNameMapper": {
+      <!-- src로 시작하는 경로포함방식을 찾는다면
+      해당 모든 황작자와 모든 경로는 Root Directory에서 찾아내라고 알려주는 설정 -->
+    "^src/(.\*)$": "<rootDir>/$1"
+    },
+    "rootDir": "src"
 
-    <!-- src로 시작하는 경로포함방식을 찾는다면 
-    해당 모든 황작자와 모든 경로는 Root Directory에서 찾아내라고 알려주는 설정 -->
-
-  "^src/(.\*)$": "<rootDir>/$1"
-  },
-  "rootDir": "src"
-
-  <!-- 여기가 root Directory -->
-
-  ...
+    <!-- 여기가 root Directory -->
+    ...
   }
+```
 
 - mocking (가짜 함수)
   repository를 포함하고 있는 모듈에서 repository를 가짜로 속이려고 만드는 설정
-  즉 Mock repository를 생성 => 이런 일련의 작업을 mockicng 이라고함
+  Mock repository를 생성 => 이런 일련의 작업을 mockicng 이라고함
   첫번째로 테스팅 모듈 생성시 providers에서 최상위 대체 대상을 모킹하고
   그 대체대상이 포함하고있는 함수를 사용할경우
+  사용예)
+
+  ```
   //---------------
   const mockRepository = () => ({
-  findOne: jest.fn(),
-  save: jest.fn(),
-  create: jest.fn(),
-  findOneOrFail: jest.fn(),
-  delete: jest.fn(),
+    findOne: jest.fn(),
+    save: jest.fn(),
+    create: jest.fn(),
+    findOneOrFail: jest.fn(),
+    delete: jest.fn(),
   });
   //---------------
   const mockJwtService = () => ({
-  sign: jest.fn(() => 'signed-token-baby'),
-  verify: jest.fn(),
+    sign: jest.fn(() => 'signed-token-baby'),
+    verify: jest.fn(),
   });
   //---------------
-  const mockMailService = () => ({
-  sendVerificationEmail: jest.fn(),
+    const mockMailService = () => ({
+    sendVerificationEmail: jest.fn(),
   });
+  ```
+
+  (설정된 함수는 테스팅 모듈을 포함할때 useVale에 포함한다)
 
   이런식으로 설정하여 사용한다
-  설정된 함수는 테스팅 모듈을 포함할때 useVale에 포함한다.
 
-# 7.2 mocking part two
+# 테스팅 제외 (package.json)
 
-# 7.4 recap
-
-# 7.5
-
-- 테스트를 제외해도 되는 부분 설정(package.json)
+```
   "coveragePathIgnorePatterns": [
   "node_modules",
   ".entity.ts",
   ".constants.ts"
   ]
-  이런식으로 설정
-  test:cov에서 현재 얼마나 테스트가 완료됐는지 계산해서 퍼센테이지를 보여주는데
-  entify파일과 constants 파일은 테스트 할필요가 없으니 제외하기위해서 poackage.js에 추가해준다
+```
 
-- 테스트하는 방식은 테스트 하는사람의 자유
-- toHaveBeenCalled() 몇번 호출됐는지 상관없이 호출됐는지만 확인(안쓰여서 부가 설명)
-- npm run test:cov 얼마나 테스팅이 진행됐는지 퍼센테이지와 어디가 진행안됐는지 모니터링 해줌
+test:cov에서 현재 얼마나 테스트가 완료됐는지 계산해서 퍼센테이지를 보여주는데
+entify파일과 constants 파일은 테스트 할필요가 없으니 제외하기위해서 poackage.js에 추가
 
-# 7.8
+- toHaveBeenCalled()
+  몇번 호출됐는지 상관없이 호출됐는지만 확인(안쓰여서 부가 설명)
 
-- beforeAll 과 beforeEach차이
-  beforeAll 각 테스팅시 호출스택을 공유하고 beforeEach은 각 테스팅마다 호출을 별개의것으로 구분한다
+# 테스팅 진행 현황
 
-# 7.9 findById
+```
+npm run test:cov
+```
 
-- mockResolvedValue와 mockReturnValue의 차이
-  반환값이 있을때 promise를 return 하는가 아닌가의 차이
-  반환값이 promise를 return하면 mockResolvedValue
-  (ex. save,findeOne..등 보통 여기선 DB를 제어하는 함수인경우)
-  반환값이 promise를 return하 않으면면 mockReturnValue
-  (ex. create..등 보통 여기선 일반 javascript 함수인경우 물론 예외도 있음)
-  가장 중요한건 mockResolvedValue와 mockReturnValue는 반환값을 mocking하는것
+# beforeAll 과 beforeEach차이
 
-# 7.12 verifyEmail 테스팅
+- beforeAll 각 테스팅시 호출스택을 공유하고 beforeEach은 각 테스팅마다 호출을 별개의것으로 구분
 
-# 8 UNIT TESTING JWT AND MAIL
+# mockResolvedValue와 mockReturnValue의 차이
 
-# 8.1 jwt service unit test
+반환값이 있을때 promise를 return 하는가 아닌가의 차이
+반환값이 promise를 return하면 mockResolvedValue
+(ex. save,findeOne..등 보통 여기선 DB를 제어하는 함수인경우)
+반환값이 promise를 return하 않으면면 mockReturnValue
+(ex. create..등 보통 여기선 일반 javascript 함수인경우 물론 예외도 있음)
+가장 중요한건 mockResolvedValue와 mockReturnValue는 반환값을 mocking하는것
 
-# 8.2 mail service unit test
-
-# 특정파일만 검사하고싶을때
+# 특정파일만 테스트 하고싶을때
 
 @blackstar0223 Check "collectCoverageFrom" in package.json.
 In my case:
+
+```
 "collectCoverageFrom": [
-"**/*.(t|j)s"
+  "**/*.(t|j)s"
 ],
+```
 
 I modified it:
+
+```
 "collectCoverageFrom": [
-"**/*.service.(t|j)s"
+  "**/*.service.(t|j)s"
 ],
 And then jest --coverage shows only \*.service.ts(or js if exists) files.
 and I didn't set coveragePathIgnorePatterns
+```
 
-이런식으로 설정가능
+# slug
 
-# jwt.middleware단에서 {user로 뽑아줘야 제대로 작동함}
+- 검색시 사용할 목적으로 작업
+  특정 규칙을 이용하여 검색단어를 최적화 하는 작업()
+  예시)
 
-const { user } = await this.userService.findById(decoded['id']);
-#mac 연결
+  ```
+  //...createCategoryInput.name is Search term...
 
-npm install eslint eslint-plugin-react eslint-babel –save-dev
+  const categoryName = createCategoryInput?.name.trim().toLowerCase();
+  const categorySlug = categoryName.replace(/ /g, '-');
+  ```
 
-# 9 E2E Testing 나중에 보기
+# 메타데이터 사용(SetMetadata 사용법)
 
-# 10 RESTAURANT CRUD
+- SetMetadata를 이용한 role Decorator생성 방법 숙지
+  restaurant의 resolver에는 user를 위한 기능, delivery를 위한기능, owner(사장)을 위한 기능이 각각있는데
+  이 구분을 SetMetadata로 지정해서 구분
 
-# 10.0 RESTAURANT MODELS
-
-## Restaurant model
-
-- name
-- category(foreign key)
-- address
-- coverImage
-
-- create restaurant.entity.ts
-- create category.entity.ts
-
-- relation 정의 (Restaurant와 Category의 관계 정의)
-  OneToMany and ManyToOne
-
-# 10.1 relationship and inputtype
-
-- inputType 설정
-  relation이 정의된 entity간은 서로 @InputType의 첫번째 인자에
-  인풋시 정의될 인풋호출명?을 설정한다
-
-# 10.2 restaurant 기본 구성 설정 및 Code Cleanup
-
-# 10.3 createRestaurant
-
-category가 존재하지 않으면 그 category를 새로 만들고 싶고
-존재한다면 그 category를 get하고 싶음
-
-또한 어떻게 category를 찾을지도 정의해야함(slug)
-
-# 10.4 Roles part one 메타데이터 사용(SetMetadata 사용법)
-
-- SetMetadata를 이용한 role Decorator만들기
-
-restaurant의 resolver에는 user를 위한 기능, delivery를 위한기능, owner(사장)을 위한 기능이 각각있는데
-이 구분을 SetMetadata로 지정해서 구분해줌
-
-# 10.5 // 모든resolver에서 AuthGuard를 사용하고싶다면 APP_GUARD를 이용하면됨
+# 전구역의 resolver에서 AuthGuard를 사용하고싶다면 APP_GUARD를 이용
 
 - 메타데이터가 설정됐으면 해당 resolver는 public이면 안됨
   (즉 메타데이터가 설정됐다면 user의 role을 확인해야 한다는 뜻)
@@ -713,18 +688,10 @@ restaurant의 resolver에는 user를 위한 기능, delivery를 위한기능, ow
 이런결과값을 가짐
 (즉 각각의 category결과값에대한 restaurant가 count된 값을 계산해서 반환함)
 
-# 10.14 category
-
-- category에 해당하는 레스토랑을 검색
-  (category를 통하여 restaurant를 검색하는것)
-- relation옵션
-  category를 통하여 restaurant를 검색할 수 있다는것은 category와 restaurant는 relataion으로 서로 묶여있다는 의미이다
-  따라서 이경우 findOne같은 함수로 검색하여 category를 통하여 restaurant를 검색할때는 relations:['restaurant']를 옵션으로 추가해줘야한다
-
-# 10.15 pagination feat category
+# pagination feat category
 
 - category에 해당하는 레스토랑을 검색시 pagination기능을 추가
-- pagination을 수동으로 구현함
+- pagination을 수동으로 구현
 
 1. pagination에 필요한 dto 구성
 2. restaurant정보를 무조건 다 불러오는게 아니라 25개씩 나눠서 불러옴
@@ -732,27 +699,37 @@ restaurant의 resolver에는 user를 위한 기능, delivery를 위한기능, ow
 3. 불러온 25개의 restaurant 데이터를 category에 추가해줌
    (obect형식)
 4. category 총 개수, category를 25개씩 나눈 총 페이지 수
+   코드 예시
 
-# 10.16 restaurant with pagination
+```
+const [restaurants, totalResults] = await this.restaurants.findAndCount({
+    where: {
+      name: Raw(name => `${name} ILIKE '%${query}%'`),
+    },
+    skip: (page - 1) * 25,
+    take: 25,
+  });
+  return {
+    ok: true,
+    restaurants,
+    totalResults,
+    totalPages: Math.ceil(totalResults / 25),
+};
+```
 
-모든 레스토랑 검색
-
-- findAndCount는
-  // findAndCount는 array를 반환하는데 총 검색된 데이터와 count 된 개수를 array안에 포함해서 반환한다.
-
-# 10.17 Restaurant and search
+# Restaurant and search
 
 아이디로 레스트랑을 검색하던가 레스토랑 이름으로 레스토랑을 검색하는 두가지 방법을 구현
 findRestaurantById
 searchRestaurantByName
 
 - Like사용법 sql 명령어중 하나임
-  // like는 비슷한 값을 찾아주는것
-  // 여기선 query라는 단어가 앞뒤 중간 어디라도 포함된다면 검색해달라는 뜻
-  // 만약 Like(`${query}%`) 이런식이라면 query라는 단어로 시작되는 데이터를 검색해달라는 뜻
+  like는 비슷한 값을 찾아주는것
+  여기선 query라는 단어가 앞뒤 중간 어디라도 포함된다면 검색해달라는 뜻
+  만약 Like(`${query}%`) 이런식이라면 query라는 단어로 시작되는 데이터를 검색해달라는 뜻
   name: Like(`%${query}%`),
 
-# 10.18 ILike sql문 사용법
+# ILike sql문 사용법
 
 Like는 대문자 소문자를 구분검색 ILike는 대소문자 구분없이 검색
 
@@ -764,9 +741,7 @@ For those who use MySQL, LIKE is already case-insensitive. If you want to search
 아래 예시 참조
 ex) Raw(name => `${name} LIKE BINARY '%${query}%'`)
 
-# 11.0 dish entity
-
--
+# dish entity
 
 1.  dish.entity.ts만든다
 2.  app.module에 엔티티 추가
@@ -778,7 +753,7 @@ ex) Raw(name => `${name} LIKE BINARY '%${query}%'`)
 5.  dish.entity.ts에서 @RelationId()데코레이션을 이용하여 restaurantId 을 가져옴
     (RelationId는 foreign key이다)
 
-# 11.1 dish option
+# dish option
 
 예를들면 피자를 주문할때 선택하는 맛(옵션)
 ex..피글빼주세요, 치즈 더 추가해주세요..등등
@@ -793,76 +768,16 @@ ex..피글빼주세요, 치즈 더 추가해주세요..등등
 3. dish resolver를 restaurant.resolver.ts파일에 추가해줌
 4. createDish기능을 dish resolver에 추가
 5. createDish의 실제로 작동되는 기능은 restaurants.service.ts 에 추가
-6. 이때 레스토랑 검색시 relation관계에 있는 menu도 같이 검색가능하게 만들기위해
+6. 이때 레스토랑 검색시 relation관계에 있는 menu도 같이 검색가능하게 만들기위해 아래와 같이 변경
 
 ```
 findRestaurantById의 레스토랑 검색하는 부분을
 const restaurant = await this.restaurants.findOne(restaurantId, {
-        relations: ['menu'],  //<== 추가된 부분
-      });
+    relations: ['menu'],  //<== 추가된 부분
+});
 ```
 
-로 변경
-
-# 11.2 create dish service안에 createDish의 method만들기
-
-# 11.3 edit dish, delete dish
-
-# 11.4 Order Entity
-
-주문 기능을 위해 order모듈 생성 및 entity파일 생성
-
-- nest g mo orders
-
-- ManyToMany관계
-  서로 여러개를 가짐 dish는 order를 여러개 가지고 order또한 dish를 여러개 가짐
-
-- order.entity.ts 작성(DB 테이블 만들기)
-
-- 테이블간 relation을 정의
-
-- relation정의된 field는 @column() 데코레이션 안써도됨
-
-# 11.5
-
-- createOrder의 resolver,service, appModule 및 DTO 생성
-
-# Json형식의 object Type Entity
-
-- 일종의 가상 entity같은 느낌...entity인데 json형식임
-
-# 11.6 dish option을 위한 추가 작업
-
-- order-item 만들기
-- relation은 반대쪽에 항상 설정해줘야하는건아님(접근을 원할때만 설정)
-  ex) ManyToOne설정을 했다면 반대편에도 OneToMany설정을 해줘야하는가? ㄴㄴ
-
-# 11.7 실제로 createOrder기능 만들기
-
-# 11.8 자잘한것들 수정
-
-그리고 createOrder 테스트(client 권한으로)
-
-# 11.9
-
-service 추가
-
-# 11.10
-
-forEach return할수없다(에러 핸들링이 불가능)
-따라서 forEach를 for로 변경 (orders.serivice.ts)
-
-# 11.11
-
-# 11.12 getOrders part One
-
-- 주문 현황 확인
-  고객은 자신이 주문한 내용을 전부 보고싶을꺼고
-  주인은 자신이 주문 받은 내용을 전부 보고싶을것이고
-  배달원또한 자신이 배달하려는 주문을 모두 보고싶을 것이다
-  따라서 getOrders의 권한은 로그인한 모든 사람 Any(로그인을 햇다면 누구나 접근가능)
-
-* flat() 중첩 배열 평탄화 및 배열의 빈값 제거
+# flat() 중첩 배열 평탄화 및 배열의 빈값 제거
 
 - 중첩배열 평탄화 예시
 
@@ -884,18 +799,11 @@ arr4.flat(Infinity);
 // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 ```
 
-# 11.13 getOrder 주문 하나를 가져옴
+# getOrder 주문 하나를 가져옴
 
-# 11.14 edit Order 주문수정(주문 진행 단계 변경)
+# edit Order 주문수정(주문 진행 단계 변경)
 
-- 정확히 말하면 주문의 단계를 변화시키는것임
-  (1.유저가 주문함 2. 레스토랑이 주문받고 요리 시작 3. 요리완성..등등...)
-
-- 에러를 직접 핸들링하거나 상상할수 있는 에러나 해커의 공격을 최대한으로 상상하여 방어적으로 코드를 작성하는것을 defensive programming 이라고 하는듯
-
-# 12
-
-# 12.0 Subscriptions part One
+# Subscriptions part One
 
 - graphql-subscriptions 설치
   npm install graphql-subscriptions
@@ -908,29 +816,11 @@ arr4.flat(Infinity);
 
 # 12.1 Subscriptions part Two
 
-- context에서 connection이라는 것을 사용함
-- graphql 웹소켓은 Request가 없고 Connection이라는게 존재함
-- http는 매번 request할때마다 토큰을 보내지만 graphql subscription 웹소켓은 한번만 보냄그리고 연결이 끊어지지 않음
-
-- 서버에서 graphql subscription을 만들어두면 graphql에서 해당 기능을 listening중이고
-  해당 subscription을 정해진 규칙을 이용하여 웹소켓을 통하여 실시간 통신함
-
-# 12.2 subscription Authentication part one
-
-- subscription 보호하기
-- app.module.ts graphql의 context 옵션 설정
-  http와 웹소켓을 동시에 사용하는방법을 알아내야함
-  // request가 있는 경우엔 request http headers에서 TOKEN KEY를 가져오고
-  // reuqest가 없는경우엔 graphql web socket connection 에서 TOEN KEY를 가져온다
-
-# 12.3 subscription Authentication part Two
-
-- auth.guard.ts 수정 & userModule에서 UsersModule을 import해줌
-
-- 이설정으로 이제 subscript 웹소켓일때와 http일때 둘다 인증과정 확인가능
+- realtime 으로 변경된 데이터를 프론트엔드에서 감지가능한 기능
 
 # 12.4 pubsub
 
+- subscriptoion을 위한 라이브러리
 - pubsub 사용방법 및 pobsub의 기능 좀더 살표보기
 
 # 12.5 Subscription Filter
@@ -998,14 +888,15 @@ subscript에서 전달받은 payload를 기준으로 custom function을 만들�
       });
 ```
 
-# 12.10 eager relation 은 DB에서 entity를 load할때마다 자동으로 load되는 relation을 정함
+# eager
 
-그니깐
+- relataion관계에 있는 entity간 필드를 load할때마다 자동으로 load되는 relation을 정함
+  코드예)
 
 ```
  const order = await this.orders.findOne(orderId, {
         relations: ['restaurant'],
-      });
+  });
 ```
 
 이런식으로 relations: ['restaurant'], 옵션 안줘도 relation관계 데이터가 default로 불러와질수있게 설정하는것
@@ -1016,42 +907,33 @@ subscript에서 전달받은 payload를 기준으로 custom function을 만들�
 
 - editOrder가 성공적으로 update됐다면 subscription trigger를 작동하여 구독기능 작동
 
-# 12.11 orderUpdates
+# orderUpdates
 
 - order정보가 수정되면 order와 '관련된' 모든 로그인된 사용자는 수정정보를 실시간으로 확인할 수 있다.
 
-# 12.12 take order
+# take order
 
-// 배달원이 주문을 접수하는 기능
-// 배달언이 주문 접수를 안했을때 order의 driver부분은 null상태
-// 배달원이 주문접수를 하면 order에 주문접수한 driver정보(이 주문을 배달하기 위한 배달원의 정보)를 업데이트 하는것
+- 배달원이 주문을 접수하는 기능
+- 배달언이 주문 접수를 안했을때 order의 driver부분은 null상태
+- 배달원이 주문접수를 하면 order에 주문접수한 driver정보(이 주문을 배달하기 위한 배달원의 정보)를 업데이트 하는것
 
 - 주문에 배달원 할당되면 미리 만들어둔 orderUpdates 구독기능을 동작시켜서 해당 주문과 관련된 로그인한 모든 user에게 실시간으로 변동사항을 알림
 
-# 13 PAYMENT 결제방식
+# PAYMENT 결제방식
 
-- stripe
-- braintree
-- 카카오페이
-- 나이스페이
+- stripe, braintree, 카카오페이, 나이스페이, paddle, paypal 등이있음
+- create Payment Module And setting
+  paypal결제 방식 선택(결제내역은 백엔드에 저장하고 결제진행은 프론트엔드에서 진행)
 
-# 13.1 ~ 13.2 create Payment Module And setting
-
-- nest g module payments
-  모듈 만들고 세팅
-  resolver, service ,entity, dto, app.module.ts세팅 등등 간단한 기본세팅
-
-# 13.3 createPayment part
-
-- createPayment 부분
-
-# 13.4 getPayments
+# getPayments
 
 - 레스토랑 주인이 결제정보 읽어오는 기능
 
-# 13.5 @nestjs/schedule
+# 자동화 기술 @nestjs/schedule
 
-- npm install --save @nestjs/schedule
+```
+ npm install --save @nestjs/schedule
+```
 
 - 원하는 time interval 또는 정해진 시간과 날짜에 function을 실행할 수 있게 만듬
 
@@ -1062,11 +944,12 @@ subscript에서 전달받은 payload를 기준으로 custom function을 만들�
 
 - @Interval()
   ex
-  @Interval(5000)은 실행된 순간을 기준으로 5초마다 반복한다는뜻임(고정된 시간 아님)
+  `@Interval(5000)`
+  은 실행된 순간을 기준으로 5초마다 반복한다는뜻임(고정된 시간 아님)
 
 - @Timeout()
   ex
-  @Timeout(20000)은 20초 뒤에 딱 한번만 실행됨
+  `@Timeout(20000)`은 20초 뒤에 딱 한번만 실행됨
   @Timeout('notification',20000) 이런식으로 이름을 지정해서 실행하면
   이 Timeout을 제어할 수 있음
 
@@ -1077,11 +960,11 @@ subscript에서 전달받은 payload를 기준으로 custom function을 만들�
 
 스케쥴을 미리만들어두고 특정 타이밍에 추가하거나 삭제하거나... 등등 고급제어가 가능
 
-// 크론패턴으로 얼마나 반복할건지 정의
-//30초 매분 매시 매일 매달 매주 마다 실행함 즉
-// 즉 매분 초침이 30초를 가리킬때 실행함(무한반복)
-// 이 Cron기능을 제어하기위해서 myJob이라는 이름을 붙여줌
-ex)
+- 크론패턴으로 얼마나 반복할건지 정의
+- 30초 매분 매시 매일 매달 매주 마다 실행함 즉
+- 즉 매분 초침이 30초를 가리킬때 실행함(무한반복)
+- 이 Cron기능을 제어하기위해서 myJob이라는 이름을 붙여줌
+  ex)
 
 ```
 @Cron('30 * * * * *', {
@@ -1109,36 +992,18 @@ afterStarts() {
 
 ```
 
-# 13.6 Promoting Restaurants
+# Promoting Restaurants
 
 payment를 create할때 restaurant를 promote하는 방법
 
 레스토랑 프로모션 기간 기능 추가(7일)
 (이때 뭐 이벤트처럼 프로모션기간의 레스토랑을 상단에 뜨게 해준다던지... 그런 기능들)
 
-# 13.7 Promoting Restaurants part Two
+# Promoting Restaurants part Two
 
-// 날짜가 만료됐음에도 여전히 promote되고있는 restaurant를 체크하는것
-그리고 검색된 레스토랑이 있다면 프로모션 상태를 off해준다
-(isPromote=false promotedUntil=null 처리 해서 DB에 저장해준다(update))
-
-# 13.8 end of backend
-
-# restaurant.entoty.tsx category eager 추가
-
-```
-  @Field(type => Category, { nullable: true })
-  @ManyToOne(
-    type => Category,
-    category => category.restaurants,
-    { nullable: true, onDelete: 'SET NULL', eager: true } <=== 추가
-  )
-  category: Category;
-```
-
-# restaurant.service.ts
-
-pageSize변수로 페이지당 컨텐츠개수조절
+- 날짜가 만료됐음에도 여전히 promote되고있는 restaurant를 체크하는것
+  그리고 검색된 레스토랑이 있다면 프로모션 상태를 off해준다
+  (isPromote=false promotedUntil=null 처리 해서 DB에 저장해준다(update))
 
 # 추가 부분
 
@@ -1148,14 +1013,10 @@ pageSize변수로 페이지당 컨텐츠개수조절
 
 - restaurant.entity.ts에 category relation에 eager:true 설정
 
-# 20.2 file upload part one
+# file upload (ASW S3)
 
-basic setting up
-
-# 20.3 file upload
-
--apply aws sdk
-https://github.com/aws/aws-sdk-js 참고
+- apply aws sdk
+  https://github.com/aws/aws-sdk-js 참고
 
 계정 로그인후
 
@@ -1179,27 +1040,11 @@ https://github.com/aws/aws-sdk-js 참고
     https://s3.console.aws.amazon.com/s3/home 확인가능
 16. 이때 백엔드의 버킷이름과 동일하게 aws s3에서도 버킷을 생성해줘야함
 
-# 20.4 backend cors설정(백엔드로 접근가능하게)
+# backend cors설정(백엔드로 접근가능하게)
 
 - main.ts에서 app.enableCors() 적용
 
-# 20.5 CreateRestaurantOutput DTO에 restaurantId?: number; 추가
-
-# 22.6 create-order.dto.ts의 CreateOrderOutput에 orderId 반환 추가
-
-```
-@ObjectType()
-export class CreateOrderOutput extends CoreOutput {
-  @Field(type => Int, { nullable: true })
-  orderId?: number;
-}
-```
-
-# 23.1 fix bugs...
-
-createOrder부분 mutation끝나고 orderId반환안하는거랑 dish option중 extra가 0원인경우 에러나는부분 수정
-
-# 24 DEPLOY TO PRODUCTION
+# DEPLOY TO PRODUCTION
 
 처음엔 nest build를 실행하여 dist폴더안에 javascript로 변환된 파일들이 모임
 
@@ -1210,13 +1055,14 @@ createOrder부분 mutation끝나고 orderId반환안하는거랑 dish option중 
 5. git add .
 6. git commit -am "make it better"
 7. git push heroku master
-8. git push -u origin master(깃 레포지토리에 업데이트는 따로해줘야함 헤로쿠랑 업로드랑 별개)
+8. git push -u origin master
+   (깃 레포지토리에 업데이트는 따로해줘야함 헤로쿠랑 업로드랑 별개)
 
 - Procfile (확장자 없는 파일을 root에 만들어줌)
   heroku에 deploy 할때 옵션
   https://devcenter.heroku.com/articles/procfile 참고
 
-- main.ts에서 port도 변경해줘야함
+- main.ts에서 port도 변경해줌
 
 ```
  await app.listen(process.env.PORT || 4000);
@@ -1279,8 +1125,6 @@ ignoreEnvFile: process.env.NODE_ENV === 'production',
 ```
 
 로 변경
-
-- git저장소로 heroku연결시 git push -u origin master하면 자동으로 헤로쿠에도 연동돼서 업데이트됨
 
 - postgres 무료버젼은 db주소가 계속 바뀌기 때문에 app.module.ts설정을 변경해줌
   대신 모든 정보를 제공하는 uri를 받아옴
