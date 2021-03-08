@@ -446,7 +446,7 @@ src/users/entities에 verification.entity.ts추가
 
 Jest를 이용한 uit test방법
 
-# 7.0 unit test for user part
+# unit test for user part
 
 user.service.spec.ts생성(테스트파일)
 
@@ -457,7 +457,7 @@ npm run test:watch
 - beforeAll 테스트 모듈을 만들어줌
   \*\*즉 graphql등 과 상관없이 오직 UserService파일만을 위한 독립된 별개의 테스팅환경을 만들어주는것
 
-# 7.1 Jest 경로 에러 수정 및 Mocking
+# Jest 경로 에러 수정 및 Mocking
 
 - Jest 경로 에러 수정은 package.json에서 수정해줌
 
@@ -475,7 +475,7 @@ npm run test:watch
   }
 ```
 
-- mocking (가짜 함수)
+- mocking (가짜 함수 또는 가짜 변수로 대체 해줌)
   repository를 포함하고 있는 모듈에서 repository를 가짜로 속이려고 만드는 설정
   Mock repository를 생성 => 이런 일련의 작업을 mockicng 이라고함
   첫번째로 테스팅 모듈 생성시 providers에서 최상위 대체 대상을 모킹하고
