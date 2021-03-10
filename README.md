@@ -814,33 +814,35 @@ arr4.flat(Infinity);
   (다만 이럴때 원래 서버는 http request를 먼저 받아와야하는데 웹소켓을 먼저 받아오는 방식으로 활성화돼서 작동이안됨 )
   따라서 웹소캣에서 http를 받아오려면 또다른 설정이 필요함 #12.1 에서 계속
 
-# 12.1 Subscriptions part Two
+# Subscriptions part Two
 
 - realtime 으로 변경된 데이터를 프론트엔드에서 감지가능한 기능
 
-# 12.4 pubsub
+# pubsub
 
 - subscriptoion을 위한 라이브러리
 - pubsub 사용방법 및 pobsub의 기능 좀더 살표보기
 
-# 12.5 Subscription Filter
+# Subscription Filter
 
 - filter설정을 안해주면 내가 원하지 않는 부분도 Subscription해버린다.
+  (특정조건만 Subscription 할수있게 필터링해주는것)
   ex order id가 1인 내용만 Subscription하고싶은데 order id가 6이건 33이건 다른 조건도 Subscription해버린다던지...
 
-  // 특정조건만 Subscription 할수있게 필터링해주는것
-  // filter에는 3개의 인자를받는다(filter(payload,variables,context))
-  // 1. payload는 potatoReady 등 같은 함수에서 전달받은 값
-  // 2. variable은 listening을 시작하기 전에 subscription에 준variables를 가진 object
+- filter에는 3개의 인자를받는다(filter(payload,variables,context))
 
-  ```
-    ex 그래프큐엘에서 구독하는 방법
-    subscription{
-      readypotato(potatoId:1)   <= 여기서 1이 variable
-    }
-  ```
+1.  payload는 potatoReady 등 같은 함수에서 전달받은 값
+2.  variable은 listening을 시작하기 전에 subscription에 준variables를 가진 object
 
-# 12.6 Subscription Resolve 설명
+graphql subscription예시)
+
+```
+  subscription{
+    readypotato(potatoId:1)   <= 여기서 1이 variable
+  }
+```
+
+# Subscription Resolve 설명
 
 subscript에서 전달받은 payload를 기준으로 custom function을 만들어 반환해줌
 (일반적인 resolver개념이랑 비슷한듯)
@@ -849,16 +851,14 @@ subscript에서 전달받은 payload를 기준으로 custom function을 만들�
   update를 받을지 말지는 Subscription Filter가 결정하고
   Subscription Resolve는 output의 모습을 바꿔줌
 
-# 12.7 pendingOrders Subscription part One
+# pendingOrders Subscription
 
 - order를 업데이트한뒤 그 업데이트한 값을 반환받아서 Subscription에 pubsub을 이용하여 subscription 웹소켓서버로 업테이트값을 전달한다
   본격적으로 subscription trigger를 이용하여 order정보를 전달하고 전달받는 작업
 
-# 12.8 pendingOrders Subscription part Two
+* owner가 음식 준비를 완료하고 픽업할 준비가 되면 trigger되는 subscription이다
 
-- owner가 음식 준비를 완료하고 픽업할 준비가 되면 trigger되는 subscription이다
-
-# 12.9 cookedOrders delivery 만 볼수있는 구독 기능
+# cookedOrders delivery 만 볼수있는 subscription 기능
 
 - create가 있는 상태의 반환값이랑 없는 상태의 반환값이다름
   (create가 있는경우는 order의 반환값이 모든 relation을 포함하여 잘 return됨)
